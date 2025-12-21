@@ -3225,7 +3225,7 @@ Hemos completado la construcción de un marco axiomático riguroso y computacion
 
 Este documento constituye una **fundamentación completa e integrada** que une axiomas irreducibles, demostraciones rigurosas, clasificaciones avanzadas, herramientas computacionales efectivas, y conexiones con la topología algebraica clásica.
 
-La teoría racional de nudos emerge así como un **puente sólido** entre:
+La teoría modular estructural de nudos emerge así como un **puente sólido** entre:
 - Topología de baja dimensión,
 - Álgebra abstracta (anillos, grupos),
 - Teoría de números (aritmética modular),
