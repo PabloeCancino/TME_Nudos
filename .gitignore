@@ -43,3 +43,7 @@ Test_Combinatoria/configuraciones_nudos.json
 **/configuraciones_nudos.json
 **/configuraciones_nudos_n1_n2_n3*.json
 BD_Nudos/*.json
+
+# Backup logs
+backup.log
+backup.log.old
