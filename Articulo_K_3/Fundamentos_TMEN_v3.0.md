@@ -179,7 +179,7 @@ Este axioma **no está incluido** en el núcleo A1-A4 del presente trabajo.
 4. **Investigación futura:** La caracterización completa de realizabilidad es tema de investigación complementaria (ver Problema Abierto 1.3.1).
 
 **Conjetura Abierta 1.3.1 (Realizabilidad Racional).**  
-Caracterizar completamente qué configuraciones racionales satisfaciendo A1-A4 son realizables como diagramas de nudos clásicos embebidos en $\mathbb{R}^3$.
+Caracterizar completamente qué configuraciones modulares satisfaciendo A1-A4 son realizables como diagramas de nudos clásicos embebidos en $\mathbb{R}^3$.
 
 Formalmente: Determinar condiciones necesarias y suficientes sobre $(o_i, u_i)_{i=1}^n$ tal que:
 $$
@@ -217,7 +217,7 @@ El sistema axiomático A1-A4 establece un **marco general** para representar nud
 Para evitar confusión, en lo que sigue de este documento:
 
 - **"Configuración racional"**: Cualquier conjunto de pares $(o_i, u_i)$ satisfaciendo A1-A4
-- **"Nudo racional" (nuestro)**: Clase de equivalencia de configuraciones racionales bajo movidas de Reidemeister racionales
+- **"Nudo racional" (nuestro)**: Clase de equivalencia de configuraciones modulares bajo movidas de Reidemeister racionales
 - **"Rational knot (clásico)"**: Nudo 2-puente de Conway-Schubert (cuando citemos literatura)
 
 Cuando sea necesario distinguir, usaremos "2-bridge knot" para el concepto clásico.
@@ -281,10 +281,10 @@ En particular, cuando un resultado tiene **componentes mixtos** (parte rigurosa,
 ## **2.1. Definición fundamental: Configuración racional**
 
 Sea $n \in \mathbb{N}$.  
-Definimos una **configuración racional de nudos** como un conjunto finito:
+Definimos una **configuración modular** como un conjunto finito:
 
 $$
-K = \left\{\, \frac{o_1}{u_1}, \frac{o_2}{u_2}, \dots, \frac{o_n}{u_n} \,\right\},
+K = \left\{\, (o_1, u_1), (o_2, u_2), \dots, (o_n, u_n) \,\right\),
 $$
 
 con las siguientes propiedades:
@@ -300,7 +300,7 @@ con las siguientes propiedades:
    $$
 
 3. **(Interpretación cruzada)**  
-   Cada racional $\frac{o_i}{u_i}$ codifica la aparición del cruce $i$ en los niveles “over” y “under”.
+   Cada racional $(o_i, u_i)$ codifica la aparición del cruce $i$ en los niveles “over” y “under”.
 
 4. **(Estructura modular)**  
    Los índices se consideran en el anillo
@@ -308,12 +308,12 @@ con las siguientes propiedades:
    \mathbb{Z}_{2n} = \mathbb{Z}/_{2n}\mathbb{Z}.
    $$
 
-El conjunto de todas las configuraciones racionales se denota por:
+El conjunto de todas las configuraciones modulares se denota por:
 
 $$
-\mathcal{C}_{\mathrm{rat}} :=
+\mathcal{C} :=
 \bigcup_{n\in\mathbb{N}}
-\mathcal{C}_{\mathrm{rat}}(n).
+\mathcal{C}(n).
 $$
 
 ## **2.2. Fundamentación teórica**
@@ -344,7 +344,7 @@ Todo cruce de un nudo proyectado posee **dos apariciones distintas** en el recor
 Cada cruce queda así descrito mediante un par ordenado
 
 $$
-\frac{o_i}{u_i}, \qquad o_i,u_i \in \mathcal{R}_{2n},\quad o_i\neq u_i.
+(o_i, u_i), \qquad o_i,u_i \in \mathbb{Z}_{2n},\quad o_i\neq u_i.
 $$
 
 Esta doble codificación garantiza que:
@@ -354,10 +354,10 @@ Esta doble codificación garantiza que:
 3. no exista ambigüedad sobre el orden de aparición de cada cruce.
 
 ### **No conmutatividad inducida**
-La codificación $\frac{o_i}{u_i}$ por ser implícitamente orientada, es **intrínsecamente no conmutativa**:
+La codificación $(o_i, u_i)$ por ser implícitamente orientada, es **intrínsecamente no conmutativa**:
 
 $$
-\frac{o_i}{u_i} \neq \frac{u_i}{o_i},
+(o_i, u_i) \neq (u_i, o_i),
 $$
 
 pues intercambiar las coordenadas de nivel **cambia la topología del cruce**,
@@ -441,8 +441,8 @@ para:
 ## **3. Reidemeister racional dentro del sistema axiomático**
 
 En esta sección formulamos las tres movidas de Reidemeister **exclusivamente**
-en términos de la estructura modular $\mathcal{R}_{2n}$, de los pares
-racionales $\frac{o_i}{u_i}$ y de la relación de interlazado $i\bowtie j$.
+en términos de la estructura modular $\mathbb{Z}_{2n}$, de los pares
+racionales $(o_i, u_i)$ y de la relación de interlazado $i\bowtie j$.
 
 
 
@@ -451,10 +451,10 @@ racionales $\frac{o_i}{u_i}$ y de la relación de interlazado $i\bowtie j$.
 Dado el anillo de posiciones
 
 $$
-\mathcal{R}_{2n} = \{1,2,\dots,2n\},
+\mathbb{Z}_{2n} = \{1,2,\dots,2n\},
 $$
 
-decimos que dos posiciones $p,q\in\mathcal{R}_{2n}$ son **adyacentes** si
+decimos que dos posiciones $p,q\in\mathbb{Z}_{2n}$ son **adyacentes** si
 ocurre alguna de las siguientes:
 
 $$
@@ -481,7 +481,7 @@ Obsérvese que esto refina la condición informal $|p-q|=1$ al caso cíclico
 Sea $K$ una configuración racional con cruces
 
 $$
-K = \left\{\frac{o_1}{u_1},\dots,\frac{o_n}{u_n}\right\}.
+K = \left\{(o_1, u_1),\dots,(o_n, u_n)\right\).
 $$
 
 #### Definición 3.2.1 (Cruce de tipo R1).
@@ -493,7 +493,7 @@ Un cruce $c_i$ es de **tipo R1 racional** si satisface:
    \mathrm{Ady}(o_i,u_i),
    $$
    es decir, las dos apariciones del cruce son posiciones consecutivas en
-   $\mathcal{R}_{2n}$.
+   $\mathbb{Z}_{2n}$.
 
 2. (**Ausencia de interlazado con otros cruces**)
    $$
@@ -508,13 +508,13 @@ En tal caso, decimos que $c_i$ soporta una **movida R1**.
 - **Eliminación R1**: dada $K$ y un cruce $c_i$ de tipo R1, la
   configuración
   $$
-  K' := K \setminus \left\{\frac{o_i}{u_i}\right\}
+  K' := K \setminus \left\{(o_i, u_i)\right\}
   $$
   junto con la renumeración natural de las posiciones (quitando $o_i$ y
-  $u_i$ del recorrido y cerrando la brecha en $\mathcal{R}_{2n}$)
+  $u_i$ del recorrido y cerrando la brecha en $\mathbb{Z}_{2n}$)
   representa la eliminación de un lazo trivial.
 
-- **Creación R1**: el proceso inverso (insertar un par $\frac{o_i}{u_i}$
+- **Creación R1**: el proceso inverso (insertar un par $(o_i, u_i)$
   adyacente y sin interlazado nuevo) modela la creación de un lazo trivial.
 
 De este modo, R1 queda expresada puramente en términos de adyacencia modular
@@ -558,7 +558,7 @@ Dos cruces $c_a,c_b$ forman un **par R2 racional** si cumplen:
 - **Eliminación R2**: si $c_a,c_b$ forman un par R2 racional, la
   configuración
   $$
-  K' := K \setminus \left\{\frac{o_a}{u_a},\frac{o_b}{u_b}\right\}
+  K' := K \setminus \left\{(o_a, u_a),(o_b, u_b)\right\}
   $$
   con su renumeración modular natural corresponde a eliminar un par de
   cruces que se cancelan localmente.
@@ -583,7 +583,7 @@ si:
    $$
    \{o_i,o_j,o_k,u_i,u_j,u_k\}
    $$
-   son todas distintas en $\mathcal{R}_{2n}$.
+   son todas distintas en $\mathbb{Z}_{2n}$.
 
 2. (**Grafo de interlazado local adecuado**)  
    Restrictos a $\{i,j,k\}$, los patrones de interlazado
@@ -592,7 +592,7 @@ si:
    o el patrón equivalente prescrito según la orientación elegida).
 
 3. (**Patrón cíclico de etiquetas**)  
-   El orden cíclico de las seis etiquetas sobre $\mathcal{R}_{2n}$ es
+   El orden cíclico de las seis etiquetas sobre $\mathbb{Z}_{2n}$ es
    uno de los patrones permitidos, por ejemplo:
 
    $$
@@ -613,7 +613,7 @@ Una **movida R3 racional** consiste en reemplazar, dentro de una
 configuración racional $K$, el triple
 
 $$
-\left\{\frac{o_i}{u_i},\,\frac{o_j}{u_j},\,\frac{o_k}{u_k}\right\}
+\left\{(o_i, u_i),\,(o_j, u_j),\,(o_k, u_k)\right\}
 $$
 
 por otro triple
@@ -647,7 +647,7 @@ Con estas definiciones:
   por la relación de interlazado (más la condición de aislamiento local).
 - R3 queda caracterizada por un **patrón combinatorio** sobre las seis
   posiciones del triple de cruces, expresado únicamente en el lenguaje del
-  sistema: $\mathcal{R}_{2n}$, pares racionales y relación $\bowtie$.
+  sistema: $\mathbb{Z}_{2n}$, pares racionales y relación $\bowtie$.
 
 # **4. Núcleo axiomático**
 
@@ -657,10 +657,10 @@ El núcleo axiomático contiene únicamente los cuatro principios **irredundante
 
 ## **AXIOMA A1 — Espacio del recorrido (estructura cíclica)**  
 Para cada $n\in\mathbb{N}$ existe un conjunto finito totalmente ordenado  
-$$\mathcal{R}_{2n}=\{1,2,\dots,2n\},$$  
+$$\mathbb{Z}_{2n}=\{1,2,\dots,2n\},$$  
 equipado con una operación de suma modular  
 $$i\oplus j := (i+j)\bmod 2n,$$  
-que convierte a $\mathcal{R}_{2n}$ en un **grupo abeliano cíclico**.
+que convierte a $\mathbb{Z}_{2n}$ en un **grupo abeliano cíclico**.
 
 La operación $\oplus$ interpreta el avance mínimo en el recorrido del nudo.
 
@@ -668,9 +668,9 @@ La operación $\oplus$ interpreta el avance mínimo en el recorrido del nudo.
 
 ## **AXIOMA A2 — Existencia de cruces y cobertura del recorrido**  
 Para cada $n$ existe un conjunto de cruces $C=\{c_1,\dots,c_n\}$, y para cada $c_i$ existe un par ordenado  
-$$(o_i,u_i)\in\mathcal{R}_{2n}\times\mathcal{R}_{2n},\qquad o_i\neq u_i,$$  
+$$(o_i,u_i)\in\mathbb{Z}_{2n}\times\mathbb{Z}_{2n},\qquad o_i\neq u_i,$$  
 tal que:  
-$$\{o_1,\dots,o_n,u_1,\dots,u_n\}=\mathcal{R}_{2n}.$$
+$$\{o_1,\dots,o_n,u_1,\dots,u_n\}=\mathbb{Z}_{2n}.$$
 
 Este axioma garantiza que cada posición del recorrido corresponde a exactamente una rama de cruce (superior o inferior).
 
@@ -692,11 +692,11 @@ Este axioma fija la estructura combinatoria esencial del diagrama.
 
 ## **AXIOMA A4 — Equivalencia Isotópica (Reidemeister Racional)**  
 
-Existe una relación de equivalencia $\sim$ sobre el conjunto de configuraciones racionales, generada por:
+Existe una relación de equivalencia $\sim$ sobre el conjunto de configuraciones modulares, generada por:
 - Las movidas racionales $R1$, $R2$, $R3$ (definidas en Sección 3),
 - Las rotaciones del recorrido $\rho_k$ (definidas en D7.1).
 
-Dos configuraciones racionales $K$ y $K'$ representan el **mismo nudo** (bajo isotopía ambiente) si y solo si:
+Dos configuraciones modulares $K$ y $K'$ representan el **mismo nudo** (bajo isotopía ambiente) si y solo si:
 $$
 K \sim K'.
 $$
@@ -771,9 +771,9 @@ Formalizar rigurosamente la correspondencia exacta entre:
 2. Equivalencia por isotopía ambiente de nudos embebidos en $\mathbb{R}^3$.
 
 **Sub-problemas:**
-1. Definir biyección explícita: configuraciones racionales $\leftrightarrow$ diagramas de nudos
+1. Definir biyección explícita: configuraciones modulares $\leftrightarrow$ diagramas de nudos
 2. Probar que movidas racionales R1, R2, R3 corresponden localmente a movidas topológicas
-3. Caracterizar configuraciones racionales realizables como diagramas planos
+3. Caracterizar configuraciones modulares realizables como diagramas planos
 
 **Estado:**  
 Problema de investigación activa. La evidencia empírica (Observación 4.1) sugiere fuertemente la correspondencia, pero la formalización completa requiere herramientas de topología algebraica fuera del alcance del presente trabajo.
@@ -808,14 +808,14 @@ Para detalles técnicos, condiciones conocidas de realizabilidad, y caracterizac
 
 
 ## **D1 — Cruce racional**  
-Un cruce racional es un par  
-$$\frac{o_i}{u_i},$$  
-con $o_i\neq u_i$ y posiciones tomadas del conjunto $\mathcal{R}_{2n}$.
+Un par ordenado de cruce es un par  
+$$(o_i, u_i),$$  
+con $o_i\neq u_i$ y posiciones tomadas del conjunto $\mathbb{Z}_{2n}$.
 
 
 ## **D2 — Configuración racional**  
 Una configuración racional es el conjunto  
-$$K = \left\{\frac{o_1}{u_1}, \dots, \frac{o_n}{u_n}\right\},$$  
+$$K = \left\{(o_1, u_1), \dots, (o_n, u_n)\right\),$$  
 sujeto a las condiciones del Axioma A2.
 
 
@@ -835,7 +835,7 @@ Para un cruce $i$ con posiciones $(o_i, u_i)$ en el recorrido cíclico:
    - Si el strand superior cruza de **sureste a noroeste** (⬋) respecto al strand inferior, entonces $\sigma_i = -1$ (**cruce negativo**).
 
 **Fórmula computacional:**  
-Para pares ordenados en $\mathcal{R}_{2n}$, el signo puede determinarse mediante la diferencia modular:
+Para pares ordenados en $\mathbb{Z}_{2n}$, el signo puede determinarse mediante la diferencia modular:
 
 $$
 \sigma_i = \mathrm{sgn}\bigl((u_i - o_i) \bmod 2n\bigr),
@@ -884,7 +884,7 @@ $$
 \deg(K) := n,
 $$
 
-donde $K = \left\{\frac{o_1}{u_1}, \dots, \frac{o_n}{u_n}\right\}$.
+donde $K = \left\{(o_1, u_1), \dots, (o_n, u_n)\right\)$.
 
 **Propiedades:**
 1. $\deg(K) \in \mathbb{N}$.
@@ -906,7 +906,7 @@ $$
 
 ## **D7 — Operación de espejo**  
 $$
-K^\ast := \left\{\frac{u_1}{o_1},\dots,\frac{u_n}{o_n}\right\}.
+K^\ast := \left\{(u_1, o_1),\dots,\frac{u_n}{o_n}\right\}.
 $$
 
 La operación es involutiva y respeta la equivalencia isotópica como teorema (ver T3, Sección 5).
@@ -946,7 +946,7 @@ El propósito del sistema axiomático (Sección 1.1) declara dos operaciones fun
 La **operación Progresión** $\mathcal{P}$ actúa desplazando cada posición una unidad en el recorrido cíclico:
 
 $$
-\mathcal{P}: \mathcal{C}_{\mathrm{rat}}(n) \to \mathcal{C}_{\mathrm{rat}}(n),
+\mathcal{P}: \mathcal{C}(n) \to \mathcal{C}(n),
 $$
 
 $$
@@ -973,11 +973,11 @@ $\mathcal{P}(K) \sim K$ para toda configuración racional $K$.
 La **operación Inversión** $\mathcal{I}$ intercambia las posiciones "over" y "under" de cada cruce, realizando algebraicamente la operación de espejo:
 
 $$
-\mathcal{I}: \mathcal{C}_{\mathrm{rat}}(n) \to \mathcal{C}_{\mathrm{rat}}(n),
+\mathcal{I}: \mathcal{C}(n) \to \mathcal{C}(n),
 $$
 
 $$
-\mathcal{I}(K) := K^\ast = \left\{\frac{u_1}{o_1}, \frac{u_2}{o_2}, \dots, \frac{u_n}{o_n}\right\}.
+\mathcal{I}(K) := K^\ast = \left\{(u_1, o_1), (u_2, o_2), \dots, \frac{u_n}{o_n}\right\}.
 $$
 
 **Propiedades algebraicas:**
@@ -994,7 +994,7 @@ Un nudo $K$ es anfiqueiral si y solo si existe una configuración $K'$ equivalen
 *Demostración:* Si $K$ es anfiqueiral, entonces $K \cong K^\ast$. Por el Teorema T3 y las movidas de Reidemeister, existe un representante canónico $K'$ en la clase de equivalencia tal que $K' = \mathcal{I}(K')$. Recíprocamente, si $\mathcal{I}(K') = K'$, entonces $K' \cong K'{}^\ast$, lo que implica anfiquiralidad. $\square$
 
 **Observación (Estructura de involución).**  
-Las operaciones $\mathcal{P}$ e $\mathcal{I}$ generan una estructura algebraica sobre $\mathcal{C}_{\mathrm{rat}}$ que se aproxima a un **grupo diédrico con involución**. La interacción entre progresión (generador cíclico) e inversión (reflexión) se formaliza completamente en el Teorema T12 (Sección 11).
+Las operaciones $\mathcal{P}$ e $\mathcal{I}$ generan una estructura algebraica sobre $\mathcal{C}$ que se aproxima a un **grupo diédrico con involución**. La interacción entre progresión (generador cíclico) e inversión (reflexión) se formaliza completamente en el Teorema T12 (Sección 11).
 
 
 ## **Teorema T4.1 — Estructura Generada por Progresión e Inversión**
@@ -1062,7 +1062,7 @@ $$
 $\square$
 
 **Corolario T4.1.**  
-Las simetrías algebraicas de configuraciones racionales (rotaciones y reflexiones) se modelan exactamente por la acción del grupo diédrico $D_{2n}$, anticipando el desarrollo completo de la Sección 11.
+Las simetrías algebraicas de configuraciones modulares (rotaciones y reflexiones) se modelan exactamente por la acción del grupo diédrico $D_{2n}$, anticipando el desarrollo completo de la Sección 11.
 
 
 
@@ -1078,19 +1078,19 @@ Estas definiciones se numeran D18-D19 (no D8-D9 según su ubicación) porque, au
 Sea $K$ una configuración racional con $n$ cruces, y sea
 
 $$
-U(K) := \{u_1,\dots,u_n\} \subset \mathcal{R}_{2n}
+U(K) := \{u_1,\dots,u_n\} \subset \mathbb{Z}_{2n}
 $$
 
 el conjunto de posiciones *under* de $K$.
 
 **Enunciado.**  
-Para cada par de elementos consecutivos $u,u'\in U(K)$ (según el orden cíclico de $\mathcal{R}_{2n}$), existe un **arco elemental** definido por el intervalo dirigido:
+Para cada par de elementos consecutivos $u,u'\in U(K)$ (según el orden cíclico de $\mathbb{Z}_{2n}$), existe un **arco elemental** definido por el intervalo dirigido:
 $$
 \mathcal{A}(u,u') := [u\rightsquigarrow u'] =
 \{\,u, u\oplus1, u\oplus2,\dots, u'\,\}.
 $$
 
-Además, $U(K)$ particiona $\mathcal{R}_{2n}$ en exactamente $n$ intervalos dirigidos, y por tanto
+Además, $U(K)$ particiona $\mathbb{Z}_{2n}$ en exactamente $n$ intervalos dirigidos, y por tanto
 
 $$
 |\mathcal{A}(K)| = n,
@@ -1106,7 +1106,7 @@ Un nudo con $n$ cruces posee exactamente $n$ arcos (pétalos).
 ### **Demostración**
 
 1. **Estructura cíclica del recorrido.**  
-   Por el Axioma A1 (Espacio del Recorrido), $\mathcal{R}_{2n}$ es un conjunto finito de $2n$ posiciones
+   Por el Axioma A1 (Espacio del Recorrido), $\mathbb{Z}_{2n}$ es un conjunto finito de $2n$ posiciones
    dotado de la suma modular
 
    $$
@@ -1116,8 +1116,8 @@ Un nudo con $n$ cruces posee exactamente $n$ arcos (pétalos).
    que modela el avance mínimo a lo largo del recorrido del nudo.
 
 2. **Conjunto de posiciones *under*.**  
-   Por el Axioma A2 (Existencia de Cruces) y la definición de configuración racional, cada cruce racional
-   $\frac{o_i}{u_i}$ contribuye exactamente una posición *under* $u_i$, y estas son todas
+   Por el Axioma A2 (Existencia de Cruces) y la definición de configuración racional, cada par ordenado de cruce
+   $(o_i, u_i)$ contribuye exactamente una posición *under* $u_i$, y estas son todas
    distintas. Por tanto:
 
    $$
@@ -1125,7 +1125,7 @@ Un nudo con $n$ cruces posee exactamente $n$ arcos (pétalos).
    $$
 
 3. **Orden cíclico de $U(K)$.**  
-   El conjunto $U(K)$ hereda el orden cíclico de $\mathcal{R}_{2n}$ inducido por la
+   El conjunto $U(K)$ hereda el orden cíclico de $\mathbb{Z}_{2n}$ inducido por la
    operación $i \mapsto i\oplus 1$.  
    Podemos escribir, de manera única:
 
@@ -1158,12 +1158,12 @@ Un nudo con $n$ cruces posee exactamente $n$ arcos (pétalos).
    consecutivos.
 
 5. **Cobertura de todo el recorrido.**  
-   Tomemos una posición cualquiera $x \in \mathcal{R}_{2n}$.  
+   Tomemos una posición cualquiera $x \in \mathbb{Z}_{2n}$.  
    Avancemos hacia atrás en el recorrido usando la operación inversa
    $i \mapsto i\ominus1$ (donde $i\ominus1$ es la inversa de $i\oplus1$) hasta
    encontrar una posición que pertenezca a $U(K)$.
 
-   - Como $\mathcal{R}_{2n}$ es finito, este proceso debe encontrar algún
+   - Como $\mathbb{Z}_{2n}$ es finito, este proceso debe encontrar algún
      $u_{i_{k}} \in U(K)$
    - Por definición del orden cíclico, el primer elemento de $U(K)$ encontrado
      al avanzar desde $u_{i_k}$ hacia adelante mediante $i\mapsto i\oplus1$
@@ -1179,7 +1179,7 @@ Un nudo con $n$ cruces posee exactamente $n$ arcos (pétalos).
    Por lo tanto,
 
    $$
-   \mathcal{R}_{2n}
+   \mathbb{Z}_{2n}
    =
    \bigcup_{k=1}^n \mathcal{A}(u_{i_k},u_{i_{k+1}}).
    $$
@@ -1204,7 +1204,7 @@ Un nudo con $n$ cruces posee exactamente $n$ arcos (pétalos).
    \bigl\{\mathcal{A}(u_{i_k},u_{i_{k+1}})\bigr\}_{k=1}^n
    $$
 
-   es una **partición orientada** de $\mathcal{R}_{2n}$.
+   es una **partición orientada** de $\mathbb{Z}_{2n}$.
 
 7. **Cardinalidad de los arcos.**  
    Por definición del conjunto de arcos del nudo:
@@ -1225,7 +1225,7 @@ Un nudo con $n$ cruces posee exactamente $n$ arcos (pétalos).
    |\mathcal{A}(K)| = |U(K)| = n.
    $$
 
-Con esto queda demostrado que el conjunto de posiciones *under* $U(K)$ particiona el recorrido $\mathcal{R}_{2n}$ en exactamente $n$ intervalos dirigidos, y que el número de arcos elementales de un nudo con $n$ cruces es precisamente $n$.
+Con esto queda demostrado que el conjunto de posiciones *under* $U(K)$ particiona el recorrido $\mathbb{Z}_{2n}$ en exactamente $n$ intervalos dirigidos, y que el número de arcos elementales de un nudo con $n$ cruces es precisamente $n$.
 
 $\square$
 
@@ -1402,7 +1402,7 @@ $$
 $$
 
 donde $K^\ast$ denota la configuración espejo de $K$, obtenida al intercambiar
-las coordenadas over/under de cada cruce racional.
+las coordenadas over/under de cada par ordenado de cruce.
 
 
 
@@ -1411,21 +1411,21 @@ las coordenadas over/under de cada cruce racional.
 Sea $K$ una configuración racional con $n$ cruces, escrita como
 $$
 K = \left\{
-\frac{o_1}{u_1},\ \frac{o_2}{u_2},\ \dots,\ \frac{o_n}{u_n}
-\right\},
+(o_1, u_1),\ (o_2, u_2),\ \dots,\ (o_n, u_n)
+\right\),
 $$
 donde, por definición de configuración racional, se cumple:
 $$
-o_i,u_i \in \mathcal{R}_{2n},\qquad o_i \neq u_i \quad \text{para todo } i.
+o_i,u_i \in \mathbb{Z}_{2n},\qquad o_i \neq u_i \quad \text{para todo } i.
 $$
 
 Recordemos la **definición de espejo** (Axioma correspondiente):
 
 > La configuración espejo $K^\ast$ se obtiene intercambiando las coordenadas
-> de cada cruce racional:
+> de cada par ordenado de cruce:
 > $$
 > K^\ast := \left\{
-> \frac{u_1}{o_1},\ \frac{u_2}{o_2},\ \dots,\ \frac{u_n}{o_n}
+> (u_1, o_1),\ (u_2, o_2),\ \dots,\ \frac{u_n}{o_n}
 > \right\}.
 > $$
 
@@ -1434,15 +1434,15 @@ Aplicamos ahora de nuevo la operación de espejo a $K^\ast$.
 1. El $i$-ésimo cruce de $K$ es $\dfrac{o_i}{u_i}$.
 2. En $K^\ast$, el $i$-ésimo cruce correspondiente es  
    $$
-   \frac{u_i}{o_i}.
+   (u_i, o_i).
    $$
 3. Volvemos a aplicar la definición de espejo, ahora sobre $K^\ast$:
    el espejo de $\dfrac{u_i}{o_i}$ se obtiene, de nuevo, intercambiando
    sus coordenadas:
    $$
-   \left(\frac{u_i}{o_i}\right)^\ast
+   \left((u_i, o_i)\right)^\ast
    =
-   \frac{o_i}{u_i}.
+   (o_i, u_i).
    $$
 
 Por tanto, al tomar el espejo de $K^\ast$, obtenemos:
@@ -1450,14 +1450,14 @@ $$
 (K^\ast)^\ast
 =
 \left\{
-\left(\frac{u_1}{o_1}\right)^\ast,\,
-\left(\frac{u_2}{o_2}\right)^\ast,\,
+\left((u_1, o_1)\right)^\ast,\,
+\left((u_2, o_2)\right)^\ast,\,
 \dots,\,
 \left(\frac{u_n}{o_n}\right)^\ast
 \right\}
 =
 \left\{
-\frac{o_1}{u_1},\ \frac{o_2}{u_2},\ \dots,\ \frac{o_n}{u_n}
+(o_1, u_1),\ (o_2, u_2),\ \dots,\ (o_n, u_n)
 \right\}.
 $$
 
@@ -1659,7 +1659,7 @@ $$
 
 donde $n$ es el número de cruces
 $$
-K = \left\{ \frac{o_1}{u_1}, \dots, \frac{o_n}{u_n} \right\}.
+K = \left\{ (o_1, u_1), \dots, (o_n, u_n) \right\).
 $$
 
 Es decir, $\deg(K)$ es simplemente la cardinalidad del conjunto de cruces.
@@ -1671,7 +1671,7 @@ Es decir, $\deg(K)$ es simplemente la cardinalidad del conjunto de cruces.
 **Caso R1.**  
 Por la Definición D8.2.1, un cruce $c_i$ es de tipo R1 racional si:
 
-1. Sus apariciones $o_i,u_i$ son adyacentes en $\mathcal{R}_{2n}$:
+1. Sus apariciones $o_i,u_i$ son adyacentes en $\mathbb{Z}_{2n}$:
    $$
    \mathrm{Ady}(o_i,u_i),
    $$
@@ -1681,13 +1681,13 @@ Por la Definición D8.2.2 (eliminación R1), al aplicar R1 se obtiene una nueva
 configuración
 
 $$
-K' := K \setminus \left\{ \frac{o_i}{u_i} \right\}.
+K' := K \setminus \left\{ (o_i, u_i) \right\}.
 $$
 
 En $K'$ el conjunto de cruces es
 
 $$
-\left\{ \frac{o_1}{u_1}, \dots, \widehat{\frac{o_i}{u_i}}, \dots, \frac{o_n}{u_n} \right\},
+\left\{ (o_1, u_1), \dots, \widehat{(o_i, u_i)}, \dots, (o_n, u_n) \right\},
 $$
 
 donde el símbolo $\widehat{(\cdot)}$ indica que ese elemento se elimina.
@@ -1698,7 +1698,7 @@ $$
 \deg(K') = n-1 < n = \deg(K).
 $$
 
-La renumeración de posiciones en $\mathcal{R}_{2n}$ (eliminar $o_i,u_i$ y cerrar el
+La renumeración de posiciones en $\mathbb{Z}_{2n}$ (eliminar $o_i,u_i$ y cerrar el
 ciclo) no crea ni destruye nuevos cruces, sólo re-etiqueta las posiciones, de modo
 que el número de cruces disminuye exactamente en $1$.
 
@@ -1716,7 +1716,7 @@ Por la Definición D8.3.1, un par de cruces $c_a,c_b$ forma un par R2 racional s
 Por la Definición D8.3.2 (eliminación R2), al aplicar R2 se obtiene
 
 $$
-K' := K \setminus \left\{ \frac{o_a}{u_a}, \frac{o_b}{u_b} \right\}.
+K' := K \setminus \left\{ (o_a, u_a), (o_b, u_b) \right\}.
 $$
 
 El nuevo conjunto de cruces tiene cardinalidad $n-2$, de modo que
@@ -1725,7 +1725,7 @@ $$
 \deg(K') = n-2 < n = \deg(K).
 $$
 
-De nuevo, la renumeración modular de posiciones en $\mathcal{R}_{2n}$ sólo re-etiqueta,
+De nuevo, la renumeración modular de posiciones en $\mathbb{Z}_{2n}$ sólo re-etiqueta,
 sin introducir cruces adicionales.
 
 Concluimos que **cada aplicación de R1 o R2 que elimina cruces produce una configuración
@@ -1739,7 +1739,7 @@ con grado estrictamente menor**.
 Por la Definición D8.4.2, una movida R3 racional reemplaza un triple
 
 $$
-\left\{ \frac{o_i}{u_i}, \frac{o_j}{u_j}, \frac{o_k}{u_k} \right\}
+\left\{ (o_i, u_i), (o_j, u_j), (o_k, u_k) \right\}
 $$
 
 por otro triple
@@ -1773,7 +1773,7 @@ cuando $K'$ se obtiene de $K$ mediante una movida R3.
 Por el Axioma del Álgebra del Recorrido, una rotación
 
 $$
-\rho_k : \mathcal{R}_{2n} \to \mathcal{R}_{2n}
+\rho_k : \mathbb{Z}_{2n} \to \mathbb{Z}_{2n}
 $$
 
 es un automorfismo del conjunto de posiciones que simplemente re-etiqueta los índices:
@@ -1783,7 +1783,7 @@ i \longmapsto \rho_k(i).
 $$
 
 Aplicar una rotación a una configuración racional $K$ consiste en reemplazar cada par
-$\frac{o_i}{u_i}$ por
+$(o_i, u_i)$ por
 
 $$
 \frac{\rho_k(o_i)}{\rho_k(u_i)}.
@@ -1849,9 +1849,9 @@ Entonces existe una configuración racional $\mathrm{FN}(K)$ tal que:
    Una configuración racional $K$ es **irreductible** si no existe ninguna reducción elemental aplicable, es decir, no existen cruces de tipo $R1$ ni parejas $R2$ en $K$ que permitan disminuir $\deg(K)$.
 
 4. **Forma normal léxica.**  
-   Entre todas las configuraciones racionales $K'$ con $\deg(K') = \deg(K)$ tales que $K'\sim K$, consideramos el orden léxico sobre las $n$ parejas
+   Entre todas las configuraciones modulares $K'$ con $\deg(K') = \deg(K)$ tales que $K'\sim K$, consideramos el orden léxico sobre las $n$ parejas
    $$
-   \left\{\frac{o_1}{u_1},\dots,\frac{o_n}{u_n}\right\}.
+   \left\{(o_1, u_1),\dots,(o_n, u_n)\right\}.
    $$
    Definimos $\mathrm{LexMin}(K)$ como la única configuración de esa clase con **tupla de pares ordenada léxicamente mínima**.
 
@@ -1918,15 +1918,15 @@ A partir de $K_M$ (irreductible), consideremos ahora únicamente las movidas rac
    \deg(K') = \deg(K_M) \quad \text{si } K' \text{ se obtiene de } K_M \text{ sólo por } R3 \text{ y rotaciones}.
    $$
 
-2. El conjunto de configuraciones racionales con grado fijo $n=\deg(K_M)$ es finito, porque:
-   - el conjunto $\mathcal{R}_{2n} = \{1,\dots,2n\}$ es finito,
+2. El conjunto de configuraciones modulares con grado fijo $n=\deg(K_M)$ es finito, porque:
+   - el conjunto $\mathbb{Z}_{2n} = \{1,\dots,2n\}$ es finito,
    - una configuración racional es una partición de $\{1,\dots,2n\}$ en $n$ pares ordenados (over/under) que cubren exactamente todos los índices.
 
    Por tanto, hay sólo un número finito (aunque grande) de posibles configuraciones racionales de grado $n$.
 
 3. La clase de equivalencia de $K_M$ bajo $R3$ y rotaciones es un subconjunto de ese conjunto finito; por tanto, tiene también un número finito de elementos.
 
-En una clase finita de configuraciones, el orden léxico sobre los $n$ pares $\frac{o_i}{u_i}$ induce siempre un **mínimo** bien definido.  
+En una clase finita de configuraciones, el orden léxico sobre los $n$ pares $(o_i, u_i)$ induce siempre un **mínimo** bien definido.  
 Definimos entonces
 $$
 \mathrm{FN}(K) := \mathrm{LexMin}(K_M),
@@ -2085,7 +2085,7 @@ Con ello queda probado que $I^\ast$ y $F^\ast$ son invariantes del nudo racional
 
 Los axiomas y teoremas previos establecen el núcleo irreducible de la teoría racional de nudos, proporcionando una fundamentación sólida para representar nudos mediante pares ordenados y demostrar sus propiedades básicas. 
 
-Sin embargo, la potencia real de esta teoría emerge cuando reconocemos que el conjunto de posiciones $\mathcal{R}_{2n}$ no es simplemente un conjunto numérico, sino un **anillo modular** con rica estructura algebraica. Esta perspectiva permite interpretar el recorrido del nudo como una **órbita de grupo**, los cruces como **generadores de relaciones**, y las simetrías del nudo como **automorfismos** del anillo subyacente.
+Sin embargo, la potencia real de esta teoría emerge cuando reconocemos que el conjunto de posiciones $\mathbb{Z}_{2n}$ no es simplemente un conjunto numérico, sino un **anillo modular** con rica estructura algebraica. Esta perspectiva permite interpretar el recorrido del nudo como una **órbita de grupo**, los cruces como **generadores de relaciones**, y las simetrías del nudo como **automorfismos** del anillo subyacente.
 
 En esta sección profundizamos en estas estructuras algebraicas, introduciendo el concepto de **subgrupo del nudo** (que formaliza la ciclicidad del recorrido), la interpretación de la orientación mediante **cosets laterales** (que da sustento algebraico a la operación de espejo), y demostrando la **unicidad de las relaciones de cruce** (que garantiza que los pares ordenados distinguen completamente los cruces).
 
@@ -2096,19 +2096,19 @@ Estas formalizaciones no solo enriquecen la teoría matemática, sino que propor
 
 ## **Definición D8 — Subgrupo del Nudo**
 
-Sea $K$ una configuración racional con $n$ cruces. El conjunto de posiciones visitadas al recorrer el nudo forma un **subgrupo cíclico** del grupo aditivo $(\mathcal{R}_{2n}, \oplus)$.
+Sea $K$ una configuración racional con $n$ cruces. El conjunto de posiciones visitadas al recorrer el nudo forma un **subgrupo cíclico** del grupo aditivo $(\mathbb{Z}_{2n}, \oplus)$.
 
 **Definición formal.**  
 El **subgrupo del nudo** $G_K$ se define como:
 
 $$
-G_K := \langle 1 \rangle = \{1, 2, 3, \dots, 2n\} \subset \mathcal{R}_{2n},
+G_K := \langle 1 \rangle = \{1, 2, 3, \dots, 2n\} \subset \mathbb{Z}_{2n},
 $$
 
 donde $\langle 1 \rangle$ denota el subgrupo cíclico generado por el elemento $1$ bajo la operación $\oplus$.
 
 **Proposición 6.1 (Ciclicidad).**  
-$G_K$ es un subgrupo cíclico de orden $2n$ que coincide con todo el anillo $\mathcal{R}_{2n}$.
+$G_K$ es un subgrupo cíclico de orden $2n$ que coincide con todo el anillo $\mathbb{Z}_{2n}$.
 
 *Demostración:*  
 Sea $K$ parametrizado por el recorrido orientado. Al enumerar secuencialmente las posiciones encontradas, tenemos $p_{k+1} \equiv p_k \oplus 1 \pmod{2n}$.
@@ -2122,7 +2122,7 @@ Dado que $\gcd(1, 2n) = 1$, el elemento $1$ es un generador del grupo aditivo $\
 
 Por tanto:
 $$
-G_K = \langle 1 \rangle = \mathcal{R}_{2n}.
+G_K = \langle 1 \rangle = \mathbb{Z}_{2n}.
 $$
 
 $\square$
@@ -2134,9 +2134,9 @@ Esta estructura algebraica revela que el recorrido de un nudo no es simplemente 
 
 ## **Definición D9 — Orientación mediante Cosets**
 
-La orientación de un nudo $K$ puede representarse algebraicamente mediante **cosets laterales** (clases laterales) en el anillo $\mathcal{R}_{2n}$.
+La orientación de un nudo $K$ puede representarse algebraicamente mediante **cosets laterales** (clases laterales) en el anillo $\mathbb{Z}_{2n}$.
 
-Sea $H$ un subgrupo apropiado de $\mathcal{R}_{2n}$ (por ejemplo, el subgrupo generado por la distancia típica entre apariciones de un mismo cruce). Para un cruce $i$ con posiciones $(o_i, u_i)$:
+Sea $H$ un subgrupo apropiado de $\mathbb{Z}_{2n}$ (por ejemplo, el subgrupo generado por la distancia típica entre apariciones de un mismo cruce). Para un cruce $i$ con posiciones $(o_i, u_i)$:
 
 - **Coset derecho**: $o_i \cdot H$ representa la dirección positiva (strand que pasa *por encima*).
 - **Coset izquierdo**: $H \cdot u_i$ representa la dirección negativa (strand que pasa *por debajo*).
@@ -2166,7 +2166,7 @@ $$
 $$
 
 **Corolario 6.2.**  
-Un nudo es anfiqueiral si y solo si existe un automorfismo $\varphi: \mathcal{R}_{2n} \to \mathcal{R}_{2n}$ tal que $\varphi$ intercambia los cosets preservando la estructura del nudo.
+Un nudo es anfiqueiral si y solo si existe un automorfismo $\varphi: \mathbb{Z}_{2n} \to \mathbb{Z}_{2n}$ tal que $\varphi$ intercambia los cosets preservando la estructura del nudo.
 
 *Demostración:*  
 La condición de anfiquiralidad $K \cong K^\ast$ implica que existe un isomorfismo de configuraciones que mapea $P(K)$ a $P(K^\ast)$.
@@ -2195,7 +2195,7 @@ En un nudo $K$ con $n$ cruces, cada **relación modular** definida por un cruce 
 **Definición previa (Relación de Cruce).**  
 Cada cruce $i$ define una relación modular:
 $$
-\rho_i : o_i \leftrightarrow u_i \quad \text{en } \mathcal{R}_{2n},
+\rho_i : o_i \leftrightarrow u_i \quad \text{en } \mathbb{Z}_{2n},
 $$
 donde $o_i$ es la posición "over" y $u_i$ es la posición "under".
 
@@ -2230,7 +2230,7 @@ Si $i \neq j$, entonces $\rho_i \neq \rho_j$. $\square$
 **Corolario 6.4 (Conjunto de Pares Ordenados).**  
 Para un nudo $K$, el conjunto de pares ordenados:
 $$
-P(K) = \{(o_1, u_1), (o_2, u_2), \dots, (o_n, u_n)\} \subset \mathcal{R}_{2n} \times \mathcal{R}_{2n}
+P(K) = \{(o_1, u_1), (o_2, u_2), \dots, (o_n, u_n)\} \subset \mathbb{Z}_{2n} \times \mathbb{Z}_{2n}
 $$
 es un **conjunto** (no multiconjunto), es decir, todos sus elementos son distintos.
 
@@ -2276,7 +2276,7 @@ $$
 3. Por el Teorema T7, los pares son todos distintos.
 
 **Observación 7.1.**  
-La secuencia $S(K)$ codifica completamente la estructura combinatoria del nudo en el anillo $\mathcal{R}_{2n}$.
+La secuencia $S(K)$ codifica completamente la estructura combinatoria del nudo en el anillo $\mathbb{Z}_{2n}$.
 
 
 
@@ -2604,13 +2604,13 @@ Este teorema **NO** afirma que todos los nudos (en sentido general) con $n$ impa
 
 Sea $K$ un nudo anfiqueiral. Por definición, existe un homeomorfismo $h: S^3 \to S^3$ que preserva orientación y tal que $h(K) = K^\ast$.
 
-Este homeomorfismo induce una **involución** $\phi: \mathcal{R}_{2n} \to \mathcal{R}_{2n}$ sobre el conjunto de posiciones que invierte los cruces:
+Este homeomorfismo induce una **involución** $\phi: \mathbb{Z}_{2n} \to \mathbb{Z}_{2n}$ sobre el conjunto de posiciones que invierte los cruces:
 $$
 \phi(o_i) = u_i \quad \text{y} \quad \phi(u_i) = o_i.
 $$
 
 **Paso 1: Involución sin puntos fijos (justificación).**  
-Para nudos racionales **alternantes** y nudos **2-puente**, la simetría especular $K \cong K^\ast$ induce una involución $\phi: \mathcal{R}_{2n} \to \mathcal{R}_{2n}$ que intercambia posiciones over/under:
+Para nudos racionales **alternantes** y nudos **2-puente**, la simetría especular $K \cong K^\ast$ induce una involución $\phi: \mathbb{Z}_{2n} \to \mathbb{Z}_{2n}$ que intercambia posiciones over/under:
 $$
 \phi(o_i) = u_i \quad \text{y} \quad \phi(u_i) = o_i.
 $$
@@ -2621,21 +2621,21 @@ $$
 
 2. **Para nudos 2-puente:** La construcción de Conway mediante trenzas racionales garantiza que la simetría especular intercambia completamente las dos "ramas" del puente. No hay cruces en posiciones especiales que queden fijos.
 
-3. **Argumento algebraico:** Como $o_i \neq u_i$ por el Axioma A2, y $\phi$ debe intercambiarlos completamente en nudos alternantes, no existe $p \in \mathcal{R}_{2n}$ tal que $\phi(p) = p$.
+3. **Argumento algebraico:** Como $o_i \neq u_i$ por el Axioma A2, y $\phi$ debe intercambiarlos completamente en nudos alternantes, no existe $p \in \mathbb{Z}_{2n}$ tal que $\phi(p) = p$.
 
 **Contraste con nudos generales:**  
 En nudos no alternantes con estructuras complejas (como los de Stoimenow), la simetría especular puede tener puntos fijos en arcos o regiones, permitiendo anfiquiralidad con $n$ impar. Esto queda fuera del alcance de este teorema.
 
 **Paso 2: Partición en órbitas.**  
-El conjunto de posiciones $\mathcal{R}_{2n}$ se particiona en órbitas de tamaño 2 bajo la acción de $\phi$:
+El conjunto de posiciones $\mathbb{Z}_{2n}$ se particiona en órbitas de tamaño 2 bajo la acción de $\phi$:
 $$
-\mathcal{R}_{2n} = \{\{o_1, u_1\}, \{o_2, u_2\}, \dots, \{o_n, u_n\}\}.
+\mathbb{Z}_{2n} = \{\{o_1, u_1\}, \{o_2, u_2\}, \dots, \{o_n, u_n\}\}.
 $$
 
 **Paso 3: Cardinalidad.**  
 La cardinalidad total es:
 $$
-|\mathcal{R}_{2n}| = \sum_{i=1}^n 2 = 2n.
+|\mathbb{Z}_{2n}| = \sum_{i=1}^n 2 = 2n.
 $$
 
 Hasta aquí, esto es consistente para cualquier $n$.
@@ -2970,14 +2970,14 @@ La estructura de simetría de un nudo puede formalizarse mediante la **teoría d
 
 ## **Definición D17 — Grupo de Simetría del Nudo**
 
-El **grupo de simetría** $\mathrm{Sym}(K)$ de un nudo $K$ es el conjunto de automorfismos del anillo $\mathcal{R}_{2n}$ que preservan el conjunto de pares ordenados:
+El **grupo de simetría** $\mathrm{Sym}(K)$ de un nudo $K$ es el conjunto de automorfismos del anillo $\mathbb{Z}_{2n}$ que preservan el conjunto de pares ordenados:
 
 $$
-\mathrm{Sym}(K) := \bigl\{\varphi \in \mathrm{Aut}(\mathcal{R}_{2n}) : \varphi(P(K)) = P(K)\bigr\}.
+\mathrm{Sym}(K) := \bigl\{\varphi \in \mathrm{Aut}(\mathbb{Z}_{2n}) : \varphi(P(K)) = P(K)\bigr\}.
 $$
 
 **Propiedades algebraicas:**
-1. $\mathrm{Sym}(K)$ es un **subgrupo** de $\mathrm{Aut}(\mathcal{R}_{2n})$ bajo composición de funciones.
+1. $\mathrm{Sym}(K)$ es un **subgrupo** de $\mathrm{Aut}(\mathbb{Z}_{2n})$ bajo composición de funciones.
 2. Contiene al menos la identidad: $\mathrm{id} \in \mathrm{Sym}(K)$.
 3. La operación de grupo es la composición: $(\varphi_1 * \varphi_2)(x) = \varphi_1(\varphi_2(x))$.
 
@@ -3029,7 +3029,7 @@ La cardinalidad del grupo de simetría es un **invariante de quiralidad**: disti
 
 ## **Teorema T12 — Acción del Grupo Diédrico**
 
-El grupo diédrico $D_{2n}$ (grupo de simetrías del polígono regular de $2n$ lados) actúa naturalmente sobre el anillo $\mathcal{R}_{2n}$ mediante:
+El grupo diédrico $D_{2n}$ (grupo de simetrías del polígono regular de $2n$ lados) actúa naturalmente sobre el anillo $\mathbb{Z}_{2n}$ mediante:
 
 **Rotaciones:**
 $$
@@ -3105,9 +3105,9 @@ El grupo fundamental $\pi_1(S^3 \setminus K)$ tiene una presentación estándar 
 - **Relaciones**: Una relación por cada cruce.
 
 **Paso 2: Asignación a $G_K$.**  
-El homomorfismo $\Phi$ asigna cada generador $g_i$ (correspondiente a un arco) a un elemento del grupo cíclico $G_K = \langle 1 \rangle \subset \mathcal{R}_{2n}$:
+El homomorfismo $\Phi$ asigna cada generador $g_i$ (correspondiente a un arco) a un elemento del grupo cíclico $G_K = \langle 1 \rangle \subset \mathbb{Z}_{2n}$:
 $$
-\Phi(g_i) = a_i \in \mathcal{R}_{2n},
+\Phi(g_i) = a_i \in \mathbb{Z}_{2n},
 $$
 donde $a_i$ es la posición inicial del arco $i$ en la numeración modular.
 
@@ -3127,7 +3127,7 @@ Dado que $\Phi$ preserva las relaciones, es un homomorfismo de grupos bien defin
 $\Phi$ es sobreyectivo: $\Phi(\pi_1(S^3 \setminus K)) = G_K$.
 
 *Justificación:*  
-Al recorrer el nudo, cada posición en $\mathcal{R}_{2n}$ es imagen de algún arco. Por tanto, $G_K$ es la imagen de $\Phi$.
+Al recorrer el nudo, cada posición en $\mathbb{Z}_{2n}$ es imagen de algún arco. Por tanto, $G_K$ es la imagen de $\Phi$.
 
 **Observación 12.1 (No inyectividad).**  
 $\Phi$ **no** es inyectivo en general. El grupo del nudo $\pi_1(S^3 \setminus K)$ contiene información mucho más rica (como relaciones no abelianas) que se pierde en la proyección al grupo cíclico $G_K$.
