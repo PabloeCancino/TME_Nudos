@@ -1182,8 +1182,18 @@ K \sim K'.
 
 \textbf{Naturaleza del axioma:}\\
 Este axioma \textbf{adapta} el Teorema de Reidemeister clásico (1927) al
-marco modular racional. No pretende \textbf{demostrar} dicho teorema,
+marco modular estructural (TMEN). No pretende \textbf{demostrar} dicho teorema,
 sino \textbf{asumirlo} en versión discreta.
+
+\textbf{Verificación en Lean 4:}\\
+El archivo \texttt{Reidemeister.lean} contiene el enunciado formal completo del
+teorema (\texttt{reidemeister\_theorem}). Las propiedades algebraicas de los
+movimientos R1 y R2 y la dirección de \emph{soundness} (si relacionados por
+movimientos \(\to\) equivalentes topológicamente) están estructuradas como
+teoremas. La dirección de \emph{completitud} (si equivalentes topológicamente
+\(\to\) relacionados por movimientos) se adopta como axioma fundamental, dado
+que requiere herramientas de topología diferencial fuera del alcance de la
+formalización actual.
 
 \subsubsection{\texorpdfstring{\textbf{Justificación Metodológica del
 Axioma

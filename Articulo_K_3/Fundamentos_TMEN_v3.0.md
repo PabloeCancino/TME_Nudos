@@ -830,7 +830,7 @@ Problema de investigación activa. La evidencia empírica (Observación 4.1) sug
 Una demostración rigurosa convertiría el Axioma A4 en un **teorema derivado** del Teorema de Reidemeister clásico, reforzando los fundamentos teóricos del marco modular racional.
 
 
-### **Nota 4.1 — Realizar ibilidad y Axiomas A1-A4**
+### **Nota 4.1 — Realizabilidad y Axiomas A1-A4**
 
 Los cuatro axiomas A1-A4 constituyen el núcleo **mínimo e irreducible** de la teoría racional de nudos. Sin embargo, es importante notar que:
 
