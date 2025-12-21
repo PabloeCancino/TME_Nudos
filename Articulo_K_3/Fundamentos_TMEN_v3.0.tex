@@ -685,7 +685,7 @@ y el espacio total:
 \subsection{\texorpdfstring{\textbf{2.2. Fundamentación
 teórica}}{2.2. Fundamentación teórica}}\label{fundamentaciuxf3n-teuxf3rica}
 
-La representación modular de nudos descansa sobre tres principios
+La representación racional de nudos descansa sobre tres principios
 matemáticos fundamentales que permiten traducir un diagrama de nudo
 clásico a una estructura aritmético--modular, sin pérdida de información
 topológica.
@@ -706,7 +706,7 @@ principios vinculan:
 \end{enumerate}
 
 A partir de ellos se construyen los axiomas y resultados formales de la
-Teoría Modular Estructural de Nudos (TMEN).
+teoría racional de Nudos.
 
 \subsection{\texorpdfstring{\textbf{2.3. Principio de Doble
 Codificación}}{2.3. Principio de Doble Codificación}}\label{principio-de-doble-codificaciuxf3n}
@@ -754,7 +754,7 @@ La codificación \((o_i, u_i)\) por ser implícitamente orientada, es
 pues intercambiar las coordenadas de nivel \textbf{cambia la topología
 del cruce}, equivalente a tomar el \textbf{espejo} del nudo. A
 
-El orden en el par ordenado no es algebraicamente intercambiable:\\
+El orden en el par racional no es algebraicamente intercambiable:\\
 representa información geométrica esencial.
 
 \subsection{\texorpdfstring{\textbf{2.4. Principio Modular del
@@ -1052,8 +1052,8 @@ racional} si:
 \paragraph{Definición 3.4.2 (Aplicación de
 R3).}\label{definiciuxf3n-3.4.2-aplicaciuxf3n-de-r3.}
 
-Una \textbf{movida R3 modular} consiste en reemplazar, dentro de una
-configuración modular \(K\), el triple
+Una \textbf{movida R3 racional} consiste en reemplazar, dentro de una
+configuración racional \(K\), el triple
 
 \[
 \left\{(o_i, u_i),\,(o_j, u_j),\,(o_k, u_k)\right\}
@@ -1099,7 +1099,7 @@ Con estas definiciones:
 \item
   R3 queda caracterizada por un \textbf{patrón combinatorio} sobre las
   seis posiciones del triple de cruces, expresado únicamente en el
-  lenguaje del sistema: \(\mathbb{Z}_{2n}\), pares ordenados y relación
+  lenguaje del sistema: \(\mathbb{Z}_{2n}\), pares racionales y relación
   \(\bowtie\).
 \end{itemize}
 
@@ -1108,7 +1108,7 @@ axiomático}}{4. Núcleo axiomático}}\label{nuxfacleo-axiomuxe1tico}
 
 El núcleo axiomático contiene únicamente los cuatro principios
 \textbf{irredundantes} que constituyen el \textbf{núcleo irreducible} de
-la Teoría Modular Estructural de Nudos (TMEN).
+la Teoría Racional de Nudos.
 
 \subsection{\texorpdfstring{\textbf{AXIOMA A1 --- Espacio del recorrido
 (estructura
@@ -1168,10 +1168,10 @@ Este axioma fija la estructura combinatoria esencial del diagrama.
 
 \subsection{\texorpdfstring{\textbf{AXIOMA A4 --- Equivalencia Isotópica
 (Reidemeister
-Modular)}}{AXIOMA A4 --- Equivalencia Isotópica (Reidemeister Modular)}}\label{axioma-a4-equivalencia-isotuxf3pica-reidemeister-modular}
+Racional)}}{AXIOMA A4 --- Equivalencia Isotópica (Reidemeister Racional)}}\label{axioma-a4-equivalencia-isotuxf3pica-reidemeister-racional}
 
 Existe una relación de equivalencia \(\sim\) sobre el conjunto de
-configuraciones modulares, generada por: - Las movidas modulares
+configuraciones modulares, generada por: - Las movidas racionales
 \(R1\), \(R2\), \(R3\) (definidas en Sección 3), - Las rotaciones del
 recorrido \(\rho_k\) (definidas en D7.1).
 
@@ -1184,6 +1184,16 @@ K \sim K'.
 Este axioma \textbf{adapta} el Teorema de Reidemeister clásico (1927) al
 marco modular estructural (TMEN). No pretende \textbf{demostrar} dicho teorema,
 sino \textbf{asumirlo} en versión discreta.
+
+\textbf{Verificación en Lean 4:}\\
+El archivo \texttt{Reidemeister.lean} contiene el enunciado formal completo del
+teorema (\texttt{reidemeister\_theorem}). Las propiedades algebraicas de los
+movimientos R1 y R2 y la dirección de \emph{soundness} (si relacionados por
+movimientos \(\to\) equivalentes topológicamente) están estructuradas como
+teoremas. La dirección de \emph{completitud} (si equivalentes topológicamente
+\(\to\) relacionados por movimientos) se adopta como axioma fundamental, dado
+que requiere herramientas de topología diferencial fuera del alcance de la
+formalización actual.
 
 \subsubsection{\texorpdfstring{\textbf{Justificación Metodológica del
 Axioma
@@ -1209,7 +1219,7 @@ configuraciones \textbf{discretas} (pares ordenados en
 de \(\mathbb{R}^3\) no es parte del sistema axiomático A1-A4
 
 Por tanto, adoptamos como \textbf{axioma fundamental} que las versiones
-modulares de R1, R2, R3 (definidas discretamente en Sección 3) capturan
+racionales de R1, R2, R3 (definidas discretamente en Sección 3) capturan
 la equivalencia isotópica de los nudos correspondientes.
 
 \textbf{Esta es una elección metodológica legítima que:} - ✓ Permite
@@ -1226,7 +1236,7 @@ configuraciones son realizables)
 \subsubsection{\texorpdfstring{\textbf{Observación 4.1 --- Evidencia de
 Correspondencia}}{Observación 4.1 --- Evidencia de Correspondencia}}\label{observaciuxf3n-4.1-evidencia-de-correspondencia}
 
-La correspondencia entre equivalencia modular (\(\sim\)) y equivalencia
+La correspondencia entre equivalencia racional (\(\sim\)) y equivalencia
 topológica ha sido verificada empíricamente en:
 
 \textbf{1. Tabla de Rolfsen (nudos clásicos):} - Todos los nudos hasta 8
@@ -1260,13 +1270,13 @@ Correspondencia}}{Problema Abierto 4.1 --- Formalización de la Correspondencia}
 
 \textbf{Enunciado:}\\
 Formalizar rigurosamente la correspondencia exacta entre: 1.
-Equivalencia por movidas modulares de Reidemeister en configuraciones
+Equivalencia por movidas racionales de Reidemeister en configuraciones
 modulares, y 2. Equivalencia por isotopía ambiente de nudos embebidos en
 \(\mathbb{R}^3\).
 
 \textbf{Sub-problemas:} 1. Definir biyección explícita: configuraciones
 modulares \(\leftrightarrow\) diagramas de nudos 2. Probar que movidas
-modulares R1, R2, R3 corresponden localmente a movidas topológicas 3.
+racionales R1, R2, R3 corresponden localmente a movidas topológicas 3.
 Caracterizar configuraciones modulares realizables como diagramas planos
 
 \textbf{Estado:}\\
@@ -1278,14 +1288,14 @@ del presente trabajo.
 \textbf{Relevancia:}\\
 Una demostración rigurosa convertiría el Axioma A4 en un \textbf{teorema
 derivado} del Teorema de Reidemeister clásico, reforzando los
-fundamentos teóricos del marco modular estructural (TMEN).
+fundamentos teóricos del marco modular racional.
 
 \subsubsection{\texorpdfstring{\textbf{Nota 4.1 --- Realizar ibilidad y
 Axiomas
 A1-A4}}{Nota 4.1 --- Realizar ibilidad y Axiomas A1-A4}}\label{nota-4.1-realizar-ibilidad-y-axiomas-a1-a4}
 
 Los cuatro axiomas A1-A4 constituyen el núcleo \textbf{mínimo e
-irreducible} de la Teoría Modular Estructural de Nudos (TMEN). Sin embargo, es importante
+irreducible} de la teoría racional de nudos. Sin embargo, es importante
 notar que:
 
 \textbf{Alcance de A1-A4:}\\
@@ -1328,7 +1338,7 @@ caracterización del problema abierto, consultar \textbf{Subsección
 estructurales}}{4.2. Definiciones estructurales}}\label{definiciones-estructurales}
 
 \subsection{\texorpdfstring{\textbf{D1 --- Cruce
-modular}}{D1 --- Cruce modular}}\label{d1-cruce-modular}
+racional}}{D1 --- Cruce racional}}\label{d1-cruce-racional}
 
 Un par ordenado de cruce es un par\\
 \[(o_i, u_i),\]\\
@@ -1336,10 +1346,10 @@ con \(o_i\neq u_i\) y posiciones tomadas del conjunto
 \(\mathbb{Z}_{2n}\).
 
 \subsection{\texorpdfstring{\textbf{D2 --- Configuración
-modular}}{D2 --- Configuración modular}}\label{d2-configuracion-modular}
+racional}}{D2 --- Configuración racional}}\label{d2-configuraciuxf3n-racional}
 
-Una configuración modular es el conjunto\\
-\[K = \left\{(o_1, u_1), \dots, (o_n, u_n)\right\},\]\\
+Una configuración racional es el conjunto\\
+\[K = \left\{(o_1, u_1), \dots, (o_n, u_n)\right\),\]\\
 sujeto a las condiciones del Axioma A2.
 
 \subsection{\texorpdfstring{\textbf{D3 --- Signo del
@@ -1397,7 +1407,7 @@ donde la función sgn se define según el rango del resultado: \[
 
 \textbf{Observación.}\\
 En nudos alternantes (que incluyen todos los nudos toroidales y la
-mayoría de configuraciones modulares), los signos alternan sistemáticamente
+mayoría de nudos racionales), los signos alternan sistemáticamente
 alrededor del recorrido.
 
 \subsection{\texorpdfstring{\textbf{D4 --- Matriz de
@@ -1426,7 +1436,7 @@ s_{ij}=
 \subsection{\texorpdfstring{\textbf{D5.1 --- Grado del
 nudo}}{D5.1 --- Grado del nudo}}\label{d5.1-grado-del-nudo}
 
-El \textbf{grado} de una configuración modular \(K\) es el número de
+El \textbf{grado} de una configuración racional \(K\) es el número de
 cruces que la componen:
 
 \[
@@ -1470,7 +1480,7 @@ cíclicas}}{D7.1 --- Rotaciones cíclicas}}\label{d7.1-rotaciones-cuxedclicas}
 
 Una \textbf{rotación cíclica} \(\rho_k\) (donde
 \(k \in \mathbb{Z}/2n\mathbb{Z}\)) actúa sobre una configuración
-modular \(K\) desplazando todas las posiciones en \(k\) unidades módulo
+racional \(K\) desplazando todas las posiciones en \(k\) unidades módulo
 \(2n\):
 
 \[
@@ -1530,7 +1540,7 @@ unitaria). 3. \textbf{Grupo generado}:
 preservando la estructura pero reindexando las posiciones.
 
 \textbf{Proposición D18.1 (Preservación de equivalencia).}\\
-\(\mathcal{P}(K) \sim K\) para toda configuración modular \(K\).
+\(\mathcal{P}(K) \sim K\) para toda configuración racional \(K\).
 
 \emph{Demostración:} Por la Proposición D7.1, toda rotación preserva
 equivalencia isotópica. Dado que \(\mathcal{P} = \rho_1\), se cumple
@@ -1588,7 +1598,7 @@ Las operaciones \(\mathcal{P}\) (Progresión) e \(\mathcal{I}\)
 propiedades diédricas.
 
 \textbf{Enunciado.}\\
-Para cualquier configuración modular \(K\) con \(n\) cruces, las
+Para cualquier configuración racional \(K\) con \(n\) cruces, las
 operaciones \(\mathcal{P}\) e \(\mathcal{I}\) satisfacen:
 
 \begin{enumerate}
@@ -1680,7 +1690,7 @@ axiomático}}{5. Teoremas derivados del núcleo axiomático}}\label{teoremas-der
 \subsection{\texorpdfstring{\textbf{Teorema T1 --- Existencia de arcos
 elementales}}{Teorema T1 --- Existencia de arcos elementales}}\label{teorema-t1-existencia-de-arcos-elementales}
 
-Sea \(K\) una configuración modular con \(n\) cruces, y sea
+Sea \(K\) una configuración racional con \(n\) cruces, y sea
 
 \[
 U(K) := \{u_1,\dots,u_n\} \subset \mathbb{Z}_{2n}
@@ -1726,7 +1736,7 @@ Un nudo con \(n\) cruces posee exactamente \(n\) arcos (pétalos).
 \item
   \textbf{Conjunto de posiciones \emph{under}.}\\
   Por el Axioma A2 (Existencia de Cruces) y la definición de
-  configuración modular, cada par ordenado de cruce \((o_i, u_i)\)
+  configuración racional, cada par ordenado de cruce \((o_i, u_i)\)
   contribuye exactamente una posición \emph{under} \(u_i\), y estas son
   todas distintas. Por tanto:
 
@@ -1861,12 +1871,12 @@ nudo con \(n\) cruces es precisamente \(n\).
 matriz
 firmada}}{Teorema T2 --- Antisimetría de la matriz firmada}}\label{teorema-t2-antisimetruxeda-de-la-matriz-firmada}
 
-Para toda configuración modular \(K\) se cumple:
+Para toda configuración racional \(K\) se cumple:
 \[ S(K)^\mathsf{T} = -S(K). \]
 
 \subsubsection{\texorpdfstring{\textbf{Demostración}}{Demostración}}\label{demostraciuxf3n-2}
 
-Sea \(K\) una configuración modular con \(n\) cruces.\\
+Sea \(K\) una configuración racional con \(n\) cruces.\\
 Recordemos las definiciones:
 
 \begin{itemize}
@@ -2024,7 +2034,7 @@ es decir, la matriz firmada \(S(K)\) es siempre
 espejo}}{Teorema T3 --- Involución del espejo}}\label{teorema-t3-involuciuxf3n-del-espejo}
 
 \textbf{Enunciado.}\\
-Para toda configuración modular \(K\) se cumple: \[
+Para toda configuración racional \(K\) se cumple: \[
 (K^\ast)^\ast = K.
 \]
 
@@ -2033,9 +2043,9 @@ intercambiar las coordenadas over/under de cada par ordenado de cruce.
 
 \subsubsection{\texorpdfstring{\textbf{Demostración}}{Demostración}}\label{demostraciuxf3n-3}
 
-Sea \(K\) una configuración modular con \(n\) cruces, escrita como \[
+Sea \(K\) una configuración racional con \(n\) cruces, escrita como \[
 K = \left\{\, (o_1, u_1), (o_2, u_2), \dots, (o_n, u_n) \,\right\}
-\] donde, por definición de configuración modular, se cumple: \[
+\] donde, por definición de configuración racional, se cumple: \[
 o_i,u_i \in \mathbb{Z}_{2n},\qquad o_i \neq u_i \quad \text{para todo } i.
 \]
 
@@ -2094,7 +2104,7 @@ Pero este conjunto coincide exactamente con la configuración original
 
 \subsubsection{\texorpdfstring{\textbf{Conclusión}}{Conclusión}}\label{conclusiuxf3n-1}
 
-La operación ``espejo modular'' definida cruce a cruce es una
+La operación ``espejo racional'' definida cruce a cruce es una
 \textbf{involución}: al aplicarla dos veces, se recupera la
 configuración original.\\
 Por lo tanto, el Teorema T3 queda demostrado.\\
@@ -2102,10 +2112,10 @@ Por lo tanto, el Teorema T3 queda demostrado.\\
 
 \subsubsection{\texorpdfstring{\textbf{Teorema T4 --- Invarianza de
 \(I(K)\) y \(F(K)\) en la forma normal
-modular}}{Teorema T4 --- Invarianza de I(K) y F(K) en la forma normal modular}}\label{teorema-t4-invarianza-de-ik-y-fk-en-la-forma-normal-modular}
+racional}}{Teorema T4 --- Invarianza de I(K) y F(K) en la forma normal racional}}\label{teorema-t4-invarianza-de-ik-y-fk-en-la-forma-normal-racional}
 
-Sea \(K\) una configuración modular y sea \(\mathrm{FN}(K)\) su forma normal
-modular irreductible. Entonces:
+Sea \(K\) un nudo racional y sea \(\mathrm{FN}(K)\) su forma normal
+racional irreductible. Entonces:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -2141,8 +2151,8 @@ Recordemos las definiciones (Axioma estructural de matrices y conteos):
   \]
 \end{itemize}
 
-Además, por el Teorema T5 (Reductibilidad hacia forma normal),
-toda configuración modular \(K\) admite una forma normal
+Además, por el Teorema T5 (Reductibilidad racional hacia forma normal),
+toda configuración racional \(K\) admite una forma normal racional
 irreductible, denotada \(\mathrm{FN}(K)\), obtenida mediante un proceso
 de:
 
@@ -2166,7 +2176,7 @@ K \sim K' \;\Rightarrow\; \mathrm{FN}(K) = \mathrm{FN}(K').
 \paragraph{(1) Independencia de la forma normal respecto del
 diagrama}\label{independencia-de-la-forma-normal-respecto-del-diagrama}
 
-Sea \(K\) una configuración modular cualquiera. Consideremos un proceso
+Sea \(K\) una configuración racional cualquiera. Consideremos un proceso
 de reducción:
 
 \[
@@ -2288,7 +2298,7 @@ diagrama particular. En otras palabras:
 
 \begin{quote}
 \(I^\ast\) y \(F^\ast\) son invariantes del nudo (invariantes de
-isotopía), definidos a partir de la forma normal modular.
+isotopía), definidos a partir de la forma normal racional.
 \end{quote}
 
 \(\square\)
