@@ -209,18 +209,30 @@ El marco modular racional, tal como está presentado, es aplicable a:
 - Nudos salvajes (wild knots) con infinitos cruces
 
 **Conclusión sobre alcance:**  
+```
 El sistema axiomático A1-A4 establece un **marco general** para representar nudos mediante aritmética modular. La clase exacta de nudos representables depende de si se imponen condiciones adicionales de realizabilidad.
 
 
 ### **1.3.5. Convención Terminológica para este Documento**
 
-Para evitar confusión, en lo que sigue de este documento:
+Para evitar confusión con la literatura clásica, en lo que sigue de este documento:
 
-- **"Configuración racional"**: Cualquier conjunto de pares $(o_i, u_i)$ satisfaciendo A1-A4
-- **"Nudo racional" (nuestro)**: Clase de equivalencia de configuraciones modulares bajo movidas de Reidemeister racionales
-- **"Rational knot (clásico)"**: Nudo 2-puente de Conway-Schubert (cuando citemos literatura)
+- **"Configuración modular"** o **"configuración TMEN"**: Cualquier conjunto de pares ordenados $(o_i, u_i)$ sobre $\mathbb{Z}_{2n}$ satisfaciendo A1-A4
+- **"Nudo K₃"** o **"configuración K₃"**: Configuración modular con 3 cruces (sobre $\mathbb{Z}_6$)
+- **"Equivalencia TMEN"**: Relación de equivalencia bajo movidas Reidemeister + acción de $D_{2n}$
+- **"Rational knot (clásico)"**: Nudo 2-puente de Conway-Schubert (cuando citemos literatura externa)
 
-Cuando sea necesario distinguir, usaremos "2-bridge knot" para el concepto clásico.
+**Términos evitados:**
+- ❌ "Configuración racional" → ✅ "Configuración modular"
+- ❌ "Nudo racional" → ✅ "Configuración TMEN" o "Nudo K₃"
+- ❌ "Teoría racional" → ✅ "Teoría Modular Estructural (TMEN)"
+
+Cuando sea necesario distinguir, usaremos **"2-bridge knot"** o **"Conway rational knot"** para el concepto clásico.
+
+> **Nota:** Esta convención terminológica evita ambigüedad entre:
+> - Los **rational knots** de Conway (familia específica de nudos 2-puente)
+> - Las **configuraciones modulares** de TMEN (marco general sobre $\mathbb{Z}_{2n}$)
+
 
 
 ## **1.4. Convenciones de Presentación Formal**
@@ -1446,9 +1458,7 @@ las coordenadas over/under de cada par ordenado de cruce.
 
 Sea $K$ una configuración racional con $n$ cruces, escrita como
 $$
-K = \left\{
-(o_1, u_1),\ (o_2, u_2),\ \dots,\ (o_n, u_n)
-\right\),
+K = \left\{\, (o_1, u_1), (o_2, u_2), \dots, (o_n, u_n) \,\right\}
 $$
 donde, por definición de configuración racional, se cumple:
 $$
