@@ -1,0 +1,13 @@
+{
+  "total_knots": 21,
+  "even_crossing_count": 21,
+  "odd_crossing_count": 0,
+  "all_even": true,
+  "distribution": {
+    "0": 1,
+    "4": 1,
+    "6": 1,
+    "8": 5,
+    "10": 13
+  }
+}

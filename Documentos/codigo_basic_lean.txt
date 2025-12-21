@@ -1,0 +1,1023 @@
+/-
+  Fundamentos Axiomáticos de la Teoría Modular Racional de Nudos
+  Formalización en Lean 4
+
+  Dr Pablo Eduardo Cancino Marentes - UAN 2025
+-/
+
+import Mathlib.Data.ZMod.Basic
+import Mathlib.Algebra.Group.Defs
+import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.List.Lex
+import Mathlib.Tactic.Ring
+import Mathlib.Tactic.Linarith
+
+
+/-!
+## Axioma A1 — Espacio del recorrido (estructura cíclica)
+
+Para cada n ∈ ℕ existe un conjunto finito totalmente ordenado
+ℝ₂ₙ = {0, 1, 2, ..., 2n-1} equipado con una operación de suma modular
+que convierte a ℝ₂ₙ en un grupo abeliano cíclico.
+
+**Nota sobre la indexación**: En Lean, es más natural usar {0, 1, ..., 2n-1}
+en lugar de {1, 2, ..., 2n} del documento original. Esto no afecta la
+estructura matemática ya que ambos son isomorfos como grupos cíclicos.
+-/
+
+namespace RationalKnots
+
+/-- El espacio de recorrido R_{2n} para un nudo con n cruces.
+    Usamos ZMod (2*n) que ya implementa ℤ/(2n)ℤ en Mathlib. -/
+abbrev TraversalSpace (n : ℕ) := ZMod (2 * n)
+
+/-- Notación para el espacio de recorrido -/
+notation "ℝ[" n "]" => TraversalSpace n
+
+/-!
+## Axioma de Doble Modularidad
+
+El nudo racional se estructura sobre dos dimensiones modulares:
+1. **Modularidad de Trayectoria (Dimensión 1)**: Regida por $Mod_{2n}$, define la linealidad y el recorrido.
+2. **Modularidad de Nivel (Dimensión 2)**: Regida por $Mod_2$, define la alteridad (arriba/abajo) y la condición de cierre.
+-/
+
+/-- 1. Modularidad de Trayectoria (Linealidad) -/
+abbrev TrajectoryModularity (n : ℕ) := ZMod (2 * n)
+
+/-- 2. Modularidad de Nivel (Alteridad) -/
+abbrev LevelModularity := ZMod 2
+
+/-- Proyección de la trayectoria al nivel (Paridad) -/
+def trajectory_to_level {n : ℕ} (t : ℝ[n]) : LevelModularity :=
+  t.val
+
+/-!
+### Propiedades del Axioma A1
+
+El tipo ZMod (2*n) de Mathlib ya satisface todas las propiedades requeridas:
+1. Es un conjunto finito con 2n elementos
+2. Tiene operación de suma modular (⊕ se nota como +)
+3. Forma un grupo abeliano cíclico
+4. Tiene estructura de anillo
+
+Demostramos explícitamente estas propiedades:
+-/
+
+/-- El espacio de recorrido es finito con cardinalidad 2n (cuando n > 0) -/
+theorem traversal_space_card (n : ℕ) [NeZero n] :
+  Fintype.card (ℝ[n]) = 2 * n := by
+  unfold TraversalSpace
+  exact ZMod.card (2 * n)
+
+/-- El espacio de recorrido tiene estructura de grupo abeliano -/
+instance (n : ℕ) [NeZero n] : AddCommGroup (ℝ[n]) :=
+  inferInstance
+
+/-- El espacio de recorrido tiene estructura cíclica (generado por 1) -/
+theorem traversal_space_cyclic (n : ℕ) [NeZero n] :
+  ∀ x : ℝ[n], ∃ k : ℕ, x = k • (1 : ℝ[n]) := by
+  intro x
+  use x.val
+  simp [ZMod.natCast_val]
+
+/-!
+### Operación de suma modular
+
+La operación ⊕ del documento se implementa como la suma usual (+) en ZMod.
+-/
+
+/-- La operación de suma modular en el espacio de recorrido -/
+def modular_add {n : ℕ} (i j : ℝ[n]) : ℝ[n] := i + j
+
+/-- La suma modular es asociativa -/
+theorem modular_add_assoc {n : ℕ} [NeZero n] (i j k : ℝ[n]) :
+  modular_add (modular_add i j) k = modular_add i (modular_add j k) := by
+  unfold modular_add
+  ring
+
+/-- La suma modular es conmutativa -/
+theorem modular_add_comm {n : ℕ} [NeZero n] (i j : ℝ[n]) :
+  modular_add i j = modular_add j i := by
+  unfold modular_add
+  ring
+
+/-- El elemento 0 es neutro para la suma modular -/
+theorem modular_add_zero {n : ℕ} [NeZero n] (i : ℝ[n]) :
+  modular_add i 0 = i := by
+  unfold modular_add
+  ring
+
+/-- Cada elemento tiene inverso aditivo -/
+theorem modular_add_neg {n : ℕ} [NeZero n] (i : ℝ[n]) :
+  modular_add i (-i) = 0 := by
+  unfold modular_add
+  ring
+
+/-!
+### Ejemplos concretos
+-/
+
+/-- Ejemplo para n=3: El espacio tiene 6 elementos -/
+example : Fintype.card (ℝ[3]) = 6 := by
+  exact traversal_space_card 3
+
+/-- Ejemplo de suma modular: En ℝ[3], 4 + 5 = 3 (mod 6) -/
+example : (4 : ℝ[3]) + (5 : ℝ[3]) = 3 := by
+  rfl
+
+/-- Ejemplo: Todo elemento de ℝ[2] se genera por sumas de 1 -/
+example (x : ℝ[2]) : ∃ k : ℕ, x = k • (1 : ℝ[2]) :=
+  traversal_space_cyclic 2 x
+
+
+/-!
+## Axioma A2 — Existencia de cruces y cobertura del recorrido
+
+Para cada n existe un conjunto de cruces C = {c₁, ..., cₙ}, y para cada cᵢ existe un par ordenado
+(oᵢ, uᵢ) ∈ ℝ₂ₙ × ℝ₂ₙ, oᵢ ≠ uᵢ, tal que {o₁, ..., oₙ, u₁, ..., uₙ} = ℝ₂ₙ.
+-/
+
+/--
+Estructura de un cruce racional.
+Cada cruce tiene una posición "over" y una posición "under" en el espacio de recorrido Z_{2n}.
+-/
+@[ext]
+structure RationalCrossing (n : ℕ) where
+  over_pos : ℝ[n]
+  under_pos : ℝ[n]
+  distinct : over_pos ≠ under_pos
+deriving DecidableEq
+
+instance (n : ℕ) [NeZero n] : Fintype (RationalCrossing n) :=
+  let pred : ℝ[n] × ℝ[n] → Prop := fun c => c.1 ≠ c.2
+  have h : DecidablePred pred := fun _ => inferInstance
+  have h_ne : NeZero (2*n) := ⟨by have := NeZero.ne n; omega⟩
+  have : Fintype (ℝ[n] × ℝ[n]) := @instFintypeProd _ _ (@ZMod.fintype (2*n) h_ne) (@ZMod.fintype (2*n) h_ne)
+  have : Fintype { c : ℝ[n] × ℝ[n] // pred c } := Subtype.fintype pred
+  Fintype.ofEquiv { c : ℝ[n] × ℝ[n] // pred c }
+    { toFun := fun c => ⟨c.val.1, c.val.2, c.property⟩
+      invFun := fun c => ⟨(c.over_pos, c.under_pos), c.distinct⟩
+      left_inv := fun _ => rfl
+      right_inv := fun _ => rfl }
+
+/-- Representación textual de un cruce -/
+instance (n : ℕ) : Repr (RationalCrossing n) where
+  reprPrec c _ := "(" ++ repr c.over_pos ++ ", " ++ repr c.under_pos ++ ")"
+
+/-- Configuración racional: un conjunto de n cruces que cubren todo el espacio de recorrido -/
+@[ext]
+structure RationalConfiguration (n : ℕ) where
+  crossings : Fin n → RationalCrossing n
+  coverage : ∀ x : ℝ[n], ∃ (i : Fin n), (crossings i).over_pos = x ∨ (crossings i).under_pos = x
+deriving DecidableEq
+
+noncomputable instance (n : ℕ) : Fintype (RationalConfiguration n) :=
+  if h : n = 0 then
+    have : IsEmpty (RationalConfiguration n) := ⟨fun c => by
+      subst h
+      have := c.coverage 0
+      simp at this⟩
+    Fintype.ofIsEmpty
+  else
+    have : NeZero n := ⟨h⟩
+    let pred : (Fin n → RationalCrossing n) → Prop := fun crossings =>
+      ∀ x : ℝ[n], ∃ (i : Fin n), (crossings i).over_pos = x ∨ (crossings i).under_pos = x
+    have h_dec : DecidablePred pred := fun _ => Classical.propDecidable _
+    have : Fintype { crossings // pred crossings } := Subtype.fintype pred
+    Fintype.ofEquiv { crossings // pred crossings }
+      { toFun := fun c => ⟨c.val, c.property⟩
+        invFun := fun c => ⟨c.crossings, c.coverage⟩
+        left_inv := fun _ => rfl
+        right_inv := fun _ => rfl }
+
+/-!
+### Propiedades del Axioma A2
+
+La condición de cobertura junto con la cardinalidad finita implica que
+cada posición del recorrido corresponde a exactamente una rama de cruce.
+-/
+
+/-- Lema auxiliar: La unión de posiciones over y under cubre el espacio -/
+theorem coverage_implies_surjective (n : ℕ) (K : RationalConfiguration n) :
+  Function.Surjective (fun (p : Fin n × Bool) =>
+    match p.2 with
+    | true => (K.crossings p.1).over_pos
+    | false => (K.crossings p.1).under_pos) := by
+  intro x
+  rcases K.coverage x with ⟨i, h⟩
+  rcases h with h_over | h_under
+  · exact ⟨(i, true), h_over⟩
+  · exact ⟨(i, false), h_under⟩
+
+/-!
+## Axioma A3 — Interlazado fundamental
+
+A cada cruce se le asigna su intervalo discreto [aᵢ, bᵢ] = [min(oᵢ, uᵢ), max(oᵢ, uᵢ)].
+Dos cruces cᵢ, cⱼ están interlazados ssi se cumple estrictamente:
+aᵢ < aⱼ < bᵢ < bⱼ o bien aⱼ < aᵢ < bⱼ < bᵢ.
+-/
+
+/-- Intervalo discreto asociado a un cruce.
+    Usamos el orden natural de Fin (2*n) subyacente a ZMod (2*n). -/
+def crossing_interval {n : ℕ} (c : RationalCrossing n) : (ℕ × ℕ) :=
+  let o_val := c.over_pos.val
+  let u_val := c.under_pos.val
+  (min o_val u_val, max o_val u_val)
+
+/-- Relación de interlazado entre dos cruces -/
+def are_interlaced {n : ℕ} (c1 c2 : RationalCrossing n) : Prop :=
+  let (a1, b1) := crossing_interval c1
+  let (a2, b2) := crossing_interval c2
+  (a1 < a2 ∧ a2 < b1 ∧ b1 < b2) ∨ (a2 < a1 ∧ a1 < b2 ∧ b2 < b1)
+
+/-- Notación para interlazado: c₁ ⋈ c₂ -/
+infix:50 " ⋈ " => are_interlaced
+
+instance {n : ℕ} (c1 c2 : RationalCrossing n) : Decidable (c1 ⋈ c2) :=
+  inferInstanceAs (Decidable ((_ < _ ∧ _ < _ ∧ _ < _) ∨ (_ < _ ∧ _ < _ ∧ _ < _)))
+
+/--
+A rational knot is **alternating** if the over/under nature of the crossings
+alternates as we traverse the knot.
+This is equivalent to saying that all `over_pos` have the same parity (all even or all odd),
+and consequently all `under_pos` have the opposite parity.
+-/
+def is_alternating {n : ℕ} (K : RationalConfiguration n) : Prop :=
+  ∀ i j : Fin n, (K.crossings i).over_pos.val % 2 = (K.crossings j).over_pos.val % 2
+
+/--
+El nudo debe comenzar y terminar en el mismo nivel (≡ 0 mod 2) para poder cerrarse.
+Esto es una propiedad fundamental de los nudos racionales bien formados (alternantes).
+-/
+def is_level_closed {n : ℕ} (K : RationalConfiguration n) : Prop :=
+  ∀ i : Fin n, trajectory_to_level (K.crossings i).over_pos = trajectory_to_level (K.crossings i).under_pos + 1
+  -- Nota: Esta definición preliminar captura la alternancia local.
+  -- La condición global de "cerrarse" se refiere a la consistencia de esta paridad en todo el recorrido.
+
+/--
+Teorema: Si un nudo es alternante, entonces satisface la condición de cierre de nivel.
+Esto conecta la definición combinatoria de alternancia con la modularidad de nivel.
+-/
+theorem alternating_implies_level_closed {n : ℕ} [NeZero n] (K : RationalConfiguration n) :
+  is_alternating K → is_level_closed K := by
+  intro h_alt
+  unfold is_level_closed trajectory_to_level
+  intro i
+
+  -- 1. Todos los over_pos tienen la misma paridad
+  have h_same_parity : ∀ j : Fin n, (K.crossings j).over_pos.val % 2 = (K.crossings i).over_pos.val % 2 := by
+    intro j
+    exact h_alt j i
+
+  -- 2. El espacio total tiene n pares y n impares
+  -- Esto requiere un argumento de cardinalidad sobre Finset.
+  -- Por ahora, usamos la intuición: si over_set tiene n elementos y todos son pares (o impares),
+  -- entonces under_set debe ser el complemento.
+
+  -- Simplificación: Trabajamos en ZMod 2
+  let over_parity := (K.crossings i).over_pos.val % 2
+
+  -- Si over_pos y under_pos tuvieran la misma paridad, habría colisión o falta de cobertura
+  -- Pero la demostración formal completa requiere contar elementos pares/impares en ZMod (2n).
+  -- Asumimos por ahora que la propiedad de alternancia implica paridad distinta entre over/under localmente
+  -- si asumimos que el nudo es "propiamente" alternante en el recorrido.
+
+  -- REVISIÓN: La definición `is_alternating` solo dice que los OVER tienen misma paridad.
+  -- ¿Implica esto que OVER y UNDER son distintos mod 2?
+  -- Sí, porque si OVER son todos pares, y cubren n posiciones, y hay n posiciones pares en total,
+  -- entonces OVER = {pares}. Por tanto UNDER = {impares}.
+  -- Así que under_pos % 2 ≠ over_pos % 2.
+
+  have h_over_mod2 : ∀ j, (K.crossings j).over_pos.val % 2 = over_parity := h_same_parity
+
+  -- Necesitamos probar: over_parity = (under_pos % 2) + 1
+  -- Equivalente a: over_parity ≠ under_pos % 2
+
+  -- sorry por ahora para cerrar la estructura, implementaremos la prueba de conteo luego.
+  sorry
+
+/-!
+## D3 — Signo del cruce
+
+A cada cruce i se le asigna un signo σᵢ ∈ {+1, -1}.
+Fórmula: σᵢ = sgn((uᵢ - oᵢ) mod 2n).
+-/
+
+/-- Función signo auxiliar para ZMod (2*n) -/
+def zmod_sign {n : ℕ} (x : ℝ[n]) : Int :=
+  if x.val > 0 ∧ x.val ≤ n then 1 else -1
+
+/-- El signo de un cruce racional -/
+def crossing_sign {n : ℕ} (c : RationalCrossing n) : Int :=
+  zmod_sign (c.under_pos - c.over_pos)
+
+/-!
+## Axioma de Enroscamiento (Dimensión 3)
+
+El nudo racional se realiza en el espacio tridimensional $S^3$.
+Esta dimensión se manifiesta a través del "Enroscamiento" (Twisting),
+que permite que la trayectoria lineal ($Mod_{2n}$) se cierre sobre sí misma
+sin auto-intersecciones (salvo en la proyección plana).
+
+La medida global de este enroscamiento es el **Writhe** (w).
+-/
+
+/--
+Writhe (w): La suma de los signos de todos los cruces.
+Representa el enroscamiento total del nudo en el espacio.
+-/
+def writhe {n : ℕ} (K : RationalConfiguration n) : Int :=
+  ((List.range n).map (fun i =>
+    if h : i < n then crossing_sign (K.crossings ⟨i, h⟩) else 0
+  )).sum
+
+/--
+Propiedad de Inmersión:
+El nudo racional es una inmersión de $S^1$ en $S^3$ ($R1 \to S3$).
+El enroscamiento asegura que esta inmersión sea isotópica a la configuración plana
+definida por los cruces.
+-/
+def is_natural_embedding {n : ℕ} (K : RationalConfiguration n) : Prop :=
+  -- Esta es una propiedad meta-matemática en este nivel de abstracción.
+  -- Formalmente, implica que el Writhe es un invariante de isotopía regular (bajo R2 y R3).
+  True
+
+/-!
+## D4 — Matriz de interlazado
+
+mᵢⱼ = 1 si i ⋈ j, 0 en otro caso.
+-/
+
+/-- Matriz de interlazado de una configuración -/
+def interlacing_matrix {n : ℕ} (K : RationalConfiguration n) (i j : Fin n) : ℕ :=
+  if are_interlaced (K.crossings i) (K.crossings j) then 1 else 0
+
+/-!
+## D7 — Operación de espejo (Involución)
+
+K* := {(u₁, o₁), ..., (uₙ, oₙ)}.
+-/
+
+/-- Operación de espejo sobre un cruce -/
+def mirror_crossing {n : ℕ} (c : RationalCrossing n) : RationalCrossing n :=
+  { over_pos := c.under_pos,
+    under_pos := c.over_pos,
+    distinct := Ne.symm c.distinct }
+
+/-- Operación de espejo sobre una configuración -/
+def mirror_knot {n : ℕ} (K : RationalConfiguration n) : RationalConfiguration n :=
+  { crossings := fun i => mirror_crossing (K.crossings i),
+    coverage := by
+      intro x
+      rcases K.coverage x with ⟨i, h⟩
+      use i
+      cases h with
+      | inl h_over => right; exact h_over
+      | inr h_under => left; exact h_under }
+
+/-!
+## D7.1 — Rotaciones cíclicas
+
+ρₖ(K) desplaza todas las posiciones en k unidades.
+-/
+
+/-- Rotación de un cruce por k unidades -/
+def rotate_crossing {n : ℕ} (k : ℝ[n]) (c : RationalCrossing n) : RationalCrossing n :=
+  { over_pos := c.over_pos + k,
+    under_pos := c.under_pos + k,
+    distinct := by
+      intro h
+      have : c.over_pos = c.under_pos := add_right_cancel h
+      exact c.distinct this }
+
+/-- Rotación de una configuración por k unidades -/
+def rotate_knot {n : ℕ} (k : ℝ[n]) (K : RationalConfiguration n) : RationalConfiguration n :=
+  { crossings := fun i => rotate_crossing k (K.crossings i),
+    coverage := by
+      intro x
+      -- x = y + k for some y
+      let y := x - k
+      rcases K.coverage y with ⟨i, h⟩
+      use i
+      simp [rotate_crossing]
+      cases h with
+      | inl h_over => left; rw [h_over]; ring
+      | inr h_under => right; rw [h_under]; ring }
+
+/-!
+## 4.3. Operaciones internas
+
+D18 — Operación Progresión: P(K) = ρ₁(K)
+D19 — Operación Inversión: I(K) = K*
+-/
+
+/-- Operación Progresión -/
+def progression {n : ℕ} [NeZero n] (K : RationalConfiguration n) : RationalConfiguration n :=
+  rotate_knot 1 K
+
+/-- Operación Inversión -/
+def inversion {n : ℕ} (K : RationalConfiguration n) : RationalConfiguration n :=
+  mirror_knot K
+
+/-!
+# 3. Reidemeister Racional
+-/
+
+/-!
+### 3.1. Adyacencia modular
+Dos posiciones p, q son adyacentes si p ⊕ 1 = q o q ⊕ 1 = p.
+-/
+
+def is_adjacent {n : ℕ} (p q : ℝ[n]) : Prop :=
+  p + 1 = q ∨ q + 1 = p
+
+/-!
+### 3.2. Movida R1 racional
+Cruce cᵢ es tipo R1 si Ady(oᵢ, uᵢ) y no está interlazado con ningún otro.
+-/
+
+def is_R1_candidate {n : ℕ} (K : RationalConfiguration n) (i : Fin n) : Prop :=
+  let c := K.crossings i
+  is_adjacent c.over_pos c.under_pos ∧
+  ∀ (j : Fin n), j ≠ i → ¬(are_interlaced c (K.crossings j))
+
+/-!
+### 3.3. Movida R2 racional
+Par (cₐ, c_b) es tipo R2 si Ady(oₐ, o_b), Ady(uₐ, u_b), a ⋈ b, y aislamiento local.
+-/
+
+def is_R2_candidate {n : ℕ} (K : RationalConfiguration n) (a b : Fin n) : Prop :=
+  let ca := K.crossings a
+  let cb := K.crossings b
+  a ≠ b ∧
+  is_adjacent ca.over_pos cb.over_pos ∧
+  is_adjacent ca.under_pos cb.under_pos ∧
+  are_interlaced ca cb
+  -- Nota: La condición de "aislamiento local" se satisface automáticamente en el modelo discreto
+  -- si asumimos adyacencia estricta (distancia 1), ya que no hay espacio para otros cruces entre ellos.
+
+/-!
+### 3.4. Movida R3 racional
+Triple (cᵢ, cⱼ, cₖ) es tipo R3 si tiene grafo de interlazado adecuado y patrón cíclico.
+-/
+
+/-- Verifica si una lista de posiciones sigue un orden cíclico -/
+def is_cyclic_order {n : ℕ} (_l : List (ℝ[n])) : Prop :=
+  -- Simplificación: Verificamos si existe una rotación que los ordene estrictamente
+  -- Esto es complejo de definir formalmente en ZMod sin orden global.
+  -- Usamos una definición operativa basada en "estar entre".
+  True -- Placeholder para la implementación completa de orden cíclico
+
+def is_R3_candidate {n : ℕ} (K : RationalConfiguration n) (i j k : Fin n) : Prop :=
+  let ci := K.crossings i
+  let cj := K.crossings j
+  let ck := K.crossings k
+  i ≠ j ∧ j ≠ k ∧ i ≠ k ∧
+  -- 1. Seis posiciones distintas
+  List.Nodup [ci.over_pos, cj.over_pos, ck.over_pos, ci.under_pos, cj.under_pos, ck.under_pos] ∧
+  -- 2. Grafo de interlazado (ejemplo: i ⋈ j, j ⋈ k, ¬(i ⋈ k))
+  -- El documento menciona "exactamente dos pares se interlazan y uno no"
+  ((ci ⋈ cj ∧ cj ⋈ ck ∧ ¬(ci ⋈ ck)) ∨
+   (ci ⋈ cj ∧ ci ⋈ ck ∧ ¬(cj ⋈ ck)) ∨
+   (ci ⋈ ck ∧ cj ⋈ ck ∧ ¬(ci ⋈ cj))) ∧
+  -- 3. Patrón cíclico
+  is_cyclic_order [ci.over_pos, cj.over_pos, ck.over_pos, ci.under_pos, cj.under_pos, ck.under_pos]
+
+/-!
+# Axioma A4 — Equivalencia Isotópica
+
+Existe una relación de equivalencia ∼ generada por R1, R2, R3 y rotaciones.
+-/
+
+/-- Wrapper para configuraciones de cualquier tamaño -/
+structure GeneralConfiguration where
+  n : ℕ
+  config : RationalConfiguration n
+
+/-!
+### Predicados de Transición (Placeholders)
+Definimos qué significa que una configuración sea el resultado de aplicar una movida a otra.
+La implementación constructiva de estas funciones (renumeración, etc.) se deja para una etapa posterior.
+-/
+
+def is_R1_transition {n : ℕ} (_K : RationalConfiguration n) (_K' : RationalConfiguration (n-1)) (_i : Fin n) : Prop :=
+  -- K' se obtiene de K eliminando el cruce i (que debe ser R1) y renumerando.
+  True
+
+def is_R2_transition {n : ℕ} (_K : RationalConfiguration n) (_K' : RationalConfiguration (n-2)) (_a _b : Fin n) : Prop :=
+  -- K' se obtiene de K eliminando el par (a,b) (que debe ser R2) y renumerando.
+  True
+
+def is_R3_transition {n : ℕ} (_K _K' : RationalConfiguration n) (_i _j _k : Fin n) : Prop :=
+  -- K' se obtiene de K aplicando el deslizamiento R3 en el triple (i,j,k).
+  True
+
+/-- Relación de equivalencia isotópica -/
+inductive Isotopic : GeneralConfiguration → GeneralConfiguration → Prop where
+  | refl (K) : Isotopic K K
+  | symm {K K'} : Isotopic K K' → Isotopic K' K
+  | trans {K K' K''} : Isotopic K K' → Isotopic K' K'' → Isotopic K K''
+
+  -- Rotaciones
+  | rotation {n} (K : RationalConfiguration n) (k : ℝ[n]) :
+      Isotopic ⟨n, K⟩ ⟨n, rotate_knot k K⟩
+
+  -- Movida R1 (Reducción)
+  | R1_reduction {n} (K : RationalConfiguration n) (K' : RationalConfiguration (n-1)) (i : Fin n) :
+      is_R1_candidate K i → is_R1_transition K K' i → Isotopic ⟨n, K⟩ ⟨n-1, K'⟩
+
+  -- Movida R1 (Creación - Inversa de Reducción)
+  -- Cubierta por symm + R1_reduction
+
+  -- Movida R2 (Reducción)
+  | R2_reduction {n} (K : RationalConfiguration n) (K' : RationalConfiguration (n-2)) (a b : Fin n) :
+      is_R2_candidate K a b → is_R2_transition K K' a b → Isotopic ⟨n, K⟩ ⟨n-2, K'⟩
+
+  -- Movida R3 (Deslizamiento)
+  | R3_move {n} (K K' : RationalConfiguration n) (i j k : Fin n) :
+      is_R3_candidate K i j k → is_R3_transition K K' i j k → Isotopic ⟨n, K⟩ ⟨n, K'⟩
+
+/-- Notación para equivalencia isotópica -/
+infix:50 " ∼ " => Isotopic
+
+
+/-!
+# 5. Teoremas derivados
+-/
+
+/-!
+## Teorema T3 — Involución del espejo
+(K*)* = K
+-/
+
+theorem mirror_involution {n : ℕ} (K : RationalConfiguration n) :
+  mirror_knot (mirror_knot K) = K := by
+  simp [mirror_knot, mirror_crossing]
+
+/-!
+## Teorema T4.1 — Estructura Diédrica
+I ∘ P ∘ I = P⁻¹
+-/
+
+/-- Progresión inversa (P⁻¹) -/
+def progression_inv {n : ℕ} [NeZero n] (K : RationalConfiguration n) : RationalConfiguration n :=
+  rotate_knot (-1) K
+
+theorem dihedral_structure_commutes {n : ℕ} [NeZero n] (K : RationalConfiguration n) :
+  inversion (progression (inversion K)) = progression K := by
+  simp [inversion, progression, mirror_knot, rotate_knot, mirror_crossing, rotate_crossing]
+
+/-!
+## Teorema T2 — Antisimetría de la matriz firmada
+S(K)ᵀ = -S(K)
+-/
+
+/-- Matriz firmada S(K) -/
+def signed_matrix {n : ℕ} (K : RationalConfiguration n) (i j : Fin n) : Int :=
+  if i = j then 0
+  else
+    let ci := K.crossings i
+    let cj := K.crossings j
+    let (ai, bi) := crossing_interval ci
+    let (aj, bj) := crossing_interval cj
+    let si := crossing_sign ci
+    let sj := crossing_sign cj
+    if ai < aj ∧ aj < bi ∧ bi < bj then
+      si * sj
+    else if aj < ai ∧ ai < bj ∧ bj < bi then
+      -(si * sj)
+    else
+      0
+
+theorem signed_matrix_antisymmetric {n : ℕ} (K : RationalConfiguration n) (i j : Fin n) :
+  signed_matrix K j i = -signed_matrix K i j := by
+  by_cases h_eq : i = j
+  · rw [h_eq]; simp [signed_matrix]
+  · have h_neq_ji : j ≠ i := Ne.symm h_eq
+
+    -- Expandir definiciones y simplificar lets
+    unfold signed_matrix
+    dsimp only
+    simp [h_eq, h_neq_ji]
+
+    let ci := K.crossings i
+    let cj := K.crossings j
+    let si := crossing_sign ci
+    let sj := crossing_sign cj
+
+    -- Definir intervalos usando proyecciones para coincidir con dsimp
+    let ai := (crossing_interval ci).1
+    let bi := (crossing_interval ci).2
+    let aj := (crossing_interval cj).1
+    let bj := (crossing_interval cj).2
+
+    -- Condiciones
+    let cond1_ij := ai < aj ∧ aj < bi ∧ bi < bj
+    let cond2_ij := aj < ai ∧ ai < bj ∧ bj < bi
+    let cond1_ji := aj < ai ∧ ai < bj ∧ bj < bi
+    let cond2_ji := ai < aj ∧ aj < bi ∧ bi < bj
+
+    -- Equivalencias
+    have h_equiv_1 : cond1_ij ↔ cond2_ji := by rfl
+    have h_equiv_2 : cond2_ij ↔ cond1_ji := by rfl
+
+    -- Exclusión mutua
+    have h_mutex_ij : ¬(cond1_ij ∧ cond2_ij) := by
+      intro h
+      rcases h with ⟨⟨h1, h2, h3⟩, ⟨h4, h5, h6⟩⟩
+      linarith
+
+    -- El objetivo ahora debería estar en términos de proyecciones.
+    -- Usamos 'change' para introducir nuestros nombres locales.
+    change (if cond1_ji then sj * si else if cond2_ji then -(sj * si) else 0) =
+           -(if cond1_ij then si * sj else if cond2_ij then -(si * sj) else 0)
+
+    by_cases h1 : cond1_ij
+    · -- Caso cond1_ij verdadero
+      have h2 : ¬cond2_ij := fun h => h_mutex_ij ⟨h1, h⟩
+
+      -- Implicaciones para (j, i)
+      have h1_ji : ¬cond1_ji := by rw [h_equiv_2] at h2; exact h2
+      have h2_ji : cond2_ji := by rw [h_equiv_1] at h1; exact h1
+
+      simp [*]
+      ring
+
+    · -- Caso cond1_ij falso
+      by_cases h2 : cond2_ij
+      · -- Caso cond2_ij verdadero
+        -- Implicaciones para (j, i)
+        have h1_ji : cond1_ji := by rw [h_equiv_2] at h2; exact h2
+        have h2_ji : ¬cond2_ji := by rw [h_equiv_1] at h1; exact h1
+
+        simp [*]
+        ring
+
+      · -- Caso ambos falsos
+        -- Implicaciones para (j, i)
+        have h1_ji : ¬cond1_ji := by rw [h_equiv_2] at h2; exact h2
+        have h2_ji : ¬cond2_ji := by rw [h_equiv_1] at h1; exact h1
+
+        simp [*]
+
+/-!
+## Teorema T1 — Existencia de arcos elementales
+El conjunto de posiciones *under* tiene cardinalidad n y particiona el espacio.
+-/
+
+/-- Conjunto de posiciones under de una configuración -/
+def under_set {n : ℕ} (K : RationalConfiguration n) : Finset (TraversalSpace n) :=
+  Finset.image (fun i => (K.crossings i).under_pos) Finset.univ
+
+/-- Conjunto de posiciones over de una configuración -/
+def over_set {n : ℕ} (K : RationalConfiguration n) : Finset (TraversalSpace n) :=
+  Finset.image (fun i => (K.crossings i).over_pos) Finset.univ
+
+theorem all_positions_distinct {n : ℕ} [NeZero n] (K : RationalConfiguration n) :
+  ∀ i j, (i ≠ j → (K.crossings i).under_pos ≠ (K.crossings j).under_pos) ∧
+         (i ≠ j → (K.crossings i).over_pos ≠ (K.crossings j).over_pos) ∧
+         ((K.crossings i).under_pos ≠ (K.crossings j).over_pos) := by
+  -- Definimos el mapa f: Fin 2n -> TraversalSpace n
+  let f : Fin (2 * n) → TraversalSpace n := fun k =>
+    if h : k.val < n then
+      (K.crossings ⟨k.val, h⟩).over_pos
+    else
+      (K.crossings ⟨k.val - n, by omega⟩).under_pos
+
+  -- Axioma A2 implica que f es sobreyectiva
+  have h_surj : Function.Surjective f := by
+    intro y
+    rcases K.coverage y with ⟨i, h_over | h_under⟩
+    · use ⟨i.val, by linarith [i.isLt]⟩
+      dsimp [f]
+      have h_lt : i.val < n := i.isLt
+      rw [dif_pos h_lt]
+      exact h_over
+    · use ⟨i.val + n, by linarith [i.isLt]⟩
+      dsimp [f]
+      have h_not_lt : ¬(i.val + n < n) := by linarith
+      rw [dif_neg h_not_lt]
+      rw [←h_under]
+      congr
+      try simp
+      try omega
+
+  -- Cardinalidad igual
+  have h_card : Fintype.card (Fin (2 * n)) = Fintype.card (TraversalSpace n) := by
+    simp [TraversalSpace, ZMod.card]
+
+  -- Sobreyectiva entre conjuntos finitos del mismo tamaño implica inyectiva
+  have h_inj : Function.Injective f := by
+    have h_bij : Function.Bijective f := (Fintype.bijective_iff_surjective_and_card f).mpr ⟨h_surj, h_card⟩
+    exact h_bij.injective
+
+  intro i j
+  constructor
+  · intro h_neq
+    -- under_pos(i) vs under_pos(j) corresponds to f(i+n) vs f(j+n)
+    let k1 : Fin (2*n) := ⟨i.val + n, by linarith [i.isLt]⟩
+    let k2 : Fin (2*n) := ⟨j.val + n, by linarith [j.isLt]⟩
+    have h_k_neq : k1 ≠ k2 := by
+      intro h
+      apply h_neq
+      apply Fin.eq_of_val_eq
+      have h_val : k1.val = k2.val := by rw [h]
+      dsimp [k1, k2] at h_val
+      linarith
+
+    have h_f_neq : f k1 ≠ f k2 := fun h => h_k_neq (h_inj h)
+
+    dsimp [f] at h_f_neq
+    have h_not_lt1 : ¬(i.val + n < n) := by linarith
+    have h_not_lt2 : ¬(j.val + n < n) := by linarith
+    rw [dif_neg h_not_lt1, dif_neg h_not_lt2] at h_f_neq
+
+    -- Simplificar los argumentos de crossings
+    convert h_f_neq
+    all_goals { dsimp [k1, k2]; try simp; try omega }
+
+  constructor
+  · intro h_neq
+    -- over_pos(i) vs over_pos(j) corresponds to f(i) vs f(j)
+    let k1 : Fin (2*n) := ⟨i.val, by linarith [i.isLt]⟩
+    let k2 : Fin (2*n) := ⟨j.val, by linarith [j.isLt]⟩
+    have h_k_neq : k1 ≠ k2 := by
+      intro h
+      apply h_neq
+      apply Fin.eq_of_val_eq
+      have h_val : k1.val = k2.val := by rw [h]
+      dsimp [k1, k2] at h_val
+      exact h_val
+
+    have h_f_neq : f k1 ≠ f k2 := fun h => h_k_neq (h_inj h)
+
+    dsimp [f] at h_f_neq
+    have h_lt1 : i.val < n := i.isLt
+    have h_lt2 : j.val < n := j.isLt
+    rw [dif_pos h_lt1, dif_pos h_lt2] at h_f_neq
+    exact h_f_neq
+
+  · -- under_pos(i) vs over_pos(j) corresponds to f(i+n) vs f(j)
+    let k1 : Fin (2*n) := ⟨i.val + n, by linarith [i.isLt]⟩
+    let k2 : Fin (2*n) := ⟨j.val, by linarith [j.isLt]⟩
+    -- k1 >= n, k2 < n, so k1 != k2
+    have h_k_neq : k1 ≠ k2 := by
+      intro h
+      have h_val : k1.val = k2.val := by rw [h]
+      dsimp [k1, k2] at h_val
+      omega
+
+    have h_f_neq : f k1 ≠ f k2 := fun h => h_k_neq (h_inj h)
+
+    dsimp [f] at h_f_neq
+    have h_not_lt1 : ¬(i.val + n < n) := by linarith
+    have h_lt2 : j.val < n := j.isLt
+    rw [dif_neg h_not_lt1, dif_pos h_lt2] at h_f_neq
+
+    convert h_f_neq
+    all_goals { dsimp [k1, k2]; try simp; try omega }
+
+theorem under_set_card {n : ℕ} [NeZero n] (K : RationalConfiguration n) :
+  (under_set K).card = n := by
+  unfold under_set
+  rw [Finset.card_image_of_injective]
+  · simp
+  · intro i j h_eq
+    have h_dist := (all_positions_distinct K i j).1
+    by_contra h_neq
+    exact h_dist h_neq h_eq
+
+/-!
+## Teorema T5 — Reductibilidad racional hacia forma normal
+-/
+
+/-- Una configuración es R1-reducible si existe una configuración equivalente con n-1 cruces -/
+def is_R1_reducible {n : ℕ} (K : RationalConfiguration n) : Prop :=
+  n ≥ 1 ∧ ∃ (K' : RationalConfiguration (n - 1)), Isotopic {n := n, config := K} {n := n - 1, config := K'}
+
+/-- Una configuración es R2-reducible si existe una configuración equivalente con n-2 cruces -/
+def is_R2_reducible {n : ℕ} (K : RationalConfiguration n) : Prop :=
+  n ≥ 2 ∧ ∃ (K' : RationalConfiguration (n - 2)), Isotopic {n := n, config := K} {n := n - 2, config := K'}
+
+/-- Una configuración es irreducible si no admite reducciones R1 ni R2 que disminuyan el grado -/
+def is_irreducible {n : ℕ} (K : RationalConfiguration n) : Prop :=
+  ¬is_R1_reducible K ∧ ¬is_R2_reducible K
+
+/- Orden lexicográfico sobre las configuraciones racionales -/
+-- Para definir esto formalmente, necesitamos un orden en RationalConfiguration.
+-- Usaremos el orden inducido por la lista de pares (over, under).
+
+/-- Helper to convert configuration to list of pairs for ordering -/
+def to_list {n : ℕ} (K : RationalConfiguration n) : List (ℕ × ℕ) :=
+  (List.range n).attach.map (fun ⟨i, hi⟩ =>
+    let idx : Fin n := ⟨i, by simp at hi; exact hi⟩
+    ((K.crossings idx).over_pos.val, (K.crossings idx).under_pos.val))
+
+lemma to_list_injective {n : ℕ} : Function.Injective (@to_list n) := by
+  intro K1 K2 h
+  apply RationalConfiguration.ext
+  funext i
+  -- We rely on the fact that to_list maps the i-th element of range to the i-th crossing
+  sorry
+
+/-- Helper to convert configuration to flat list of numbers for ordering -/
+def to_flat_list {n : ℕ} (K : RationalConfiguration n) : List ℕ :=
+  (to_list K) >>= (fun (a, b) => [a, b])
+
+lemma to_flat_list_injective {n : ℕ} : Function.Injective (@to_flat_list n) := by
+  intro K1 K2 h
+  apply to_list_injective
+  -- Injectivity of bind [a,b]
+  sorry
+
+instance {n : ℕ} : LinearOrder (RationalConfiguration n) :=
+  LinearOrder.lift' to_flat_list to_flat_list_injective
+
+/-- Una configuración es léxicamente mínima en su clase de isotopía (restringida al mismo grado) -/
+def is_lexically_minimal {n : ℕ} (K : RationalConfiguration n) : Prop :=
+  ∀ (K' : RationalConfiguration n), Isotopic {n := n, config := K} {n := n, config := K'} → K ≤ K'
+
+/-- Forma Normal: Irreductible y léxicamente mínima -/
+def is_normal_form {n : ℕ} (K : RationalConfiguration n) : Prop :=
+  is_irreducible K ∧ is_lexically_minimal K
+
+/-!
+### Lemas auxiliares para T5
+-/
+
+/-- El conjunto de grados alcanzables desde K -/
+def reachable_degrees {n : ℕ} (K : RationalConfiguration n) : Set ℕ :=
+  { m | ∃ (K' : RationalConfiguration m), Isotopic ⟨n, K⟩ ⟨m, K'⟩ }
+
+/-- El conjunto de grados alcanzables no es vacío (contiene n) -/
+lemma reachable_degrees_nonempty {n : ℕ} (K : RationalConfiguration n) :
+  (reachable_degrees K).Nonempty :=
+  ⟨n, K, Isotopic.refl _⟩
+
+/-- Existe un grado mínimo alcanzable -/
+noncomputable def min_degree {n : ℕ} (K : RationalConfiguration n) : ℕ :=
+  @Nat.find (fun m => m ∈ reachable_degrees K) (Classical.decPred _) (reachable_degrees_nonempty K)
+
+/-- El grado mínimo es realmente alcanzable -/
+lemma min_degree_mem {n : ℕ} (K : RationalConfiguration n) :
+  min_degree K ∈ reachable_degrees K :=
+  @Nat.find_spec (fun m => m ∈ reachable_degrees K) (Classical.decPred _) (reachable_degrees_nonempty K)
+
+/-- El grado mínimo es menor o igual que cualquier otro grado alcanzable -/
+lemma min_degree_le {n : ℕ} (K : RationalConfiguration n) (m : ℕ) (hm : m ∈ reachable_degrees K) :
+  min_degree K ≤ m :=
+  @Nat.find_min' (fun m => m ∈ reachable_degrees K) (Classical.decPred _) (reachable_degrees_nonempty K) m hm
+
+/-- El conjunto de grados alcanzables es invariante bajo isotopía -/
+lemma reachable_degrees_eq_of_isotopic {n m : ℕ} (K1 : RationalConfiguration n) (K2 : RationalConfiguration m)
+  (h : Isotopic ⟨n, K1⟩ ⟨m, K2⟩) : reachable_degrees K1 = reachable_degrees K2 := by
+  ext d
+  constructor
+  · intro hd
+    obtain ⟨Kd, h1d⟩ := hd
+    use Kd
+    exact Isotopic.trans (Isotopic.symm h) h1d
+  · intro hd
+    obtain ⟨Kd, h2d⟩ := hd
+    use Kd
+    exact Isotopic.trans h h2d
+
+/-- El grado mínimo es invariante bajo isotopía -/
+lemma min_degree_eq_of_isotopic {n m : ℕ} (K1 : RationalConfiguration n) (K2 : RationalConfiguration m)
+  (h : Isotopic ⟨n, K1⟩ ⟨m, K2⟩) : min_degree K1 = min_degree K2 := by
+  have h_set : reachable_degrees K1 = reachable_degrees K2 := reachable_degrees_eq_of_isotopic K1 K2 h
+  apply le_antisymm
+  · apply min_degree_le
+    rw [h_set]
+    apply min_degree_mem
+  · apply min_degree_le
+    rw [← h_set]
+    apply min_degree_mem
+
+/-- Conjunto de configuraciones con grado mínimo -/
+def minimal_configs {n : ℕ} (K : RationalConfiguration n) : Set (RationalConfiguration (min_degree K)) :=
+  { K' | Isotopic ⟨n, K⟩ ⟨min_degree K, K'⟩ }
+
+/-- El conjunto de configuraciones mínimas no es vacío -/
+lemma minimal_configs_nonempty {n : ℕ} (K : RationalConfiguration n) :
+  (minimal_configs K).Nonempty := by
+  obtain ⟨K', h⟩ := min_degree_mem K
+  use K'
+  exact h
+
+
+
+/--
+Lema L5: La irreducibilidad implica que se ha alcanzado el grado mínimo global.
+Si una configuración no admite movimientos R1 ni R2 que reduzcan el número de cruces,
+entonces su número de cruces es el mínimo posible en su clase de isotopía.
+-/
+lemma L5_irreducible_implies_minimal {n : ℕ} (K : RationalConfiguration n) (h_irr : is_irreducible K) :
+  n = min_degree K := by
+  -- Por definición, min_degree K ≤ n siempre es cierto
+  apply le_antisymm
+  · -- Queremos probar n ≤ min_degree K.
+    -- Procedemos por contradicción. Supongamos min_degree K < n.
+    by_contra h_lt
+    push_neg at h_lt
+    -- Entonces existe una configuración K' con grado m = min_degree K < n tal que K ~ K'.
+    have h_reachable : min_degree K ∈ reachable_degrees K := min_degree_mem K
+    obtain ⟨K_min, h_iso⟩ := h_reachable
+    -- Aquí necesitamos usar el hecho de que si K no es mínimo, entonces es reducible.
+    -- Esto es esencialmente la contrapositiva de lo que queremos probar, o un teorema profundo
+    -- que relaciona movimientos de Reidemeister con la reducción de cruces.
+    -- En teoría de nudos racionales, esto es cierto: si no es mínimo, se puede reducir.
+    sorry
+  · apply min_degree_le
+    exact ⟨K, Isotopic.refl _⟩
+
+/--
+Teorema T5: Existencia y Unicidad de la Forma Normal.
+Todo nudo racional es isotópico a una única configuración en forma normal.
+-/
+theorem T5_normal_form_existence_uniqueness {n : ℕ} (K : RationalConfiguration n) :
+  ∃! (NF : GeneralConfiguration), Isotopic ⟨n, K⟩ NF ∧ is_normal_form NF.config := by
+  -- Paso 1: Existencia
+  -- Consideramos el conjunto de configuraciones con grado mínimo alcanzable desde K.
+  let S := minimal_configs K
+  have h_nonempty : S.Nonempty := minimal_configs_nonempty K
+
+  -- Como el conjunto de configuraciones de un grado fijo es finito, S es finito.
+  let S_fin : Finset (RationalConfiguration (min_degree K)) := Set.toFinite S |>.toFinset
+  have h_fin_nonempty : S_fin.Nonempty := by
+    rw [Finset.nonempty_iff_ne_empty]
+    intro h_empty
+    have h_S_empty : S = ∅ := by
+      rw [← Set.Finite.toFinset_eq_empty]
+      exact h_empty
+    exact Set.Nonempty.ne_empty h_nonempty h_S_empty
+
+  -- Existe un elemento mínimo respecto al orden lexicográfico
+  let K_min := S_fin.min' h_fin_nonempty
+  have h_min_mem_S : K_min ∈ S := by
+    rw [← Set.Finite.mem_toFinset (Set.toFinite S)]
+    exact S_fin.min'_mem h_fin_nonempty
+
+  use ⟨min_degree K, K_min⟩
+  refine ⟨?_, ?_⟩
+  · -- Existencia
+    constructor
+    · -- Es isotópico
+      exact h_min_mem_S
+    · -- Es forma normal
+      constructor
+      · -- Irreducible
+        unfold is_irreducible is_R1_reducible is_R2_reducible
+        constructor
+        · intro h_r1
+          obtain ⟨h_ge, K_prev, h_iso_prev⟩ := h_r1
+          have h_iso_K : Isotopic ⟨n, K⟩ ⟨min_degree K - 1, K_prev⟩ := Isotopic.trans h_min_mem_S h_iso_prev
+          have h_mem : (min_degree K - 1) ∈ reachable_degrees K := ⟨K_prev, h_iso_K⟩
+          have h_le : min_degree K ≤ min_degree K - 1 := min_degree_le K _ h_mem
+          have h_pos : min_degree K ≥ 1 := h_ge
+          omega
+        · intro h_r2
+          obtain ⟨h_ge, K_prev, h_iso_prev⟩ := h_r2
+          have h_iso_K : Isotopic ⟨n, K⟩ ⟨min_degree K - 2, K_prev⟩ := Isotopic.trans h_min_mem_S h_iso_prev
+          have h_mem : (min_degree K - 2) ∈ reachable_degrees K := ⟨K_prev, h_iso_K⟩
+          have h_le : min_degree K ≤ min_degree K - 2 := min_degree_le K _ h_mem
+          have h_pos : min_degree K ≥ 2 := h_ge
+          omega
+      · -- Léxicamente mínima
+        intro K' h_iso
+        have h_in_S : K' ∈ S := by
+          apply Isotopic.trans h_min_mem_S h_iso
+        have h_in_fin : K' ∈ S_fin := by
+          rw [Set.Finite.mem_toFinset (Set.toFinite S)]
+          exact h_in_S
+        exact S_fin.min'_le K' h_in_fin
+
+  · -- Unicidad
+    intro NF2 ⟨h_iso2, h_nf2⟩
+    obtain ⟨n2, K2⟩ := NF2
+    rcases h_nf2 with ⟨h_irr2, h_min2⟩
+
+    -- Por L5, n2 debe ser el grado mínimo
+    have h_deg_eq : n2 = min_degree K := by
+      rw [L5_irreducible_implies_minimal K2 h_irr2]
+      exact (min_degree_eq_of_isotopic K K2 h_iso2).symm
+
+    subst h_deg_eq
+    congr
+    -- K2 = K_min
+    apply le_antisymm
+    · -- K2 <= K_min
+      apply h_min2
+      exact Isotopic.trans (Isotopic.symm h_iso2) h_min_mem_S
+    · -- K_min <= K2
+      have h_iso_K_K2 : Isotopic ⟨n, K⟩ ⟨min_degree K, K2⟩ := h_iso2
+      have h_K2_in_S : K2 ∈ S := h_iso_K_K2
+      have h_K2_in_fin : K2 ∈ S_fin := by
+        rw [Set.Finite.mem_toFinset (Set.toFinite S)]
+        exact h_K2_in_S
+      exact S_fin.min'_le K2 h_K2_in_fin
+
+end RationalKnots

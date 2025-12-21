@@ -1,0 +1,41 @@
+PS C:\Users\pablo\OneDrive\Documentos\TME_Nudos> 
+ *  History restored 
+os\TME_Nudos>                                    & "C:\Program Files\GitHub CLI\gh.exe" auth login
+? Where do you use GitHub?  [Use arrows to move, type to filter]
+? Where do you use GitHub? GitHub.com
+? What is your preferred protocol for Git operations on this host? HTTPS
+? Authenticate Git with your GitHub credentials? Yes
+? How would you like to authenticate GitHub CLI? Login with a web browser
+
+! First copy your one-time code: 875C-0D91
+Press Enter to open https://github.com/login/device in your browser... 
+
+
+------------------------------------------------------------------------
+
+Aunque me dices "Listo", mis sistemas indican que aún no se ha completado el inicio de sesión en la terminal.
+
+Es muy probable que hayas autorizado en el navegador, pero la terminal se quedó esperando que presiones Enter para confirmar y finalizar el proceso.
+
+Por favor:
+
+Revisa la terminal donde corriste el comando. Si está esperando, presiona Enter.
+Si eso no funciona, pasemos al Plan B (Manual) que es más rápido ahora mismo:
+Ve a github.com/new.
+Crea un repositorio llamado TME_Nudos (déjalo público o privado, como prefieras, y no añadas README ni .gitignore).
+Pégame aquí el enlace HTTPS que te dará al crearlo (ej. https://github.com/tu_usuario/TME_Nudos.git).
+Con ese enlace yo conecto y subo todo tu código en un segundo.
+
+------------------------------------------------------------------------
+
+¡Listo! He vinculado tu proyecto exitosamente con GitHub.
+
+Resumen:
+
+Se autenticó tu cuenta.
+Se creó el repositorio privado TME_Nudos en tu cuenta.
+Se subió todo el código actual.
+Puedes verlo aquí: https://github.com/PabloeCancino/TME_Nudos
+
+Ya puedes usar git push, git pull y demás comandos con normalidad. ¿Necesitas algo más?
+

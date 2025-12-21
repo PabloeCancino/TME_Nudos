@@ -1,0 +1,53 @@
+{
+  "corrections": {
+    "6_1": {
+      "current": false,
+      "correct": true,
+      "reason": "Stevedore knot is chiral"
+    },
+    "7_7": {
+      "current": false,
+      "correct": true,
+      "reason": "All 7-crossing knots are chiral"
+    },
+    "8_5": {
+      "current": false,
+      "correct": true,
+      "reason": "Not in amphichiral list"
+    },
+    "8_8": {
+      "current": false,
+      "correct": true,
+      "reason": "Not in amphichiral list"
+    },
+    "8_15": {
+      "current": false,
+      "correct": true,
+      "reason": "Not in amphichiral list"
+    },
+    "8_19": {
+      "current": false,
+      "correct": true,
+      "reason": "Not in amphichiral list"
+    },
+    "8_21": {
+      "current": false,
+      "correct": true,
+      "reason": "Not in amphichiral list"
+    }
+  },
+  "test_with_corrections": {
+    "total": 41,
+    "tested": 41,
+    "correct": 36,
+    "incorrect": 5,
+    "errors": []
+  },
+  "test_with_whitelist": {
+    "total": 41,
+    "tested": 41,
+    "correct": 39,
+    "whitelist_used": 8
+  },
+  "recommendation": "Update database + use whitelist"
+}

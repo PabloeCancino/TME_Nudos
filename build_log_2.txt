@@ -1,0 +1,20 @@
+Ô£û [3024/3024] Building TMENudos.TCN_03_Matchings (47s)
+trace: .> LEAN_PATH=C:\Users\pablo\OneDrive\Documentos\TME_Nudos\.lake\packages\Cli\.lake\build\lib\lean;C:\Users\pablo\OneDrive\Documentos\TME_Nudos\.lake\packages\batteries\.lake\build\lib\lean;C:\Users\pablo\OneDrive\Documentos\TME_Nudos\.lake\packages\Qq\.lake\build\lib\lean;C:\Users\pablo\OneDrive\Documentos\TME_Nudos\.lake\packages\aesop\.lake\build\lib\lean;C:\Users\pablo\OneDrive\Documentos\TME_Nudos\.lake\packages\proofwidgets\.lake\build\lib\lean;C:\Users\pablo\OneDrive\Documentos\TME_Nudos\.lake\packages\importGraph\.lake\build\lib\lean;C:\Users\pablo\OneDrive\Documentos\TME_Nudos\.lake\packages\LeanSearchClient\.lake\build\lib\lean;C:\Users\pablo\OneDrive\Documentos\TME_Nudos\.lake\packages\plausible\.lake\build\lib\lean;C:\Users\pablo\OneDrive\Documentos\TME_Nudos\.lake\packages\mathlib\.lake\build\lib\lean;C:\Users\pablo\OneDrive\Documentos\TME_Nudos\.lake\build\lib\lean c:\Users\pablo\.elan\toolchains\leanprover--lean4---v4.26.0-rc2\bin\lean.exe C:\Users\pablo\OneDrive\Documentos\TME_Nudos\TMENudos\TCN_03_Matchings.lean -o C:\Users\pablo\OneDrive\Documentos\TME_Nudos\.lake\build\lib\lean\TMENudos\TCN_03_Matchings.olean -i C:\Users\pablo\OneDrive\Documentos\TME_Nudos\.lake\build\lib\lean\TMENudos\TCN_03_Matchings.ilean -c C:\Users\pablo\OneDrive\Documentos\TME_Nudos\.lake\build\ir\TMENudos\TCN_03_Matchings.c --setup C:\Users\pablo\OneDrive\Documentos\TME_Nudos\.lake\build\ir\TMENudos\TCN_03_Matchings.setup.json --json
+error: TMENudos/TCN_03_Matchings.lean:696:22: Type mismatch
+  edgeToPair_fst_mem {c, d} (M.edge_size {c, d} he2) (my_orient Ôƒ¿{c, d}, he2Ôƒ®)
+has type
+  (edgeToPair {c, d} Ôï» (my_orient Ôƒ¿{c, d}, he2Ôƒ®)).fst Ôêê {c, d}
+but is expected to have type
+  p1.fst Ôêê {c, d}
+error: TMENudos/TCN_03_Matchings.lean:699:79: Application type mismatch: The argument
+  h_mem2
+has type
+  p2.fst Ôêê {c, d}
+but is expected to have type
+  p1.fst Ôêê {c, d}
+in the application
+  edges_disjoint_of_common_mem M {a, b} {c, d} he1 he2 p1.fst h_mem1 h_mem2
+error: Lean exited with code 1
+error: build failed
+Some required targets logged failures:
+- TMENudos.TCN_03_Matchings

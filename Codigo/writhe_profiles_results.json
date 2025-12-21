@@ -1,0 +1,23 @@
+{
+  "4_1": {
+    "error": "Invalid rational configuration: positions must form {1,2,...,2n}"
+  },
+  "6_3": {
+    "error": "Invalid rational configuration: positions must form {1,2,...,2n}"
+  },
+  "8_3": {
+    "error": "Invalid rational configuration: positions must form {1,2,...,2n}"
+  },
+  "8_9": {
+    "error": "Invalid rational configuration: positions must form {1,2,...,2n}"
+  },
+  "8_12": {
+    "error": "Invalid rational configuration: positions must form {1,2,...,2n}"
+  },
+  "8_17": {
+    "error": "Invalid rational configuration: positions must form {1,2,...,2n}"
+  },
+  "8_18": {
+    "error": "Invalid rational configuration: positions must form {1,2,...,2n}"
+  }
+}

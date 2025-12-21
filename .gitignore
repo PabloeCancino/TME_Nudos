@@ -1,0 +1,45 @@
+# Lean build artifacts
+/.lake
+*.olean
+build/
+
+# Logs and temporary outputs
+*.log
+*_log.txt
+*_output.txt
+build_*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.pytest_cache/
+.venv/
+venv/
+ENV/
+env/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Large configuration files (can be regenerated)
+Test_Combinatoria/configuraciones_nudos.json
+**/configuraciones_nudos.json
+**/configuraciones_nudos_n1_n2_n3*.json
+BD_Nudos/*.json

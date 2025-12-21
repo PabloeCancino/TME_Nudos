@@ -1,0 +1,39 @@
+{
+  "knot_id": "10_71",
+  "gauss_code": [
+    -1,
+    10,
+    -2,
+    1,
+    -4,
+    5,
+    -10,
+    2,
+    -6,
+    9,
+    -3,
+    4,
+    -5,
+    3,
+    -7,
+    8,
+    -9,
+    6,
+    -8,
+    7
+  ],
+  "n_crossings": 10,
+  "R_K": "262144/46189",
+  "R_K_decimal": 5.675463855030419,
+  "R_K_mirror": "46189/262144",
+  "R_K_mirror_decimal": 0.17619705200195312,
+  "R_K_inverse": "46189/262144",
+  "property_verified": true,
+  "chirality_detected": true,
+  "classical_invariants": {
+    "alexander": "-3 - 5t + 7t\u00b2 - 5t\u00b3 + 3t\u2074",
+    "determinant": 45,
+    "signature": 0,
+    "can_detect_chirality": false
+  }
+}
