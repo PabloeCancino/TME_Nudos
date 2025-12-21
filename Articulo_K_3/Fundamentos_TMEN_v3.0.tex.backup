@@ -2,6 +2,7 @@
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
 \documentclass[
+  spanish,
   11pt,
 ]{article}
 \usepackage{xcolor}
@@ -91,7 +92,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
-  pdflang={spanish},
+  pdflang={es},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 
