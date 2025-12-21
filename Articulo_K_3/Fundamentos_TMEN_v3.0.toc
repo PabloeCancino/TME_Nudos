@@ -86,7 +86,7 @@
 \contentsline {paragraph}{\textbf {Paso 2: construcción de la forma normal racional}}{39}{section*.86}%
 \contentsline {paragraph}{\textbf {Paso 3: unicidad de la forma normal}}{40}{section*.87}%
 \contentsline {subsection}{\textbf {Teorema T6 --- Invarianza de \(I^\ast (K)\) y \(F^\ast (K)\)}}{40}{section*.88}%
-\contentsline {paragraph}{\textbf {Enunciado}}{41}{section*.89}%
+\contentsline {paragraph}{\textbf {Enunciado}}{40}{section*.89}%
 \contentsline {paragraph}{\textbf {Demostración}}{41}{section*.90}%
 \contentsline {section}{\textbf {6. Estructuras Algebraicas Avanzadas}}{42}{section*.91}%
 \contentsline {subsection}{\textbf {Definición D8 --- Subgrupo del Nudo}}{42}{section*.92}%
