@@ -278,43 +278,64 @@ En particular, cuando un resultado tiene **componentes mixtos** (parte rigurosa,
 
 # **2. Fundamentos**
 
-## **2.1. Definición fundamental: Configuración racional**
+## **2.1. Definición fundamental: Configuración modular**
 
-Sea $n \in \mathbb{N}$.  
+> **Fuente:** TCN_01_Fundamentos.lean:128-135
+
+Sea $n \in \mathbb{N}$ el número de cruces.  
 Definimos una **configuración modular** como un conjunto finito:
 
 $$
-K = \left\{\, (o_1, u_1), (o_2, u_2), \dots, (o_n, u_n) \,\right\),
+K = \{(o_1, u_1), (o_2, u_2), \ldots, (o_n, u_n)\}
 $$
 
 con las siguientes propiedades:
 
-1. **(Cobertura del recorrido)**  
+1. **(Espacio modular)**  
+   Todas las posiciones pertenecen al grupo cíclico:
    $$
-   \{ o_1, \dots, o_n, u_1, \dots, u_n \} = \{1, 2, \dots, 2n\}.
-   $$
-
-2. **(Disyunción over/under)**  
-   $$
-   o_i \neq u_i \quad \text{para todo } i.
+   o_i, u_i \in \mathbb{Z}_{2n} = \{0, 1, \ldots, 2n-1\}
    $$
 
-3. **(Interpretación cruzada)**  
-   Cada racional $(o_i, u_i)$ codifica la aparición del cruce $i$ en los niveles “over” y “under”.
-
-4. **(Estructura modular)**  
-   Los índices se consideran en el anillo
+2. **(Cobertura del recorrido)**  
+   La unión de todas las posiciones cubre completamente el espacio:
    $$
-   \mathbb{Z}_{2n} = \mathbb{Z}/_{2n}\mathbb{Z}.
+   \{ o_1, \ldots, o_n, u_1, \ldots, u_n \} = \mathbb{Z}_{2n}
    $$
 
-El conjunto de todas las configuraciones modulares se denota por:
+3. **(Disyunción over/under)**  
+   En cada par, las posiciones son distintas:
+   $$
+   o_i \neq u_i \quad \text{para todo } i \in \{1, \ldots, n\}
+   $$
+
+4. **(Propiedad de partición única)**  
+   Cada elemento de $\mathbb{Z}_{2n}$ aparece en **exactamente un** par:
+   $$
+   \forall\, i \in \mathbb{Z}_{2n}, \quad \exists ! \, (o_k, u_k) \in K : \quad i = o_k \lor i = u_k
+   $$
+   Es decir, los pares particionan $\mathbb{Z}_{2n}$ sin solapamiento.
+
+> **Correspondencia con Lean:**  
+> ```lean
+> structure K3Config where
+>   pairs : Finset OrderedPair
+>   card_eq : pairs.card = 3
+>   is_partition : ∀ i : ZMod 6, ∃! p ∈ pairs, i = p.fst ∨ i = p.snd
+> ```
+
+El conjunto de todas las configuraciones modulares con $n$ cruces se denota:
 
 $$
-\mathcal{C} :=
-\bigcup_{n\in\mathbb{N}}
-\mathcal{C}(n).
+\mathcal{C}(n) := \{ K : K \text{ es configuración modular con } n \text{ cruces} \}
 $$
+
+y el espacio total:
+
+$$
+\mathcal{C} := \bigcup_{n\in\mathbb{N}} \mathcal{C}(n)
+$$
+
 
 ## **2.2. Fundamentación teórica**
 
@@ -656,13 +677,28 @@ El núcleo axiomático contiene únicamente los cuatro principios **irredundante
 
 
 ## **AXIOMA A1 — Espacio del recorrido (estructura cíclica)**  
-Para cada $n\in\mathbb{N}$ existe un conjunto finito totalmente ordenado  
-$$\mathbb{Z}_{2n}=\{1,2,\dots,2n\},$$  
+
+> **Fuente:** Lean 4 - `ZMod (2*n)` (Mathlib.Data.ZMod.Basic)
+
+Para cada $n\in\mathbb{N}$ existe un grupo cíclico finito:
+$$\mathbb{Z}_{2n} = \{0, 1, 2, \ldots, 2n-1\},$$  
 equipado con una operación de suma modular  
-$$i\oplus j := (i+j)\bmod 2n,$$  
-que convierte a $\mathbb{Z}_{2n}$ en un **grupo abeliano cíclico**.
+$$i\oplus j := (i+j) \bmod 2n,$$  
+que convierte a $\mathbb{Z}_{2n}$ en un **grupo abeliano cíclico** de orden $2n$.
+
+**Propiedades:**
+- Elemento neutro: $0$
+-  Inverso de $i$: $2n - i$
+- Periodicidad: $2n \equiv 0$
 
 La operación $\oplus$ interpreta el avance mínimo en el recorrido del nudo.
+
+> **Correspondencia con Lean:**  
+> ```lean
+> -- ZMod 6 = {0, 1, 2, 3, 4, 5}
+> -- Operación: + módulo 6
+> ```
+
 
 
 
