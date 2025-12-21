@@ -13,18 +13,18 @@
 \contentsline {subsubsection}{\textbf {1.3.5. Convención Terminológica para este Documento}}{10}{section*.13}%
 \contentsline {subsection}{\textbf {1.4. Convenciones de Presentación Formal}}{11}{section*.14}%
 \contentsline {subsubsection}{\textbf {1.4.1. Estructura de Teoremas y Proposiciones}}{11}{section*.15}%
-\contentsline {subsubsection}{\textbf {1.4.2. Clasificación de Resultados}}{11}{section*.16}%
+\contentsline {subsubsection}{\textbf {1.4.2. Clasificación de Resultados}}{12}{section*.16}%
 \contentsline {subsubsection}{\textbf {1.4.3. Separación entre Rigor y Práctica}}{12}{section*.17}%
 \contentsline {section}{\textbf {2. Fundamentos}}{12}{section*.18}%
 \contentsline {subsection}{\textbf {2.1. Definición fundamental: Configuración modular}}{12}{section*.19}%
 \contentsline {subsection}{\textbf {2.2. Fundamentación teórica}}{13}{section*.20}%
-\contentsline {subsection}{\textbf {2.3. Principio de Doble Codificación}}{13}{section*.21}%
+\contentsline {subsection}{\textbf {2.3. Principio de Doble Codificación}}{14}{section*.21}%
 \contentsline {subsubsection}{\textbf {No conmutatividad inducida}}{14}{section*.22}%
 \contentsline {subsection}{\textbf {2.4. Principio Modular del Recorrido}}{14}{section*.23}%
 \contentsline {subsubsection}{\textbf {No conmutatividad del recorrido}}{15}{section*.24}%
 \contentsline {section}{\textbf {3. Reidemeister Racional}}{15}{section*.25}%
 \contentsline {subsection}{\textbf {3. Reidemeister racional dentro del sistema axiomático}}{15}{section*.26}%
-\contentsline {subsubsection}{3.1. Adyacencia modular}{15}{section*.27}%
+\contentsline {subsubsection}{3.1. Adyacencia modular}{16}{section*.27}%
 \contentsline {subsubsection}{3.2. Movida R1 racional}{16}{section*.28}%
 \contentsline {paragraph}{Definición 3.2.1 (Cruce de tipo R1).}{16}{section*.29}%
 \contentsline {paragraph}{Definición 3.2.2 (Aplicación de R1).}{16}{section*.30}%
