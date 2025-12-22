@@ -457,6 +457,20 @@ theorem irreducible_dichotomy (K : K3Config) (hR1 : ¬hasR1 K) (hR2 : ¬hasR2 K)
   have h := config_in_one_of_two_orbits K hR1 hR2
   exact h
 
+/-- **COROLARIO: Todas las Configuraciones Irreducibles son Realizables**
+
+    Para K₃, no existen nudos virtuales: toda configuración sin R1 ni R2
+    es realizable como nudo clásico en ℝ³.
+
+    **Significado:** El problema de realizabilidad para K₃ irreducibles
+    tiene respuesta afirmativa universal.
+-/
+theorem irreducible_is_realizable (K : K3Config)
+    (hR1 : ¬hasR1 K) (hR2 : ¬hasR2 K) :
+    isRealizable K := by
+  -- Usar clasificación: toda config sin R1/R2 está en una de 2 órbitas
+  exact config_in_one_of_two_orbits K hR1 hR2
+
 /-- **COROLARIO 3: Algoritmo de Verificación**
 
     Existe un algoritmo decidible que verifica realizabilidad en
