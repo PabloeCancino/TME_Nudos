@@ -66,16 +66,16 @@ open OrderedPair K3Config D6Action
 
 /-- Una configuración K₃ es **realizable** si pertenece a una de las dos
     órbitas conocidas de nudos clásicos embebidos en ℝ³.
-    
+
     **Justificación matemática:**
     Las únicas configuraciones K₃ irreducibles (sin R1 ni R2) pertenecen
     a exactamente dos órbitas bajo la acción de D₆:
     - Orb(trefoilKnot): Trébol derecho (4 configuraciones equivalentes)
     - Orb(mirrorTrefoil): Trébol izquierdo (4 configuraciones equivalentes)
-    
+
     Todas estas 8 configuraciones son realizables como diagramas planares
     de nudos clásicos en ℝ³.
-    
+
     **Interpretación:**
     - ✅ Realizable: La configuración representa un nudo clásico (3₁ o 3̄₁)
     - ❌ No realizable: La configuración es un "nudo virtual" o tiene R1/R2
@@ -119,8 +119,8 @@ theorem isRealizable_iff_mem_set (K : K3Config) :
 /-- Las dos órbitas son disjuntas -/
 theorem orbits_disjoint :
     Disjoint (orbit trefoilKnot) (orbit mirrorTrefoil) := by
-  -- Usar teorema de TCN_07_Clasificacion
-  sorry  -- Requiere importar orbits_disjoint_trefoil_mirror
+  -- Usar teorema de TCN_06_Representantes
+  exact orbits_disjoint_trefoil_mirror
 
 /-! ## 3. Teoremas de Caracterización -/
 
@@ -128,7 +128,7 @@ theorem orbits_disjoint :
 
     Si una configuración K₃ es realizable, entonces su órbita tiene
     cardinalidad exactamente 4.
-    
+
     **Demostración:**
     - Si K ∈ Orb(trefoil), entonces Orb(K) = Orb(trefoil) por transitividad
     - |Orb(trefoil)| = 4 (probado en TCN_06)
@@ -163,11 +163,11 @@ theorem realizable_orbit_card_eq_four (K : K3Config) :
 
     Para configuraciones sin R1 ni R2, la realizabilidad es exactamente
     la pertenencia a una de las dos órbitas conocidas.
-    
+
     **Importancia:** Este teorema cierra el problema de realizabilidad
     para K₃ irreducibles.
 -/
-theorem irreducible_realizable_iff (K : K3Config) 
+theorem irreducible_realizable_iff (K : K3Config)
     (hR1 : ¬hasR1 K) (hR2 : ¬hasR2 K) :
     isRealizable K ↔ K ∈ orbit trefoilKnot ∨ K ∈ orbit mirrorTrefoil := by
   -- Trivial por definición de isRealizable
@@ -176,17 +176,17 @@ theorem irreducible_realizable_iff (K : K3Config)
 /-- **TEOREMA 3: Caracterización Completa**
 
     TEOREMA PRINCIPAL DE REALIZABILIDAD PARA K₃:
-    
+
     Una configuración K₃ es realizable si y solo si:
     1. No tiene movimientos R1 ni R2 (es irreducible), Y
     2. Pertenece a una de las dos órbitas conocidas
-    
+
     **Consecuencia:** Este teorema proporciona un algoritmo decidible
     para verificar realizabilidad en tiempo constante.
 -/
 theorem k3_realizability_characterization (K : K3Config) :
-    isRealizable K ↔ 
-      (¬hasR1 K ∧ ¬hasR2 K) ∧ 
+    isRealizable K ↔
+      (¬hasR1 K ∧ ¬hasR2 K) ∧
       (K ∈ orbit trefoilKnot ∨ K ∈ orbit mirrorTrefoil) := by
   constructor
   · -- (⇒) Si realizable, entonces irreducible y en órbita conocida
@@ -222,8 +222,8 @@ theorem k3_realizability_characterization (K : K3Config) :
     R ∈ {trefoil, mirror} tal que K pertenece a la órbita de R.
 -/
 theorem realizable_iff_representative (K : K3Config) :
-    isRealizable K ↔ 
-    ∃ R ∈ ({trefoilKnot, mirrorTrefoil} : Finset K3Config), 
+    isRealizable K ↔
+    ∃ R ∈ ({trefoilKnot, mirrorTrefoil} : Finset K3Config),
       K ∈ orbit R := by
   constructor
   · intro h
@@ -255,7 +255,7 @@ theorem realizable_iff_representative (K : K3Config) :
 /-- **TEOREMA 5: Cardinalidad de Configuraciones Realizables**
 
     El número total de configuraciones K₃ realizables es exactamente 8.
-    
+
     **Demostración:**
     - |Orb(trefoil)| = 4 (TCN_06)
     - |Orb(mirror)| = 4 (TCN_06)
@@ -276,7 +276,7 @@ theorem total_realizable_configs :
 
     La probabilidad de que una configuración K₃ aleatoria sea realizable
     es exactamente 8/120 = 1/15 ≈ 6.67%.
-    
+
     **Interpretación:** La mayoría (93.33%) de configuraciones K₃ son
     no realizables (tienen R1 o R2, o son "nudos virtuales").
 -/
@@ -289,7 +289,7 @@ theorem realizable_fraction :
 /-- **TEOREMA 7: Conteo de Configuraciones No Realizables**
 
     Exactamente 112 de las 120 configuraciones K₃ NO son realizables.
-    
+
     **Descomposición:**
     - 112 con movimientos R1 (reducibles)
     - 0 adicionales con solo R2
@@ -303,8 +303,8 @@ theorem non_realizable_count :
     exact card_k3_config
   have h_real : (Finset.univ.filter isRealizable).card = 8 := by
     sorry  -- Requiere que filter = realizableConfigs
-  have h_partition : Finset.univ = 
-    (Finset.univ.filter isRealizable) ∪ 
+  have h_partition : Finset.univ =
+    (Finset.univ.filter isRealizable) ∪
     (Finset.univ.filter (¬isRealizable ·)) := by
     sorry  -- Partición por decidibilidad
   sorry  -- Completar cálculo
@@ -315,14 +315,14 @@ theorem non_realizable_count :
 
     Una configuración NO es realizable si y solo si:
     - Tiene movimiento R1, O
-    - Tiene movimiento R2, O  
+    - Tiene movimiento R2, O
     - No pertenece a ninguna de las dos órbitas conocidas
-    
+
     **Uso:** Proporciona certificado algebraico de no-realizabilidad.
 -/
 theorem not_realizable_criterion (K : K3Config) :
-    ¬isRealizable K ↔ 
-      hasR1 K ∨ hasR2 K ∨ 
+    ¬isRealizable K ↔
+      hasR1 K ∨ hasR2 K ∨
       (K ∉ orbit trefoilKnot ∧ K ∉ orbit mirrorTrefoil) := by
   constructor
   · -- (⇒) Si no realizable, entonces tiene R1/R2 o no está en órbitas
@@ -361,7 +361,7 @@ theorem not_realizable_criterion (K : K3Config) :
 
     Para verificar si K ∈ Orb(R), basta verificar que existe g ∈ D₆
     tal que g • R = K.
-    
+
     **Algoritmo:** Enumerar los 12 elementos de D₆ y verificar.
     **Complejidad:** O(12) = O(1) para K₃.
 -/
@@ -377,8 +377,8 @@ theorem orbit_membership_certificate (K R : K3Config) :
     - g • mirrorTrefoil = K
 -/
 theorem realizable_by_transformation (K : K3Config) :
-    isRealizable K ↔ 
-    (∃ g : D6, g • trefoilKnot = K) ∨ 
+    isRealizable K ↔
+    (∃ g : D6, g • trefoilKnot = K) ∨
     (∃ g : D6, g • mirrorTrefoil = K) := by
   unfold isRealizable
   constructor
@@ -404,7 +404,7 @@ theorem realizable_by_transformation (K : K3Config) :
 /-- **COROLARIO 1: Preservación bajo D₆**
 
     La realizabilidad se preserva bajo la acción del grupo diédrico D₆.
-    
+
     **Significado geométrico:** Las simetrías del hexágono preservan
     la realizabilidad de nudos.
 -/
@@ -433,7 +433,7 @@ theorem realizable_preserved_by_D6 (K : K3Config) (g : D6) :
     Toda configuración irreducible es:
     - Realizable (en ℝ³), O
     - Virtual (solo en teoría de nudos virtuales)
-    
+
     Para K₃: Todas las irreducibles SON realizables (las 8).
 -/
 theorem irreducible_dichotomy (K : K3Config) (hR1 : ¬hasR1 K) (hR2 : ¬hasR2 K) :
@@ -441,13 +441,15 @@ theorem irreducible_dichotomy (K : K3Config) (hR1 : ¬hasR1 K) (hR2 : ¬hasR2 K)
   -- Para K₃, la segunda opción nunca ocurre
   left
   -- Usar clasificación: toda irreducible está en una de 2 órbitas
-  sorry  -- Requiere k3_classification_strong de TCN_07
+  unfold isRealizable
+  have h := config_in_one_of_two_orbits K hR1 hR2
+  exact h
 
 /-- **COROLARIO 3: Algoritmo de Verificación**
 
     Existe un algoritmo decidible que verifica realizabilidad en
     tiempo O(1) para configuraciones K₃.
-    
+
     **Procedimiento:**
     1. Verificar si K tiene R1 → NO realizable
     2. Verificar si K tiene R2 → NO realizable
@@ -482,16 +484,16 @@ example : isRealizable mirrorTrefoil := by
 example : realizableConfigs.card = 8 := total_realizable_configs
 
 /-- Verificación computacional: fracción de realizables -/
-example : (realizableConfigs.card : ℚ) / totalConfigs = 1 / 15 := 
+example : (realizableConfigs.card : ℚ) / totalConfigs = 1 / 15 :=
   realizable_fraction
 
 /-- El trébol derecho no tiene R1 -/
 example : ¬hasR1 trefoilKnot := by
-  sorry  -- Importar de TCN_07
+  exact trefoilKnot_no_r1
 
 /-- El trébol derecho no tiene R2 -/
 example : ¬hasR2 trefoilKnot := by
-  sorry  -- Importar de TCN_07
+  exact trefoilKnot_no_r2
 
 end Examples
 
