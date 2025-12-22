@@ -458,7 +458,7 @@ def fromNotation (cn : CanonicalNotation) : Option K3Config :=
 
 /-! ## Reflexión y Quiralidad -/
 
-/-! Reflexión especular (imagen en espejo) de una configuración.
+/-- Reflexión especular (imagen en espejo) de una configuración.
 
     **Operación: K ↦ K̄**
 
@@ -935,46 +935,6 @@ theorem writhe_mirror (K : K3Config) :
   unfold writhe
   rw [dme_mirror]
   exact foldl_sum_neg K.dme
-  -- Necesitamos: suma de (dme.map (· * -1)).map sgn = -(suma de dme.map sgn)
-  rw [List.map_map]
-  -- Lema: suma de lista negada
-  have sum_neg : ∀ (l : List ℤ), l.foldl (· + ·) 0 = -(l.map (· * (-1))).foldl (· + ·) 0 := by
-    intro l
-    induction l with
-    | nil => simp [List.foldl]
-    | cons h t ih =>
-      simp only [List.foldl, List.map]
-      calc (h :: t).foldl (· + ·) 0
-          = t.foldl (· + ·) h := by rfl
-        _ = t.foldl (· + ·) 0 + h := by
-          clear ih
-          induction t generalizing h with
-          | nil => simp [List.foldl]
-          | cons h' t' ih' =>
-            simp only [List.foldl]
-            rw [ih' (h + h')]
-            ring
-        _ = -(t.map (· * (-1))).foldl (· + ·) 0 + h := by rw [← ih]
-        _ = -(t.map (· * (-1))).foldl (· + ·) (h * (-1) * (-1)) := by ring
-        _ = -((h * (-1) :: t.map (· * (-1))).foldl (· + ·) 0) := by
-          clear ih
-          generalize h * (-1) = x
-          induction t.map (· * (-1)) generalizing x with
-          | nil => simp [List.foldl]; ring
-          | cons h' t' ih' =>
-            simp only [List.foldl]
-            rw [← ih' (x + h')]
-            ring
-  -- Aplicar para chiralSigns
-  have : (K.dme.map (· * (-1))).map intSign =
-         (K.dme.map intSign).map (· * (-1)) := by
-    apply List.ext_get
-    · simp [List.length_map]
-    intro i h1 h2
-    simp only [List.get_map]
-    exact intSign_mul_neg_one (K.dme[i])
-  rw [this]
-  exact sum_neg (K.dme.map intSign)
 
 /-- **TEOREMA**: La reflexión es involutiva.
 
