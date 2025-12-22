@@ -130,8 +130,6 @@ theorem prime_decomposition_reconstructs (K : Knot) :
     K ≅ (prime_decomposition K).foldl (·#·) unknot := by
   exact (Classical.choose_spec (prime_decomposition_exists K)).2
 
-/-- ✅ RESUELTO (3/26): Filtrar unknots de la lista -/
-  primes.filter (fun P => ¬(P ≅ unknot))
 
 /-- ✅ RESUELTO (4/26): Existencia con lista filtrada -/
 theorem schubert_existence (K : Knot) :
