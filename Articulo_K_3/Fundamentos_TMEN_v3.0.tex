@@ -15,7 +15,7 @@
 	\space\space xelatex tu-documento.tex\MessageBreak
 	o\MessageBreak
 	\space\space lualatex tu-documento.tex\MessageBreak\MessageBreak
-	No uses pdflatex, latex, dvips, etc.
+	No uses pdflatex, latex, dvips, etc.%
 }
 \batchmode
 \stop
@@ -208,7 +208,7 @@ El propósito de esta teoría es construir un marco algebraico capaz de:
   \textbf{Producir} invariantes derivados de estas estructuras
   algebraicas.
 \item
-  \textbf{Determinar} condiciones para formas normales racionales.
+  \textbf{Determinar} condiciones para formas normales modulares estructurales.
 \item
   \textbf{Relacionar} la estructura algebraica con propiedades
   topológicas como quiralidad, anfiquiralidad e interlazado.
@@ -441,7 +441,7 @@ Si se desea trabajar \textbf{exclusivamente} con nudos clásicos
 embebidos en \(\mathbb{R}^3\), debe añadirse:
 
 \textbf{Axioma adicional A5 (Realizabilidad planar):}\\
-\textgreater{} La configuración racional \((o_i, u_i)_{i=1}^n\) admite
+\textgreater{} La configuración modular estructural \((o_i, u_i)_{i=1}^n\) admite
 un embedding planar, es decir, existe un diagrama de nudo en el plano
 que realiza exactamente los cruces y conexiones especificados.
 
@@ -1121,11 +1121,11 @@ preciso para:
 \begin{itemize}
 \tightlist
 \item
-  definir formalmente los cruces racionales,
+  definir formalmente los cruces modulares estructurales,
 \item
-  introducir arcos y movimientos racionales de Reidemeister,
+  introducir arcos y movimientos modulares estructurales de Reidemeister,
 \item
-  construir invariantes racionales,
+  construir invariantes modulares estructurales,
 \item
   y fundamentar un futuro \textbf{anillo no conmutativo de nudos} con
   operación de espejo como involución.
@@ -1140,7 +1140,7 @@ axiomático}}{3. Reidemeister racional dentro del sistema axiomático}}\label{re
 
 En esta sección formulamos las tres movidas de Reidemeister
 \textbf{exclusivamente} en términos de la estructura modular
-\(\mathbb{Z}_{2n}\), de los pares racionales \((o_i, u_i)\) y de la
+\(\mathbb{Z}_{2n}\), de los pares ordenados \((o_i, u_i)\) y de la
 relación de interlazado \(i\bowtie j\).
 
 \subsubsection{3.1. Adyacencia modular}\label{adyacencia-modular}
@@ -1174,7 +1174,7 @@ cíclico (\(1\) y \(2n\) también son adyacentes).
 
 \subsubsection{3.2. Movida R1 racional}\label{movida-r1-racional}
 
-Sea \(K\) una configuración racional con cruces
+Sea \(K\) una configuración modular estructural con cruces
 
 \[
 K = \left\{(o_1, u_1),\dots,(o_n, u_n)\right\}.
@@ -1316,7 +1316,7 @@ racional} si:
 R3).}\label{definiciuxf3n-3.4.2-aplicaciuxf3n-de-r3.}
 
 Una \textbf{movida R3 racional} consiste en reemplazar, dentro de una
-configuración racional \(K\), el triple
+configuración modular estructural \(K\), el triple
 
 \[
 \left\{(o_i, u_i),\,(o_j, u_j),\,(o_k, u_k)\right\}
@@ -1362,7 +1362,7 @@ Con estas definiciones:
 \item
   R3 queda caracterizada por un \textbf{patrón combinatorio} sobre las
   seis posiciones del triple de cruces, expresado únicamente en el
-  lenguaje del sistema: \(\mathbb{Z}_{2n}\), pares racionales y relación
+  lenguaje del sistema: \(\mathbb{Z}_{2n}\), pares ordenados y relación
   \(\bowtie\).
 \end{itemize}
 
@@ -1431,10 +1431,10 @@ Este axioma fija la estructura combinatoria esencial del diagrama.
 
 \subsection{\texorpdfstring{\textbf{AXIOMA A4 --- Equivalencia Isotópica
 (Reidemeister
-Racional)}}{AXIOMA A4 --- Equivalencia Isotópica (Reidemeister Racional)}}\label{axioma-a4-equivalencia-isotuxf3pica-reidemeister-racional}
+Racional)}}{AXIOMA A4 --- Equivalencia Isotópica (Reidemeister Modular Estructural)}}\label{axioma-a4-equivalencia-isotuxf3pica-reidemeister-modular-estructural}
 
 Existe una relación de equivalencia \(\sim\) sobre el conjunto de
-configuraciones modulares, generada por: - Las movidas racionales
+configuraciones modulares, generada por: - Las movidas modulares estructurales
 \(R1\), \(R2\), \(R3\) (definidas en Sección 3), - Las rotaciones del
 recorrido \(\rho_k\) (definidas en D7.1).
 
@@ -1472,7 +1472,7 @@ configuraciones \textbf{discretas} (pares ordenados en
 de \(\mathbb{R}^3\) no es parte del sistema axiomático A1-A4
 
 Por tanto, adoptamos como \textbf{axioma fundamental} que las versiones
-racionales de R1, R2, R3 (definidas discretamente en Sección 3) capturan
+modulares estructurales de R1, R2, R3 (definidas discretamente en Sección 3) capturan
 la equivalencia isotópica de los nudos correspondientes.
 
 \textbf{Esta es una elección metodológica legítima que:} - ✓ Permite
@@ -1508,7 +1508,7 @@ quiralidad/anfiquiralidad: coinciden con tablas conocidas -
 Clasificaciones topológicas: sin contraejemplos detectados
 
 \textbf{4. Casos especiales con demostración parcial:} - Para nudos
-\textbf{alternantes}: las movidas racionales preservan alternancia -
+\textbf{alternantes}: las movidas modulares estructurales preservan alternancia -
 Para nudos \textbf{toroidales}: construcción modular coincide con
 parametrización \((p,q)\)
 
@@ -1523,13 +1523,13 @@ Correspondencia}}{Problema Abierto 4.1 --- Formalización de la Correspondencia}
 
 \textbf{Enunciado:}\\
 Formalizar rigurosamente la correspondencia exacta entre: 1.
-Equivalencia por movidas racionales de Reidemeister en configuraciones
+Equivalencia por movidas modulares estructurales de Reidemeister en configuraciones
 modulares, y 2. Equivalencia por isotopía ambiente de nudos embebidos en
 \(\mathbb{R}^3\).
 
 \textbf{Sub-problemas:} 1. Definir biyección explícita: configuraciones
 modulares \(\leftrightarrow\) diagramas de nudos 2. Probar que movidas
-racionales R1, R2, R3 corresponden localmente a movidas topológicas 3.
+modulares estructurales R1, R2, R3 corresponden localmente a movidas topológicas 3.
 Caracterizar configuraciones modulares realizables como diagramas planos
 
 \textbf{Estado:}\\
@@ -1599,9 +1599,9 @@ con \(o_i\neq u_i\) y posiciones tomadas del conjunto
 \(\mathbb{Z}_{2n}\).
 
 \subsection{\texorpdfstring{\textbf{D2 --- Configuración
-racional}}{D2 --- Configuración racional}}\label{d2-configuraciuxf3n-racional}
+racional}}{D2 --- configuración modular estructural}}\label{d2-configuraciuxf3n-racional}
 
-Una configuración racional es el conjunto\\
+Una configuración modular estructural es el conjunto\\
 \[K = \left\{(o_1, u_1), \dots, (o_n, u_n)\right\}.\]\\
 sujeto a las condiciones del Axioma A2.
 
@@ -1689,7 +1689,7 @@ s_{ij}=
 \subsection{\texorpdfstring{\textbf{D5.1 --- Grado del
 nudo}}{D5.1 --- Grado del nudo}}\label{d5.1-grado-del-nudo}
 
-El \textbf{grado} de una configuración racional \(K\) es el número de
+El \textbf{grado} de una configuración modular estructural \(K\) es el número de
 cruces que la componen:
 
 \[
@@ -1793,7 +1793,7 @@ unitaria). 3. \textbf{Grupo generado}:
 preservando la estructura pero reindexando las posiciones.
 
 \textbf{Proposición D18.1 (Preservación de equivalencia).}\\
-\(\mathcal{P}(K) \sim K\) para toda configuración racional \(K\).
+\(\mathcal{P}(K) \sim K\) para toda configuración modular estructural \(K\).
 
 \emph{Demostración:} Por la Proposición D7.1, toda rotación preserva
 equivalencia isotópica. Dado que \(\mathcal{P} = \rho_1\), se cumple
@@ -1851,7 +1851,7 @@ Las operaciones \(\mathcal{P}\) (Progresión) e \(\mathcal{I}\)
 propiedades diédricas.
 
 \textbf{Enunciado.}\\
-Para cualquier configuración racional \(K\) con \(n\) cruces, las
+Para cualquier configuración modular estructural \(K\) con \(n\) cruces, las
 operaciones \(\mathcal{P}\) e \(\mathcal{I}\) satisfacen:
 
 \begin{enumerate}
@@ -1943,7 +1943,7 @@ axiomático}}{5. Teoremas derivados del núcleo axiomático}}\label{teoremas-der
 \subsection{\texorpdfstring{\textbf{Teorema T1 --- Existencia de arcos
 elementales}}{Teorema T1 --- Existencia de arcos elementales}}\label{teorema-t1-existencia-de-arcos-elementales}
 
-Sea \(K\) una configuración racional con \(n\) cruces, y sea
+Sea \(K\) una configuración modular estructural con \(n\) cruces, y sea
 
 \[
 U(K) := \{u_1,\dots,u_n\} \subset \mathbb{Z}_{2n}
@@ -1989,7 +1989,7 @@ Un nudo con \(n\) cruces posee exactamente \(n\) arcos (pétalos).
 \item
   \textbf{Conjunto de posiciones \emph{under}.}\\
   Por el Axioma A2 (Existencia de Cruces) y la definición de
-  configuración racional, cada par ordenado de cruce \((o_i, u_i)\)
+  configuración modular estructural, cada par ordenado de cruce \((o_i, u_i)\)
   contribuye exactamente una posición \emph{under} \(u_i\), y estas son
   todas distintas. Por tanto:
 
@@ -2124,12 +2124,12 @@ nudo con \(n\) cruces es precisamente \(n\).
 matriz
 firmada}}{Teorema T2 --- Antisimetría de la matriz firmada}}\label{teorema-t2-antisimetruxeda-de-la-matriz-firmada}
 
-Para toda configuración racional \(K\) se cumple:
+Para toda configuración modular estructural \(K\) se cumple:
 \[ S(K)^\mathsf{T} = -S(K). \]
 
 \subsubsection{\texorpdfstring{\textbf{Demostración}}{Demostración}}\label{demostraciuxf3n-2}
 
-Sea \(K\) una configuración racional con \(n\) cruces.\\
+Sea \(K\) una configuración modular estructural con \(n\) cruces.\\
 Recordemos las definiciones:
 
 \begin{itemize}
@@ -2287,7 +2287,7 @@ es decir, la matriz firmada \(S(K)\) es siempre
 espejo}}{Teorema T3 --- Involución del espejo}}\label{teorema-t3-involuciuxf3n-del-espejo}
 
 \textbf{Enunciado.}\\
-Para toda configuración racional \(K\) se cumple: \[
+Para toda configuración modular estructural \(K\) se cumple: \[
 (K^\ast)^\ast = K.
 \]
 
@@ -2296,9 +2296,9 @@ intercambiar las coordenadas over/under de cada par ordenado de cruce.
 
 \subsubsection{\texorpdfstring{\textbf{Demostración}}{Demostración}}\label{demostraciuxf3n-3}
 
-Sea \(K\) una configuración racional con \(n\) cruces, escrita como \[
+Sea \(K\) una configuración modular estructural con \(n\) cruces, escrita como \[
 K = \left\{\, (o_1, u_1), (o_2, u_2), \dots, (o_n, u_n) \,\right\}
-\] donde, por definición de configuración racional, se cumple: \[
+\] donde, por definición de configuración modular estructural, se cumple: \[
 o_i,u_i \in \mathbb{Z}_{2n},\qquad o_i \neq u_i \quad \text{para todo } i.
 \]
 
@@ -2405,7 +2405,7 @@ Recordemos las definiciones (Axioma estructural de matrices y conteos):
 \end{itemize}
 
 Además, por el Teorema T5 (Reductibilidad racional hacia forma normal),
-toda configuración racional \(K\) admite una forma normal racional
+toda configuración modular estructural \(K\) admite una forma normal racional
 irreductible, denotada \(\mathrm{FN}(K)\), obtenida mediante un proceso
 de:
 
@@ -2429,7 +2429,7 @@ K \sim K' \;\Rightarrow\; \mathrm{FN}(K) = \mathrm{FN}(K').
 \paragraph{(1) Independencia de la forma normal respecto del
 diagrama}\label{independencia-de-la-forma-normal-respecto-del-diagrama}
 
-Sea \(K\) una configuración racional cualquiera. Consideremos un proceso
+Sea \(K\) una configuración modular estructural cualquiera. Consideremos un proceso
 de reducción:
 
 \[
@@ -2571,7 +2571,7 @@ grado.}}{Lema L1 --- Efecto de R1, R2 y R3 sobre el grado.}}\label{lema-l1-efect
 
 \paragraph{Demostración.}\label{demostraciuxf3n.-1}
 
-Recordemos que el grado de una configuración racional \(K\) se define
+Recordemos que el grado de una configuración modular estructural \(K\) se define
 como
 
 \[
@@ -2721,7 +2721,7 @@ re-etiqueta los índices:
 i \longmapsto \rho_k(i).
 \]
 
-Aplicar una rotación a una configuración racional \(K\) consiste en
+Aplicar una rotación a una configuración modular estructural \(K\) consiste en
 reemplazar cada par \((o_i, u_i)\) por
 
 \[
@@ -2751,14 +2751,14 @@ posiciones en el recorrido. Por tanto, el número de cruces se preserva:
 racional hacia forma
 normal}}{Teorema T5 --- Reductibilidad racional hacia forma normal}}\label{teorema-t5-reductibilidad-racional-hacia-forma-normal}
 
-Sea \(K\) una configuración racional de nudo con \(n\) cruces.\\
-Entonces existe una configuración racional \(\mathrm{FN}(K)\) tal que:
+Sea \(K\) una configuración modular estructural de nudo con \(n\) cruces.\\
+Entonces existe una configuración modular estructural \(\mathrm{FN}(K)\) tal que:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
   (\textbf{Irreductibilidad})\\
-  \(\mathrm{FN}(K)\) no admite aplicación alguna de movidas racionales
+  \(\mathrm{FN}(K)\) no admite aplicación alguna de movidas modulares estructurales
   \(R1\) ni \(R2\) que \textbf{disminuyan} el número de cruces.
 \item
   (\textbf{Equivalencia por Reidemeister racional})\\
@@ -2768,7 +2768,7 @@ Entonces existe una configuración racional \(\mathrm{FN}(K)\) tal que:
   \]
 \item
   (\textbf{Canonicidad léxica})\\
-  Si \(K'\) es otra configuración racional tal que \(K'\sim K\) y \(K'\)
+  Si \(K'\) es otra configuración modular estructural tal que \(K'\sim K\) y \(K'\)
   es irreductible (en el sentido del punto 1), entonces \[
   \mathrm{FN}(K') = \mathrm{FN}(K),
   \] es decir, \(\mathrm{FN}(K)\) es la \textbf{representante canónica
@@ -2783,7 +2783,7 @@ previas}}{Definiciones previas}}\label{definiciones-previas}
 \def\labelenumi{\arabic{enumi}.}
 \item
   \textbf{Grado de una configuración.}\\
-  Para una configuración racional \(K\) definimos su grado como \[
+  Para una configuración modular estructural \(K\) definimos su grado como \[
   \deg(K) := n,
   \] donde \(n\) es el número de cruces.
 \item
@@ -2795,7 +2795,7 @@ previas}}{Definiciones previas}}\label{definiciones-previas}
   \]
 \item
   \textbf{Configuración irreductible.}\\
-  Una configuración racional \(K\) es \textbf{irreductible} si no existe
+  Una configuración modular estructural \(K\) es \textbf{irreductible} si no existe
   ninguna reducción elemental aplicable, es decir, no existen cruces de
   tipo \(R1\) ni parejas \(R2\) en \(K\) que permitan disminuir
   \(\deg(K)\).
@@ -2865,7 +2865,7 @@ normal
 racional}}{Paso 2: construcción de la forma normal racional}}\label{paso-2-construcciuxf3n-de-la-forma-normal-racional}
 
 A partir de \(K_M\) (irreductible), consideremos ahora únicamente las
-movidas racionales \(R3\) y las rotaciones del recorrido.
+movidas modulares estructurales \(R3\) y las rotaciones del recorrido.
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -2883,13 +2883,13 @@ movidas racionales \(R3\) y las rotaciones del recorrido.
   \item
     el conjunto \(\mathbb{Z}_{2n} = \{1,\dots,2n\}\) es finito,
   \item
-    una configuración racional es una partición de \(\{1,\dots,2n\}\) en
+    una configuración modular estructural es una partición de \(\{1,\dots,2n\}\) en
     \(n\) pares ordenados (over/under) que cubren exactamente todos los
     índices.
   \end{itemize}
 
   Por tanto, hay sólo un número finito (aunque grande) de posibles
-  configuraciones racionales de grado \(n\).
+  configuraciones modulares estructurales de grado \(n\).
 \item
   La clase de equivalencia de \(K_M\) bajo \(R3\) y rotaciones es un
   subconjunto de ese conjunto finito; por tanto, tiene también un número
@@ -2900,9 +2900,9 @@ En una clase finita de configuraciones, el orden léxico sobre los \(n\)
 pares \((o_i, u_i)\) induce siempre un \textbf{mínimo} bien definido.\\
 Definimos entonces \[
 \mathrm{FN}(K) := \mathrm{LexMin}(K_M),
-\] es decir, la configuración racional dentro de la clase de
+\] es decir, la configuración modular estructural dentro de la clase de
 equivalencia de \(K_M\) (bajo \(R3\) y rotaciones) que tiene la lista de
-pares racionales léxicamente mínima.
+pares ordenados léxicamente mínima.
 
 Por construcción:
 
@@ -2931,7 +2931,7 @@ Paso 1.
 \paragraph{\texorpdfstring{\textbf{Paso 3: unicidad de la forma
 normal}}{Paso 3: unicidad de la forma normal}}\label{paso-3-unicidad-de-la-forma-normal}
 
-Sea ahora \(K'\) una configuración racional tal que:
+Sea ahora \(K'\) una configuración modular estructural tal que:
 
 \begin{itemize}
 \tightlist
@@ -2977,7 +2977,7 @@ Recordemos la definición (introducida en el Teorema T4):
 \tightlist
 \item
   Sea \(\mathrm{FN}(K)\) la forma normal racional irreductible de una
-  configuración racional \(K\).
+  configuración modular estructural \(K\).
 \item
   Definimos \[
   I^\ast(K) := I(\mathrm{FN}(K)),
@@ -2992,7 +2992,7 @@ evaluados \textbf{después} de reducir \(K\) a su forma normal racional.
 \paragraph{\texorpdfstring{\textbf{Enunciado}}{Enunciado}}\label{enunciado}
 
 Sea \(\sim\) la relación de equivalencia isotópica generada por las
-movidas racionales de Reidemeister \(R1, R2, R3\) y rotaciones.\\
+movidas modulares estructurales de Reidemeister \(R1, R2, R3\) y rotaciones.\\
 Entonces:
 
 \begin{enumerate}
@@ -3009,7 +3009,7 @@ Entonces:
   \qquad
   F^\ast : \mathcal{K}_{\mathrm{rat}}/\!\sim \;\longrightarrow\; \mathbb{Q},
   \] están \textbf{bien definidas} sobre el conjunto de clases de
-  isotopía de nudos racionales, y por tanto \(I^\ast\) y \(F^\ast\) son
+  isotopía de nudos modulares estructurales, y por tanto \(I^\ast\) y \(F^\ast\) son
   \textbf{invariantes del nudo} (no del diagrama).
 \end{enumerate}
 
@@ -3114,7 +3114,7 @@ imparidad (Sección 8). 3. Conectar con la teoría de grupos y simetría
 \subsection{\texorpdfstring{\textbf{Definición D8 --- Subgrupo del
 Nudo}}{Definición D8 --- Subgrupo del Nudo}}\label{definiciuxf3n-d8-subgrupo-del-nudo}
 
-Sea \(K\) una configuración racional con \(n\) cruces. El conjunto de
+Sea \(K\) una configuración modular estructural con \(n\) cruces. El conjunto de
 posiciones visitadas al recorrer el nudo forma un \textbf{subgrupo
 cíclico} del grupo aditivo \((\mathbb{Z}_{2n}, \oplus)\).
 
@@ -3388,7 +3388,7 @@ fijo, ideal para bases de datos.
 \subsubsection{\texorpdfstring{\textbf{Ejemplo 7.1 --- Firma del Nudo
 Figura-8}}{Ejemplo 7.1 --- Firma del Nudo Figura-8}}\label{ejemplo-7.1-firma-del-nudo-figura-8}
 
-Consideremos el nudo figura-8 (\(4_1\)) con configuración racional: \[
+Consideremos el nudo figura-8 (\(4_1\)) con configuración modular estructural: \[
 P(4_1) = \{(1, 6),\, (7, 2),\, (3, 8),\, (5, 4)\}.
 \]
 
@@ -3425,7 +3425,7 @@ distintos.
 Secuencia
 Modular}}{Teorema T10 --- Completitud de la Secuencia Modular}}\label{teorema-t10-completitud-de-la-secuencia-modular}
 
-Sean \(K_i\) y \(K_j\) dos configuraciones racionales de nudos.
+Sean \(K_i\) y \(K_j\) dos configuraciones modulares estructurales de nudos.
 Entonces:
 
 \[
@@ -3451,7 +3451,7 @@ representan el mismo nudo bajo isotopía.
 
 \textbf{Paso 1: Existencia de secuencia de movidas.}\\
 Por el Axioma A4, la equivalencia isotópica \(K_i \sim K_j\) está
-generada por las movidas de Reidemeister racionales (\(R1, R2, R3\)) y
+generada por las movidas de Reidemeister modulares estructurales (\(R1, R2, R3\)) y
 las rotaciones \(\rho_k\).
 
 Por tanto, existe una secuencia finita de transformaciones: \[
@@ -3662,10 +3662,10 @@ T8/T9}}{8.0.2. Universo de Aplicabilidad de T8/T9}}\label{universo-de-aplicabili
 
 Los Teoremas T8 y T9 que siguen aplican específicamente a:
 
-✓ \textbf{Nudos racionales con diagramas alternantes} (incluye todos los
+✓ \textbf{Nudos modulares estructurales con diagramas alternantes} (incluye todos los
 2-bridge)\\
 ✓ \textbf{Nudos toroidales} \(T(p,q)\)\\
-✓ \textbf{Configuraciones racionales verificadas computacionalmente}
+✓ \textbf{Configuraciones modulares estructurales verificadas computacionalmente}
 (tabla Rolfsen hasta 8 cruces)
 
 ⚠ \textbf{NO necesariamente aplican a:} - Nudos generales no alternantes
@@ -3703,12 +3703,12 @@ Imparidad (Nudos Alternantes y
 2-Puente)}}{Teorema T8 --- Barrera de la Imparidad (Nudos Alternantes y 2-Puente)}}\label{teorema-t8-barrera-de-la-imparidad-nudos-alternantes-y-2-puente}
 
 \textbf{Enunciado.}\\
-Para \textbf{nudos racionales alternantes} (incluyendo todos los nudos
+Para \textbf{nudos modulares estructurales alternantes} (incluyendo todos los nudos
 2-puente) con \(n\) cruces, la anfiq uiralidad requiere que \(n\) sea
 \textbf{par}.
 
 Formalmente: Sea \(K\) un nudo anfiqueiral perteneciente a la clase de:
-- Nudos racionales alternantes, o - Nudos 2-puente (rational knots
+- Nudos modulares estructurales alternantes, o - Nudos 2-puente (rational knots
 clásic os de Conway)
 
 Entonces \(n\) es par.
@@ -3721,7 +3721,7 @@ Todos los nudos de estas clases con \(n\) impar son necesariamente
 Este teorema \textbf{NO} afirma que todos los nudos (en sentido general)
 con \(n\) impar sean quirales. Como contrademos en la literatura
 (Stoimenow, 2007; arXiv:0704.1941), existen nudos anfiquirales con 15,
-17, 19 cruces. Nuestro resultado es específico para nudos racionales
+17, 19 cruces. Nuestro resultado es específico para nudos modulares estructurales
 alternantes y 2-bridge.
 
 \subsubsection{\texorpdfstring{\textbf{Demostración}}{Demostración}}\label{demostraciuxf3n-8}
@@ -3736,7 +3736,7 @@ posiciones que invierte los cruces: \[
 \]
 
 \textbf{Paso 1: Involución sin puntos fijos (justificación).}\\
-Para nudos racionales \textbf{alternantes} y nudos \textbf{2-puente}, la
+Para nudos modulares estructurales \textbf{alternantes} y nudos \textbf{2-puente}, la
 simetría especular \(K \cong K^\ast\) induce una involución
 \(\phi: \mathbb{Z}_{2n} \to \mathbb{Z}_{2n}\) que intercambia posiciones
 over/under: \[
@@ -3837,7 +3837,7 @@ Anfiquirales (Nudos Alternantes y
 
 \textbf{Enunciado.}\\
 Si \(K\) es un nudo anfiqueiral perteneciente a la clase de: - Nudos
-racionales alternantes, o\\
+modulares estructurales alternantes, o\\
 - Nudos 2-puente (rational knots clásicos)
 
 Entonces el número de cruces \(n\) es \textbf{par}.
@@ -4189,7 +4189,7 @@ Simetría}}{11. Teoría de Grupos y Simetría}}\label{teoruxeda-de-grupos-y-sime
 La estructura de simetría de un nudo puede formalizarse mediante la
 \textbf{teoría de grupos}. En esta sección introducimos el concepto de
 \textbf{grupo de simetría del nudo} y demostramos cómo el grupo diédrico
-actúa naturalmente sobre la configuración racional, proporcionando un
+actúa naturalmente sobre la configuración modular estructural, proporcionando un
 puente entre la combinatoria discreta y la geometría continua.
 
 \subsection{\texorpdfstring{\textbf{Definición D17 --- Grupo de Simetría
@@ -4404,7 +4404,7 @@ coeficientes del polinomio de Alexander \(\Delta_K(t)\):
 \]
 
 \textbf{Justificación heurística:}\\
-1. Para nudos racionales, \(\Delta_K(t)\) se puede calcular directamente
+1. Para nudos modulares estructurales, \(\Delta_K(t)\) se puede calcular directamente
 desde la fracción continua que representa el nudo. 2. Esta
 representación está completamente determinada por el conjunto de pares
 ordenados \(P(K)\). 3. Dado que \(\sigma(K) = \mathrm{hash}(S(K))\) y
@@ -4417,7 +4417,7 @@ En las tablas computacionales de las familias 7 y 8-cruces, se observa
 que nudos con la misma \(\sigma(K)\) siempre tienen el mismo
 \(\Delta_K(t)\), sugiriendo que \(\sigma(K)\) captura información
 suficiente para determinar el polinomio de Alexander en nudos
-racionales.
+modulares estructurales.
 
 \textbf{Nota computacional:}\\
 Los cálculos detallados verificando esta conjetura para las familias 3-8
@@ -4425,7 +4425,7 @@ cruces han sido implementados en Python 3.11 utilizando SymPy para
 cómputo simbólico del polinomio de Alexander. Los resultados completos
 están disponibles en la implementación computacional del proyecto, donde
 se confirma consistencia perfecta (0 contraejemplos en 50+ nudos
-racionales verificados).
+modulares estructurales verificados).
 
 \subsubsection{\texorpdfstring{\textbf{Trabajo
 Futuro}}{Trabajo Futuro}}\label{trabajo-futuro}
@@ -4602,7 +4602,7 @@ Los resultados experimentales reportados en las Tablas 7.1 y 7.2 (firmas
 modulares de familias 7 y 8-cruces) fueron obtenidos mediante
 implementaciones en Python 3.11 utilizando las bibliotecas NumPy 1.24,
 SymPy 1.12, y hashlib (estándar). Los datos de las configuraciones
-racionales de nudos provienen de la tabla de Rolfsen (Rolfsen, 1976) y
+modulares estructurales de nudos provienen de la tabla de Rolfsen (Rolfsen, 1976) y
 bases de datos públicas de teoría de nudos.
 
 \textbf{Recursos en línea consultados:} - KnotInfo: Tabla de nudos y
