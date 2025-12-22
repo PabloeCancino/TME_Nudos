@@ -263,7 +263,7 @@ def adjustDelta (δ : ℤ) : ℤ :=
     Config: ((1,4), (5,2), (3,0))
     DME = (4-1, 2-5, 0-3) = (3, -3, -3)
     ```
-    -/
+-/
 noncomputable def dme (K : K3Config) : List ℤ :=
   K.pairsList.map (fun p => adjustDelta (pairDelta p))
 
@@ -391,7 +391,7 @@ noncomputable def gap (K : K3Config) : ℕ :=
     Trébol derecho:  DME = (3,-3,-3)  → Writhe = -3
     Trébol izquierdo: DME = (-3,3,3)  → Writhe = +3
     ```
-    -/
+-/
 noncomputable def writhe (K : K3Config) : ℤ :=
   K.dme.foldl (· + ·) 0
 
@@ -974,14 +974,10 @@ theorem nonzero_writhe_implies_chiral (K : K3Config) (h : K.writhe ≠ 0) :
   K ≠ K.mirror := by
   intro heq
   -- Si K = K.mirror, entonces K.writhe = K.mirror.writhe
-  have : K.writhe = K.mirror.writhe := by rw [heq]
+  have hw : K.writhe = K.mirror.writhe := congrArg writhe heq
   -- Pero por writhe_mirror, K.mirror.writhe = -K.writhe
-  rw [writhe_mirror] at this
-  -- Entonces K.writhe = -K.writhe
-  -- Lo que implica 2 * K.writhe = 0
-  have : K.writhe + K.writhe = 0 := by omega
-  have : 2 * K.writhe = 0 := by omega
-  -- Si writhe ≠ 0, esto es una contradicción
+  rw [writhe_mirror] at hw
+  -- Entonces K.writhe = -K.writhe, lo que implica 2 * K.writhe = 0
   omega
 
 /-! ## Resumen de la Jerarquía Conceptual -/
