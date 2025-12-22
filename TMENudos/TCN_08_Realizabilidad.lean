@@ -6,6 +6,7 @@
 import TMENudos.TCN_05_Orbitas
 import TMENudos.TCN_06_Representantes
 import TMENudos.TCN_07_Clasificacion
+import TMENudos.TCN_AUX_Teoremas_Auxiliares_Realizabilidad
 import Mathlib.Data.Finset.Card
 
 /-!
@@ -141,21 +142,12 @@ theorem realizable_orbit_card_eq_four (K : K3Config) :
   cases h with
   | inl h_trefoil =>
     -- K ∈ Orb(trefoil) ⟹ Orb(K) = Orb(trefoil)
-    have : orbit K = orbit trefoilKnot := by
-      ext K'
-      constructor
-      · intro hK'
-        -- Si K' ∈ Orb(K) y K ∈ Orb(trefoil), entonces K' ∈ Orb(trefoil)
-        sorry  -- Requiere transitividad de órbitas
-      · intro hK'
-        -- Si K' ∈ Orb(trefoil) y K ∈ Orb(trefoil), entonces K' ∈ Orb(K)
-        sorry  -- Requiere transitividad de órbitas
+    have : orbit K = orbit trefoilKnot := orbit_eq_of_mem h_trefoil
     rw [this]
     exact orbit_trefoilKnot_card
   | inr h_mirror =>
     -- Caso análogo para mirrorTrefoil
-    have : orbit K = orbit mirrorTrefoil := by
-      sorry  -- Análogo al caso anterior
+    have : orbit K = orbit mirrorTrefoil := orbit_eq_of_mem h_mirror
     rw [this]
     exact orbit_mirrorTrefoil_card
 
@@ -199,16 +191,20 @@ theorem k3_realizability_characterization (K : K3Config) :
         cases h with
         | inl h_trefoil =>
           -- K ∈ Orb(trefoil), y trefoil no tiene R1
-          sorry  -- Usar que trefoil no tiene R1 y R1 se preserva en órbita
+          rw [← hasR1_eq_of_mem_orbit h_trefoil]
+          exact trefoilKnot_no_r1
         | inr h_mirror =>
           -- Análogo para mirror
-          sorry
+          rw [← hasR1_eq_of_mem_orbit h_mirror]
+          exact mirrorTrefoil_no_r1
       · -- ¬hasR2 K
         cases h with
         | inl h_trefoil =>
-          sorry  -- Análogo a R1
+          rw [← hasR2_eq_of_mem_orbit h_trefoil]
+          exact trefoilKnot_no_r2
         | inr h_mirror =>
-          sorry
+          rw [← hasR2_eq_of_mem_orbit h_mirror]
+          exact mirrorTrefoil_no_r2
     · -- K está en una de las dos órbitas (trivial por definición)
       exact h
   · -- (⇐) Si irreducible y en órbita conocida, entonces realizable
@@ -302,12 +298,21 @@ theorem non_realizable_count :
   have h_total : Finset.univ.card = (120 : ℕ) := by
     exact card_k3_config
   have h_real : (Finset.univ.filter isRealizable).card = 8 := by
-    sorry  -- Requiere que filter = realizableConfigs
+    -- filter isRealizable = realizableConfigs
+    have : Finset.univ.filter isRealizable = realizableConfigs := by
+      ext K
+      simp [isRealizable_iff_mem_set]
+    rw [this]
+    exact total_realizable_configs
   have h_partition : Finset.univ =
     (Finset.univ.filter isRealizable) ∪
     (Finset.univ.filter (¬isRealizable ·)) := by
-    sorry  -- Partición por decidibilidad
-  sorry  -- Completar cálculo
+    exact finset_partition_by_decidable Finset.univ isRealizable
+  -- Calcular: 120 - 8 = 112
+  have h_disj := finset_filter_disjoint Finset.univ isRealizable
+  rw [h_partition] at h_total
+  rw [Finset.card_union_of_disjoint h_disj] at h_total
+  omega
 
 /-! ## 5. Criterios Constructivos -/
 
@@ -417,16 +422,23 @@ theorem realizable_preserved_by_D6 (K : K3Config) (g : D6) :
     | inl h_trefoil =>
       left
       -- Si K ∈ Orb(trefoil), entonces g•K ∈ Orb(trefoil)
-      sorry  -- Requiere que órbita es cerrada bajo acción
+      exact mem_orbit_of_smul_mem h_trefoil g
     | inr h_mirror =>
       right
-      sorry  -- Análogo
+      -- Análogo para mirror
+      exact mem_orbit_of_smul_mem h_mirror g
   · intro h
     -- Aplicar g⁻¹ al argumento anterior
-    have : K = g⁻¹ • (g • K) := by
-      sorry  -- Requiere acción de grupo
+    have : K = g⁻¹ • (g • K) := by simp [smul_inv_smul]
     rw [this]
-    sorry  -- Aplicar dirección (⇒)
+    unfold isRealizable at h ⊢
+    cases h with
+    | inl h_trefoil =>
+      left
+      exact mem_orbit_of_smul_mem h_trefoil g⁻¹
+    | inr h_mirror =>
+      right
+      exact mem_orbit_of_smul_mem h_mirror g⁻¹
 
 /-- **COROLARIO 2: Irreducibilidad Implica Realizabilidad o Virtualidad**
 
