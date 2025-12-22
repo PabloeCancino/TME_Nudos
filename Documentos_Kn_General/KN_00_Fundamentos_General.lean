@@ -164,7 +164,7 @@ def rotate (K : KnConfig n) (k : ZMod (2*n)) : KnConfig n where
   card_eq := by
     rw [Finset.card_image_of_injective]
     · exact K.card_eq
-    · intro p₁ p₂ h
+    · intro p₁ p₂ hp₁ hp₂ h
       cases p₁; cases p₂
       simp only [OrderedPair.rotate, mk.injEq] at h
       obtain ⟨h1, h2⟩ := h
@@ -244,7 +244,7 @@ theorem pairs_per_element (n : ℕ) [NeZero n] (i : ZMod (2*n)) :
 theorem total_configs_formula (n : ℕ) [NeZero n] :
     ∃ m : ℕ, m = Nat.factorial (2*n) / Nat.factorial n := by
   use Nat.factorial (2*n) / Nat.factorial n
-
+  
 /-! ## 4. Instancias Decidibles -/
 
 /-- Decidibilidad de pertenencia de par a configuración -/
