@@ -414,8 +414,10 @@ theorem schubert_is_JSJ_special_case (K : Knot) :
       prime_decomposition K = decomp ∧
       True  -- Relación con JSJ simplificada
   := by
-  use prime_decomposition K
-  simp
+use prime_decomposition K
+  constructor
+  · rfl
+  · trivial
 
 /-!
 ## 9. COMPLEJIDAD COMPUTACIONAL
