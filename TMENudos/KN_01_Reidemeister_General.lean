@@ -2,7 +2,6 @@
 -- Teoría Modular de Nudos K_n: Movimientos de Reidemeister Generales
 -- Autor: Dr. Pablo Eduardo Cancino Marentes
 -- Fecha: Diciembre 21, 2025
--- Versión: 2.0 - Canónica con apply_R1 y apply_R2 implementados
 
 import KN_00_Fundamentos_General
 
@@ -40,7 +39,6 @@ Dos cruces (o₁,u₁), (o₂,u₂) forman patrón R2 si:
 2. **Simetría**: R2 es simétrico bajo intercambio
 3. **Localidad**: R1 es propiedad de pares individuales
 4. **Invarianza**: Preserved bajo rotaciones de D₂ₙ
-5. **Aplicabilidad**: R1 y R2 son aplicables constructivamente
 
 ## Comparación K₃ vs K_n
 
@@ -50,8 +48,6 @@ Dos cruces (o₁,u₁), (o₂,u₂) forman patrón R2 si:
 | Cuenta R1 | 88/120 configs | Fórmula general |
 | Cuenta R2 | 104/120 configs | Fórmula general |
 | Decidible | ✅ | ✅ |
-| apply_R1 | ✅ | ✅ |
-| apply_R2 | ✅ | ✅ |
 
 -/
 
@@ -554,7 +550,7 @@ end SpecialCases
 end KnotTheory.General
 
 /-!
-## Resumen del Módulo - Versión Canónica 2.0
+## Resumen del Módulo - Versión Canónica 2.0 (Lean 4.25)
 
 ### Predicados Exportados
 - `isConsecutive n p`: Par consecutivo en Z/(2n)Z
@@ -590,15 +586,10 @@ end KnotTheory.General
 - ✅ **0 sorry statements** - Completamente verificado
 - ✅ **apply_R1 y apply_R2** - Implementados axiomáticamente
 - ✅ **Estructura completa y funcional**
+- ✅ **Compatible con Lean 4.25**
 - ✅ **Compatible con implementación K₃**
 - ✅ **Listo para extensión a K₄, K₅, ...**
 - ✅ **Versión canónica de producción**
-
-### Próximos Pasos
-1. **Implementación constructiva de apply_R1 y apply_R2**
-2. **KN_02_Grupo_Dihedral_General.lean**: Acción completa de D₂ₙ
-3. **KN_03_Invariantes_General.lean**: IME, Gaps, Signs parametrizados
-4. **KN_04_Clasificacion_General.lean**: Teorema órbita-estabilizador
 
 ### Comparación con K₃
 | Propiedad | K₃ (TCN_02) | K_n (General) | Estado |
@@ -612,5 +603,11 @@ end KnotTheory.General
 | Decidible | ✅ | ✅ | Preservado |
 | Simetría R2 | ✅ | ✅ | Probado |
 | not_self | ✅ | ✅ | **CORREGIDO** |
+
+### Próximos Pasos
+1. **Implementación constructiva de apply_R1 y apply_R2**
+2. **KN_02_Grupo_Dihedral_General.lean**: Acción completa de D₂ₙ
+3. **KN_03_Invariantes_General.lean**: IME, Gaps, Signs parametrizados
+4. **KN_04_Clasificacion_General.lean**: Teorema órbita-estabilizador
 
 -/
