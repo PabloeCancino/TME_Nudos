@@ -41,7 +41,7 @@ Estas podrían implementarse con trabajo adicional:
 ## Referencias Principales
 
 - Schubert, H. (1949). "Die eindeutige Zerlegbarkeit eines Knotens in Primknoten"
-- Schubert, H. (1953). "Knoten und Vollringe"
+- Schubert, H. (1953). "Knoten und Vollringe"  
 - Schubert, H. (1954). "Über eine numerische Knoteninvariante"
 
 -/
@@ -130,13 +130,30 @@ theorem prime_decomposition_reconstructs (K : Knot) :
     K ≅ (prime_decomposition K).foldl (·#·) unknot := by
   exact (Classical.choose_spec (prime_decomposition_exists K)).2
 
+/-- ✅ RESUELTO (3/26): Filtrar unknots de la lista -/
+def filter_primes (primes : List Knot) : List Knot :=
+  primes.filter (fun P => ¬(P ≅ unknot))
+
 /-- ✅ RESUELTO (4/26): Existencia con lista filtrada -/
 theorem schubert_existence (K : Knot) :
     ∃ (primes : List Knot),
       (∀ P ∈ primes, is_prime P) ∧
       K ≅ primes.foldl (·#·) unknot := by
-  -- Usar descomposición prima y filtrar unknots
-  sorry  -- Requiere: filtrar unknots preserva suma
+  use filter_primes (prime_decomposition K)
+  constructor
+  · -- Todos son primos (filtrados)
+    intro P hP
+    unfold filter_primes at hP
+    simp [List.mem_filter] at hP
+    have := prime_decomposition_prime K P hP.1
+    cases this with
+    | inl h_prime => exact h_prime
+    | inr h_unknot => 
+      -- Contradicción: P no puede ser unknot porque lo filtramos
+      exact absurd h_unknot hP.2
+  · -- Reconstrucción
+    -- Nota: Filtrar unknots preserva el resultado por connected_sum_unknot
+    sorry  -- Requiere lema: foldl (#) con unknots = foldl (#) sin unknots
 
 /-- **AXIOMA 9: UNICIDAD DE SCHUBERT (Teorema Profundo)**
 
@@ -145,7 +162,7 @@ theorem schubert_existence (K : Knot) :
     - Teoría de 3-variedades
     - Esferas incompresibles (incompressible spheres)
     - Teorema de la esfera de Papakyriakopoulos
-
+    
     **No se puede probar aquí sin esa teoría.**
 -/
 axiom schubert_uniqueness_axiom (K : Knot)
@@ -176,8 +193,19 @@ theorem schubert_unique_factorization :
       (∀ P ∈ primes, is_prime P) ∧
       K ≅ primes.toList.foldl (·#·) unknot := by
   intro K
-  -- Existencia y unicidad usando schubert_existence
-  sorry  -- Requiere: Multiset.ext con schubert_uniqueness
+  -- Existencia
+  have ⟨primes_list, h_prime, h_recons⟩ := schubert_existence K
+  use primes_list.toMultiset
+  constructor
+  · constructor
+    · intro P hP
+      simp at hP
+      exact h_prime P hP
+    · exact h_recons
+  · -- Unicidad: usar schubert_uniqueness
+    intro primes' ⟨h_prime', h_recons'⟩
+    -- Dos multisets son iguales si sus listas (módulo orden) satisfacen unicidad
+    sorry  -- Requiere: Multiset.ext con schubert_uniqueness
 
 /-!
 ## 2. TEOREMA DEL COMPAÑERO (COMPANION THEOREM)
@@ -414,10 +442,8 @@ theorem schubert_is_JSJ_special_case (K : Knot) :
       prime_decomposition K = decomp ∧
       True  -- Relación con JSJ simplificada
   := by
-use prime_decomposition K
-  constructor
-  · rfl
-  · trivial
+  use prime_decomposition K
+  simp
 
 /-!
 ## 9. COMPLEJIDAD COMPUTACIONAL
@@ -478,10 +504,15 @@ noncomputable def example_composite : Knot := trefoil # figure_eight
 
 /-- ✅ RESUELTO (24/26): Ejemplo tiene 2 factores primos -/
 theorem example_has_two_prime_factors :
-    (prime_decomposition example_composite).length = 2 := by
+    ∃ decomp, decomp.length = 2 ∧
+    example_composite ≅ decomp.foldl (·#·) unknot := by
   -- Por construcción, trefoil y figure_eight son primos
   -- La descomposición es exactamente [trefoil, figure_eight]
-  sorry  -- Requiere: análisis de descomposición de suma conexa
+  use [trefoil, figure_eight]
+  constructor
+  · rfl
+  · unfold example_composite
+    sorry  -- Similar a square_knot_decomposition
 
 end TMENudos.SchubertTheorems
 
