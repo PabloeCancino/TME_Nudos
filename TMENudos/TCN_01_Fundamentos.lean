@@ -292,7 +292,7 @@ noncomputable def dme (K : K3Config) : List ℤ :=
     Trébol derecho:  DME = (3,-3,-3)  →  IME = (3,3,3)
     Trébol izquierdo: DME = (-3,3,3)  →  IME = (3,3,3)  [mismo IME]
     ```
-    -/
+-/
 noncomputable def ime (K : K3Config) : List ℕ :=
   K.dme.map Int.natAbs
 
@@ -336,7 +336,7 @@ lemma intSign_mul_neg_one (x : ℤ) : intSign (x * (-1)) = intSign x * (-1) := b
     El vector de signos determina la diferencia entre nudos quirales:
     - Nudos espejos tienen mismo IME pero σ opuesto
     - Permite reconstruir DME desde IME y σ
-    -/
+-/
 noncomputable def chiralSigns (K : K3Config) : List ℤ :=
   K.dme.map intSign
 
@@ -361,7 +361,7 @@ noncomputable def chiralSigns (K : K3Config) : List ℤ :=
     ```lean
     Trébol: IME = (3,3,3) → Gap = 9 (máximo para K₃)
     ```
-    -/
+-/
 noncomputable def gap (K : K3Config) : ℕ :=
   K.ime.foldl (· + ·) 0
 
@@ -577,7 +577,7 @@ def mirror (K : K3Config) : K3Config :=
     - Si Writhe = 0, requiere análisis más profundo
 
     TODO: Implementación completa verificando si ∃σ. DME_σ = -DME
-    -/
+-/
 noncomputable def isChiral (K : K3Config) : Bool :=
   K.writhe ≠ 0
 
