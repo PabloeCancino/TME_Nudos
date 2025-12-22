@@ -47,6 +47,12 @@ theorem reverse_reverse (p : OrderedPair n) : p.reverse.reverse = p := by
   cases p
   rfl
 
+/-- Teorema de extensionalidad para OrderedPair -/
+@[ext]
+theorem ext {p q : OrderedPair n} (h1 : p.fst = q.fst) (h2 : p.snd = q.snd) : p = q := by
+  cases p; cases q
+  simp_all
+
 /-- Rotación de un par ordenado -/
 def rotate (p : OrderedPair n) (k : ZMod (2*n)) : OrderedPair n :=
   ⟨p.fst + k, p.snd + k, by
@@ -59,7 +65,6 @@ def rotate (p : OrderedPair n) (k : ZMod (2*n)) : OrderedPair n :=
 theorem ratio_rotate (p : OrderedPair n) (k : ZMod (2*n)) :
     (p.rotate k).snd - (p.rotate k).fst = p.snd - p.fst := by
   simp [rotate]
-  ring
 
 end OrderedPair
 
@@ -88,9 +93,12 @@ def rotate (K : KnConfig n) (k : ZMod (2*n)) : KnConfig n where
     rw [Finset.card_image_of_injective]
     · exact K.card_eq
     · intro p₁ p₂ h
+      unfold OrderedPair.rotate at h
       cases p₁; cases p₂
-      simp [OrderedPair.rotate] at h
-      ext <;> omega
+      simp at h
+      ext
+      · exact add_left_cancel h.1
+      · exact add_left_cancel h.2
   coverage := by
     intro i
     obtain ⟨p, hp, hor⟩ := K.coverage (i - k)
@@ -108,9 +116,11 @@ def reflect (K : KnConfig n) : KnConfig n where
     rw [Finset.card_image_of_injective]
     · exact K.card_eq
     · intro p₁ p₂ h
-      cases p₁; cases p₂
-      simp [OrderedPair.reverse] at h
-      ext <;> tauto
+      ext
+      · simp [OrderedPair.reverse] at h
+        exact h.2
+      · simp [OrderedPair.reverse] at h
+        exact h.1
   coverage := by
     intro i
     obtain ⟨p, hp, hor⟩ := K.coverage i
