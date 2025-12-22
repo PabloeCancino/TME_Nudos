@@ -1,43 +1,64 @@
 % Options for packages loaded elsewhere
 \PassOptionsToPackage{unicode}{hyperref}
 \PassOptionsToPackage{hyphens}{url}
+
+% Verificar el motor de compilación
+\RequirePackage{iftex}
+
+\ifPDFTeX
+\PackageError{xelatex-required}{%
+	Este documento requiere XeLaTeX o LuaLaTeX%
+}{%
+	Este documento usa características Unicode que solo están\MessageBreak
+	disponibles en XeLaTeX o LuaLaTeX.\MessageBreak\MessageBreak
+	Por favor compila usando:\MessageBreak
+	\space\space xelatex tu-documento.tex\MessageBreak
+	o\MessageBreak
+	\space\space lualatex tu-documento.tex\MessageBreak\MessageBreak
+	No uses pdflatex, latex, dvips, etc.
+}
+\batchmode
+\stop
+\fi
+
 \documentclass[
-  11pt,
+11pt,
 ]{article}
+
 \usepackage{xcolor}
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{fontspec}
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
-\usepackage{iftex}
-\ifPDFTeX
-  \usepackage[T1]{fontenc}
-  \usepackage[utf8]{inputenc}
-  \usepackage{textcomp} % provide euro and other symbols
-\else % if luatex or xetex
-  \usepackage{unicode-math} % this also loads fontspec
-  \defaultfontfeatures{Scale=MatchLowercase}
-  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
-\fi
+
+% Configuración específica para XeLaTeX/LuaLaTeX
+\usepackage{unicode-math} % this also loads fontspec
+\defaultfontfeatures{Scale=MatchLowercase}
+\defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+
 \usepackage{lmodern}
-\ifPDFTeX\else
-  % xetex/luatex font selection
-\fi
+
+% Configuración de fuentes para Unicode
+% Puedes especificar fuentes aquí si lo deseas:
+% \setmainfont{Linux Libertine O}
+% \setsansfont{Linux Biolinum O}
+% \setmonofont{Fira Code}
+
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \IfFileExists{microtype.sty}{% use microtype if available
-  \usepackage[]{microtype}
-  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+	\usepackage[]{microtype}
+	\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
 \makeatletter
 \@ifundefined{KOMAClassName}{% if non-KOMA class
-  \IfFileExists{parskip.sty}{%
-    \usepackage{parskip}
-  }{% else
-    \setlength{\parindent}{0pt}
-    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+	\IfFileExists{parskip.sty}{%
+		\usepackage{parskip}
+	}{% else
+		\setlength{\parindent}{0pt}
+		\setlength{\parskip}{6pt plus 2pt minus 1pt}}
 }{% if KOMA class
-  \KOMAoptions{parskip=half}}
+	\KOMAoptions{parskip=half}}
 \makeatother
 \usepackage{color}
 \usepackage{fancyvrb}
@@ -77,24 +98,24 @@
 \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{#1}}
 \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\ifLuaTeX
-\usepackage[bidi=basic,shorthands=off]{babel}
-\else
+
+% Configuración de babel para XeLaTeX/LuaLaTeX
 \usepackage[bidi=default,shorthands=off]{babel}
-\fi
+
 \ifLuaTeX
-  \usepackage{selnolig} % disable illegal ligatures
+\usepackage{selnolig} % disable illegal ligatures
 \fi
+
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+	\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
-  pdflang={spanish},
-  hidelinks,
-  pdfcreator={LaTeX via pandoc}}
+	pdflang={spanish},
+	hidelinks,
+	pdfcreator={LaTeX via pandoc}}
 
 \author{}
 \date{}
