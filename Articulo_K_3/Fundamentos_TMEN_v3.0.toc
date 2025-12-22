@@ -1,6 +1,6 @@
 \babel@toc {nil}{}\relax 
 \contentsline {section}{\textbf {Fundamentos Axiomáticos de la Teoría Modular Estructural de Nudos}}{4}{section*.2}%
-\contentsline {subsubsection}{Una formalización algebraica basada en pares ordenados, estructuras modulares \(\symbb {Z}_{2n}\) y descriptores DME/IME}{4}{section*.3}%
+\contentsline {subsubsection}{Una formalización algebraica basada en pares ordenados, estructuras modulares \(\mathbb {Z}_{2n}\) y descriptores DME/IME}{4}{section*.3}%
 \contentsline {subsection}{\textbf {1. Introducción}}{4}{section*.4}%
 \contentsline {subsection}{\textbf {1.1. Propósito del sistema axiomático}}{4}{section*.5}%
 \contentsline {subsection}{\textbf {1.2. Símbolos primitivos}}{5}{section*.6}%
@@ -142,5 +142,5 @@
 \contentsline {subsubsection}{\textbf {Conjetura 12.1 (Relación con Firma Modular)}}{61}{section*.142}%
 \contentsline {subsubsection}{\textbf {Trabajo Futuro}}{62}{section*.143}%
 \contentsline {subsection}{\textbf {Epílogo: Síntesis y Perspectivas}}{62}{section*.144}%
-\contentsline {section}{\textbf {Referencias}}{63}{section*.145}%
+\contentsline {section}{\textbf {Referencias}}{62}{section*.145}%
 \contentsline {subsection}{\textbf {Documentos Internos del Proyecto}}{64}{section*.146}%
