@@ -296,6 +296,31 @@ noncomputable def dme (K : K3Config) : List ℤ :=
 noncomputable def ime (K : K3Config) : List ℕ :=
   K.dme.map Int.natAbs
 
+/-- Función de signo para enteros.
+
+    **Definición:**
+    ```
+    sign(x) = { +1  si x > 0
+              {  0  si x = 0
+              { -1  si x < 0
+    ```
+
+    Esta función es necesaria porque `Int.sign` no está disponible
+    o no funciona correctamente en Mathlib para Lean 4.26.0.
+-/
+def intSign (x : ℤ) : ℤ :=
+  if x > 0 then 1 else if x < 0 then -1 else 0
+
+/-- El signo de -x es el opuesto del signo de x -/
+lemma intSign_neg (x : ℤ) : intSign (-x) = -intSign x := by
+  unfold intSign
+  split_ifs <;> omega
+
+/-- El signo de x*(-1) es el signo de x multiplicado por -1 -/
+lemma intSign_mul_neg_one (x : ℤ) : intSign (x * (-1)) = intSign x * (-1) := by
+  unfold intSign
+  split_ifs <;> omega
+
 /-- Vector de signos quirales: **σ = sgn(DME)**.
 
     σᵢ = +1 si δᵢ > 0, σᵢ = -1 si δᵢ < 0
@@ -313,7 +338,7 @@ noncomputable def ime (K : K3Config) : List ℕ :=
     - Permite reconstruir DME desde IME y σ
     -/
 noncomputable def chiralSigns (K : K3Config) : List ℤ :=
-  K.dme.map Int.sign
+  K.dme.map intSign
 
 /-- Gap Total: Complejidad estructural acumulada.
 
@@ -433,7 +458,7 @@ def fromNotation (cn : CanonicalNotation) : Option K3Config :=
 
 /-! ## Reflexión y Quiralidad -/
 
-/-- Reflexión especular (imagen en espejo) de una configuración.
+/-! Reflexión especular (imagen en espejo) de una configuración.
 
     **Operación: K ↦ K̄**
 
@@ -907,8 +932,9 @@ theorem gap_mirror (K : K3Config) :
     Writhe(K̄) = -Writhe(K) -/
 theorem writhe_mirror (K : K3Config) :
   K.mirror.writhe = -K.writhe := by
-  unfold writhe chiralSigns
+  unfold writhe
   rw [dme_mirror]
+  exact foldl_sum_neg K.dme
   -- Necesitamos: suma de (dme.map (· * -1)).map sgn = -(suma de dme.map sgn)
   rw [List.map_map]
   -- Lema: suma de lista negada
@@ -940,17 +966,15 @@ theorem writhe_mirror (K : K3Config) :
             rw [← ih' (x + h')]
             ring
   -- Aplicar para chiralSigns
-  have : (K.dme.map (· * (-1))).map (fun x => if x > 0 then 1 else if x < 0 then -1 else 0) =
-         (K.dme.map (fun x => if x > 0 then 1 else if x < 0 then -1 else 0)).map (· * (-1)) := by
+  have : (K.dme.map (· * (-1))).map intSign =
+         (K.dme.map intSign).map (· * (-1)) := by
     apply List.ext_get
     · simp [List.length_map]
     intro i h1 h2
     simp only [List.get_map]
-    have : K.dme[i] = K.dme[i] := rfl
-    cases hd : K.dme[i] <;> simp
-    split_ifs with h3 h4 h5 h6 <;> omega
+    exact intSign_mul_neg_one (K.dme[i])
   rw [this]
-  exact sum_neg (K.dme.map fun x => if x > 0 then 1 else if x < 0 then -1 else 0)
+  exact sum_neg (K.dme.map intSign)
 
 /-- **TEOREMA**: La reflexión es involutiva.
 
