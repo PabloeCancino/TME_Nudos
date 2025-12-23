@@ -724,7 +724,7 @@ theorem gap_from_ime (K : K3Config) :
   K.gap = K.ime.foldl (· + ·) 0 := by
   rfl
 
-/-- Lema auxiliar para probar que un delta ajustado de valores distintos en ZMod 6
+/-- Lema auxiliar para probar que un delta ajustado de valores distintos en ZMod 6 
     tiene valor absoluto ≥ 1 -/
 lemma adjusted_delta_natAbs_ge_one (a b : ZMod 6) (hab : a ≠ b) :
     Int.natAbs (adjustDelta ((b.val : ℤ) - (a.val : ℤ))) ≥ 1 := by
