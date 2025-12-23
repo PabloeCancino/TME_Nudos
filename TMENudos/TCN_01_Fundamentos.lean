@@ -5,6 +5,8 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Tactic
 
+set_option linter.unusedSimpArgs false
+
 /-!
 # Bloque 1: Fundamentos Combinatorios de Nudos K₃
 
