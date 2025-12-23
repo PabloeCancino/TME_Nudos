@@ -241,7 +241,7 @@ def adjustDelta (δ : ℤ) : ℤ :=
   else if δ < -3 then δ + 6
   else δ
 
-/-- Descriptor Modular Estructural (DME): Vector de desplazamientos direccionales.
+/-! Descriptor Modular Estructural (DME): Vector de desplazamientos direccionales.
 
     **DME = (δ₁, δ₂, δ₃)** donde **δᵢ = sᵢ - eᵢ** (aritmética entera, ajustado a [-3, 3])
 
@@ -266,12 +266,13 @@ def adjustDelta (δ : ℤ) : ℤ :=
     DME = (4-1, 2-5, 0-3) = (3, -3, -3)
     ```
      -/
+
 noncomputable def dme (K : K3Config) : List ℤ :=
   K.pairsList.map (fun p => adjustDelta (pairDelta p))
 
 /-! ## Invariantes Modulares Derivados -/
 
-/-- Invariante Modular Estructural (IME): Magnitudes sin signos.
+/-! Invariante Modular Estructural (IME): Magnitudes sin signos.
 
     **IME = |DME| = (|δ₁|, |δ₂|, |δ₃|)**
 
@@ -295,10 +296,11 @@ noncomputable def dme (K : K3Config) : List ℤ :=
     Trébol izquierdo: DME = (-3,3,3)  →  IME = (3,3,3)  [mismo IME]
     ```
      -/
+
 noncomputable def ime (K : K3Config) : List ℕ :=
   K.dme.map Int.natAbs
 
-/-- Vector de signos quirales: **σ = sgn(DME)**.
+/-! Vector de signos quirales: **σ = sgn(DME)**.
 
     σᵢ = +1 si δᵢ > 0, σᵢ = -1 si δᵢ < 0
 
@@ -314,10 +316,11 @@ noncomputable def ime (K : K3Config) : List ℕ :=
     - Nudos espejos tienen mismo IME pero σ opuesto
     - Permite reconstruir DME desde IME y σ
      -/
+
 noncomputable def chiralSigns (K : K3Config) : List ℤ :=
   K.dme.map Int.sign
 
-/-- Gap Total: Complejidad estructural acumulada.
+/-! Gap Total: Complejidad estructural acumulada.
 
     **Gap = Σ|δᵢ| = Σ IME_i**
 
@@ -339,12 +342,13 @@ noncomputable def chiralSigns (K : K3Config) : List ℤ :=
     Trébol: IME = (3,3,3) → Gap = 9 (máximo para K₃)
     ```
      -/
+
 noncomputable def gap (K : K3Config) : ℕ :=
   K.ime.foldl (· + ·) 0
 
 /-! ## Writhe (Suma Algebraica) -/
 
-/-- Writhe: Suma algebraica de desplazamientos con signo.
+/-! Writhe: Suma algebraica de desplazamientos con signo.
 
     **Writhe = Σ δᵢ**
 
@@ -369,6 +373,7 @@ noncomputable def gap (K : K3Config) : ℕ :=
     Trébol izquierdo: DME = (-3,3,3)  → Writhe = +3
     ```
      -/
+
 noncomputable def writhe (K : K3Config) : ℤ :=
   K.dme.foldl (· + ·) 0
 
@@ -384,7 +389,7 @@ structure CanonicalNotation where
   entries_length : entries.length = 3
   dme_length : dme.length = 3
 
-/-- Convierte una configuración a su notación canónica (E, DME).
+/-! Convierte una configuración a su notación canónica (E, DME).
 
     Algoritmo:
     1. Normalizar configuración (e₁ = min)
@@ -393,6 +398,7 @@ structure CanonicalNotation where
     4. Ajustar al rango canónico [-3, 3]
 
     Complejidad: O(n) = O(3) = O(1) -/
+
 noncomputable def toNotation (K : K3Config) : CanonicalNotation :=
   let normalized := K.normalize
   let entries := normalized.entriesVector
