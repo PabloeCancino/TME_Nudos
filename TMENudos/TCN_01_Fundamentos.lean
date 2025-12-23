@@ -423,7 +423,7 @@ def fromNotation (cn : CanonicalNotation) : Option K3Config :=
   -- Validación básica
   if ¬validDME cn.dme then none
   else
-    let salidas := reconstructSalidas cn.entries cn.dme
+    let _salidas := reconstructSalidas cn.entries cn.dme
     -- TODO: Construir K3Config desde listas de entradas y salidas
     -- Requiere:
     -- 1. Crear OrderedPair para cada (eᵢ, sᵢ)
@@ -479,7 +479,8 @@ private lemma image_image_involutive {α : Type*} [DecidableEq α]
   simp only [Finset.mem_image]
   constructor
   · intro ⟨y, ⟨z, hz, rfl⟩, hy⟩
-    rw [← hy, hf]
+    rw [hf] at hy
+    rw [← hy]
     exact hz
   · intro hx
     use f x
@@ -642,7 +643,7 @@ lemma foldl_add_ge_aux (l : List ℕ) (m acc : ℕ)
     simp [List.foldl]
   | cons h t ih =>
     simp only [List.foldl, List.length]
-    have hh : h ≥ m := hbound h (List.mem_cons_self h t)
+    have hh : h ≥ m := hbound h List.mem_cons_self
     have ih' : t.foldl (· + ·) (acc + h) ≥ acc + h + t.length * m := by
       apply ih
       intro x hx
@@ -672,7 +673,7 @@ lemma foldl_add_le_aux (l : List ℕ) (m acc : ℕ)
     simp [List.foldl]
   | cons h t ih =>
     simp only [List.foldl, List.length]
-    have hh : h ≤ m := hbound h (List.mem_cons_self h t)
+    have hh : h ≤ m := hbound h List.mem_cons_self
     have ih' : t.foldl (· + ·) (acc + h) ≤ acc + h + t.length * m := by
       apply ih
       intro x hx
