@@ -435,7 +435,7 @@ def fromNotation (cn : CanonicalNotation) : Option K3Config :=
 
 /-! ## Reflexión y Quiralidad -/
 
-/-- Reflexión especular (imagen en espejo) de una configuración.
+/-! Reflexión especular (imagen en espejo) de una configuración.
 
     **Operación: K ↦ K̄**
 
