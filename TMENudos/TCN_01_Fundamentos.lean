@@ -265,7 +265,7 @@ def adjustDelta (δ : ℤ) : ℤ :=
     Config: ((1,4), (5,2), (3,0))
     DME = (4-1, 2-5, 0-3) = (3, -3, -3)
     ```
-    -/
+     -/
 noncomputable def dme (K : K3Config) : List ℤ :=
   K.pairsList.map (fun p => adjustDelta (pairDelta p))
 
@@ -294,7 +294,7 @@ noncomputable def dme (K : K3Config) : List ℤ :=
     Trébol derecho:  DME = (3,-3,-3)  →  IME = (3,3,3)
     Trébol izquierdo: DME = (-3,3,3)  →  IME = (3,3,3)  [mismo IME]
     ```
-    -/
+     -/
 noncomputable def ime (K : K3Config) : List ℕ :=
   K.dme.map Int.natAbs
 
@@ -313,7 +313,7 @@ noncomputable def ime (K : K3Config) : List ℕ :=
     El vector de signos determina la diferencia entre nudos quirales:
     - Nudos espejos tienen mismo IME pero σ opuesto
     - Permite reconstruir DME desde IME y σ
-    -/
+     -/
 noncomputable def chiralSigns (K : K3Config) : List ℤ :=
   K.dme.map Int.sign
 
@@ -338,7 +338,7 @@ noncomputable def chiralSigns (K : K3Config) : List ℤ :=
     ```lean
     Trébol: IME = (3,3,3) → Gap = 9 (máximo para K₃)
     ```
-    -/
+     -/
 noncomputable def gap (K : K3Config) : ℕ :=
   K.ime.foldl (· + ·) 0
 
@@ -368,7 +368,7 @@ noncomputable def gap (K : K3Config) : ℕ :=
     Trébol derecho:  DME = (3,-3,-3)  → Writhe = -3
     Trébol izquierdo: DME = (-3,3,3)  → Writhe = +3
     ```
-    -/
+     -/
 noncomputable def writhe (K : K3Config) : ℤ :=
   K.dme.foldl (· + ·) 0
 
