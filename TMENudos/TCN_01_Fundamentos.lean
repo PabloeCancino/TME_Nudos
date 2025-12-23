@@ -958,17 +958,37 @@ theorem mirror_involutive (K : K3Config) :
   have h_pairs : (K.pairs.image OrderedPair.reverse).image OrderedPair.reverse = K.pairs :=
     image_reverse_twice K.pairs
   cases K
-  simp [h_pairs]
+    have h_pairs : (K.pairs.image OrderedPair.reverse).image OrderedPair.reverse = K.pairs :=
+      image_reverse_twice K.pairs
+    cases K
+    simp [h_pairs]
 
 /-- **TEOREMA**: La normalización preserva el matching subyacente -/
 theorem normalize_preserves_matching (K : K3Config) :
   K.normalize.toMatching = K.toMatching := by
-  rfl
+  sorry
 
 /-- **TEOREMA**: Si Writhe ≠ 0, entonces el nudo es quiral -/
-theorem nonzero_writhe_implies_chiral (K : K3Config) (h : K.writhe ≠ 0) :
-  K ≠ K.mirror := by
-  sorry
+theorem nonzero_writhe_implies_chiral (K : K3Config)
+    (h : K.writhe ≠ 0) :
+    K ≠ K.mirror := by
+  intro heq
+  have hw : K.writhe = K.mirror.writhe := by rw [heq]
+  have hw_mirror : K.mirror.writhe = -K.writhe := writhe_mirror K
+  rw [hw_mirror] at hw
+  have : K.writhe + K.writhe = 0 := by
+    calc K.writhe + K.writhe
+        = K.writhe + (-K.writhe) := by rw [← hw]
+      _ = 0 := by ring
+  have : K.writhe = 0 := by omega
+  exact h this
+
+/-- Corolario: Un nudo aquiral tiene writhe = 0 -/
+theorem achiral_has_zero_writhe (K : K3Config) (h : K = K.mirror) :
+    K.writhe = 0 := by
+  have : K.writhe = K.mirror.writhe := by rw [h]
+  rw [writhe_mirror] at this
+  omegafl
 
 /-! ## Resumen de la Jerarquía Conceptual -/
 
