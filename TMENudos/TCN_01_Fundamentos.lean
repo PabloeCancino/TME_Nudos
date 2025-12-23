@@ -545,7 +545,7 @@ def mirror (K : K3Config) : K3Config :=
    card_image_reverse K,
    partition_reverse K⟩
 
-/-- Test de quiralidad: un nudo es quiral si K ≠ K̄.
+/-! Test de quiralidad: un nudo es quiral si K ≠ K̄.
 
     ## Criterios
 
@@ -562,6 +562,7 @@ def mirror (K : K3Config) : K3Config :=
 
     TODO: Implementación completa verificando si ∃σ. DME_σ = -DME
      -/
+
 noncomputable def isChiral (K : K3Config) : Bool :=
   K.writhe ≠ 0
 
@@ -708,11 +709,12 @@ lemma sum_list_le (l : List ℕ) (n m : ℕ)
 
 /-! ## Teoremas Fundamentales -/
 
-/-- **TEOREMA**: Relación fundamental DME = IME ⊙ σ
+/-! **TEOREMA**: Relación fundamental DME = IME ⊙ σ
 
     Cada componente se descompone como:
     δᵢ = |δᵢ| · sgn(δᵢ)
      -/
+
 theorem dme_decomposition (K : K3Config) :
   ∀ i, i < 3 →
     ∃ (mag : ℕ) (sgn : ℤ),
