@@ -4,6 +4,7 @@
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Tactic
+import TMENudos.ZMod_Helpers
 
 set_option linter.unusedSimpArgs false
 
