@@ -555,7 +555,7 @@ def mirror (K : K3Config) : K3Config :=
     - Si Writhe = 0, requiere análisis más profundo
 
     TODO: Implementación completa verificando si ∃σ. DME_σ = -DME
-    -/
+     -/
 noncomputable def isChiral (K : K3Config) : Bool :=
   K.writhe ≠ 0
 
@@ -706,7 +706,7 @@ lemma sum_list_le (l : List ℕ) (n m : ℕ)
 
     Cada componente se descompone como:
     δᵢ = |δᵢ| · sgn(δᵢ)
-    -/
+     -/
 theorem dme_decomposition (K : K3Config) :
   ∀ i, i < 3 →
     ∃ (mag : ℕ) (sgn : ℤ),
