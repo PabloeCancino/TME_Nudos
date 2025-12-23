@@ -606,11 +606,13 @@ lemma adjustDelta_bounded (δ : ℤ) :
   split_ifs with h1 h2
   · -- Caso 1: δ > 3, entonces adjustDelta δ = δ - 6
     constructor
-    · omega  -- -3 ≤ δ - 6
+    · have : δ ≤ 5 := by omega
+      omega  -- -3 ≤ δ - 6
     · omega  -- δ - 6 ≤ 3
   · -- Caso 2: δ ≤ 3 y δ < -3, entonces adjustDelta δ = δ + 6
     constructor
-    · omega  -- -3 ≤ δ + 6
+    · have : δ ≥ -5 := by omega
+      omega  -- -3 ≤ δ + 6
     · omega  -- δ + 6 ≤ 3
   · -- Caso 3: δ ≤ 3 y δ ≥ -3, entonces adjustDelta δ = δ
     constructor
@@ -632,7 +634,7 @@ lemma foldl_add_neg_aux (l : List ℤ) (acc : ℤ) :
 lemma foldl_sum_neg (l : List ℤ) :
   (l.map (· * (-1))).foldl (· + ·) 0 = -(l.foldl (· + ·) 0) := by
   have h := foldl_add_neg_aux l 0
-  simp at h
+  simp only [mul_neg, mul_one] at h
   exact h
 
 
@@ -825,7 +827,6 @@ theorem dme_mirror (K : K3Config) :
   -- La reflexión invierte cada par: reverse intercambia fst y snd
   -- Entonces pairDelta cambia de signo: (snd - fst) → (fst - snd) = -(snd - fst)
   ext i
-  simp only [List.get?_map]
   -- Ambos lados aplican la misma operación a cada par
   cases h : (K.pairs.toList.map OrderedPair.reverse)[i]? with
   | none =>
