@@ -644,6 +644,18 @@ lemma foldl_sum_neg (l : List ℤ) :
   simp only [mul_neg, mul_one] at h
   exact h
 
+/-- Mapear natAbs después de negar da el mismo resultado -/
+lemma natAbs_map_neg_eq (l : List ℤ) :
+    (l.map (· * (-1))).map Int.natAbs = l.map Int.natAbs := by
+  induction l with
+  | nil => rfl
+  | cons h t ih =>
+    simp only [List.map]
+    congr 1
+    · ring_nf
+      exact Int.natAbs_neg h
+    · exact ih
+
 
 /-- Lema auxiliar: foldl con cota inferior y acumulador arbitrario -/
 lemma foldl_add_ge_aux (l : List ℕ) (m acc : ℕ)
@@ -906,12 +918,7 @@ theorem gap_mirror (K : K3Config) :
   unfold gap ime
   have h_dme : K.mirror.dme = K.dme.map (· * (-1)) := dme_mirror K
   rw [h_dme]
-  have h_eq : (K.dme.map (· * (-1))).map Int.natAbs = K.dme.map Int.natAbs := by
-    rw [List.map_map]
-    congr
-    funext x
-    simp [Int.natAbs_neg]
-  rw [h_eq]
+  rw [natAbs_map_neg_eq]
 
 /-- **TEOREMA**: Writhe cambia de signo bajo reflexión.
 
@@ -926,9 +933,32 @@ theorem writhe_mirror (K : K3Config) :
 /-- **TEOREMA**: La reflexión es involutiva.
 
     (K̄)̄ = K -/
+
+/-- Lema auxiliar: aplicar reverse dos veces a un Finset da la identidad -/
+private lemma image_reverse_twice (s : Finset OrderedPair) :
+    (s.image OrderedPair.reverse).image OrderedPair.reverse = s := by
+  ext p
+  simp only [Finset.mem_image]
+  constructor
+  · intro ⟨q, ⟨r, hr, hrq⟩, hqp⟩
+    rw [← hqp, ← hrq]
+    have : r.reverse.reverse = r := OrderedPair.reverse_involutive r
+    rw [this]
+    exact hr
+  · intro hp
+    use p.reverse
+    constructor
+    · use p, hp, rfl
+    · exact OrderedPair.reverse_involutive p
+
 theorem mirror_involutive (K : K3Config) :
   K.mirror.mirror = K := by
-  sorry
+  unfold mirror
+  simp only
+  have h_pairs : (K.pairs.image OrderedPair.reverse).image OrderedPair.reverse = K.pairs :=
+    image_reverse_twice K.pairs
+  cases K
+  simp [h_pairs]
 
 /-- **TEOREMA**: La normalización preserva el matching subyacente -/
 theorem normalize_preserves_matching (K : K3Config) :
