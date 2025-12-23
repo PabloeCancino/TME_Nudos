@@ -480,9 +480,9 @@ private lemma image_image_involutive {α : Type*} [DecidableEq α]
   ext x
   simp only [Finset.mem_image]
   constructor
-  · intro ⟨y, ⟨z, hz, rfl⟩, hy⟩
-    rw [hf] at hy
-    rw [← hy]
+  · intro ⟨y, hy, hxy⟩
+    obtain ⟨z, hz, hyz⟩ := hy
+    rw [← hxy, ← hyz, hf]
     exact hz
   · intro hx
     use f x
@@ -663,8 +663,9 @@ lemma sum_list_ge (l : List ℕ) (n m : ℕ)
   l.foldl (· + ·) 0 ≥ n * m := by
   have h := foldl_add_ge_aux l m 0 hbound
   simp at h
-  rw [hlen]
-  exact h
+  calc l.foldl (· + ·) 0
+      ≥ l.length * m := h
+    _ = n * m := by rw [hlen]
 
 /-- Lema auxiliar: foldl con cota superior y acumulador arbitrario -/
 lemma foldl_add_le_aux (l : List ℕ) (m acc : ℕ)
@@ -693,8 +694,9 @@ lemma sum_list_le (l : List ℕ) (n m : ℕ)
   l.foldl (· + ·) 0 ≤ n * m := by
   have h := foldl_add_le_aux l m 0 hbound
   simp at h
-  rw [hlen]
-  exact h
+  calc l.foldl (· + ·) 0
+      ≤ l.length * m := h
+    _ = n * m := by rw [hlen]
 
 /-! ## Teoremas Fundamentales -/
 
@@ -746,7 +748,6 @@ theorem gap_ge_three (K : K3Config) : K.gap ≥ 3 := by
     -- Como p.fst ≠ p.snd, tenemos |d| ≥ 1
     rw [← hd_eq]
     -- |adjustDelta (pairDelta p)| ≥ 1
-    clear hx hd_mem hd_eq
     unfold pairDelta adjustDelta
     -- El valor absoluto de la diferencia entre elementos distintos en Z/6Z
     -- después de ajustar a [-3,3] es al menos 1
@@ -793,7 +794,6 @@ theorem gap_le_nine (K : K3Config) : K.gap ≤ 9 := by
     obtain ⟨p, hp_mem, hd_eq⟩ := hd_mem
     -- d = adjustDelta (pairDelta p)
     rw [← hd_eq]
-    clear hx hd_mem hd_eq
     unfold pairDelta adjustDelta
     -- adjustDelta garantiza que el resultado está en [-3, 3]
     -- por tanto |adjustDelta(...)| ≤ 3
