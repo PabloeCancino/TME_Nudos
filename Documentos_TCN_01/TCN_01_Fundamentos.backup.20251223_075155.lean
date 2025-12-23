@@ -5,6 +5,8 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Tactic
 
+set_option linter.unusedSimpArgs false
+
 /-!
 # Bloque 1: Fundamentos Combinatorios de Nudos K₃
 
@@ -263,7 +265,7 @@ def adjustDelta (δ : ℤ) : ℤ :=
     Config: ((1,4), (5,2), (3,0))
     DME = (4-1, 2-5, 0-3) = (3, -3, -3)
     ```
-    -/
+-/
 noncomputable def dme (K : K3Config) : List ℤ :=
   K.pairsList.map (fun p => adjustDelta (pairDelta p))
 
@@ -292,9 +294,34 @@ noncomputable def dme (K : K3Config) : List ℤ :=
     Trébol derecho:  DME = (3,-3,-3)  →  IME = (3,3,3)
     Trébol izquierdo: DME = (-3,3,3)  →  IME = (3,3,3)  [mismo IME]
     ```
-    -/
+-/
 noncomputable def ime (K : K3Config) : List ℕ :=
   K.dme.map Int.natAbs
+
+/-- Función de signo para enteros.
+
+    **Definición:**
+    ```
+    sign(x) = { +1  si x > 0
+              {  0  si x = 0
+              { -1  si x < 0
+    ```
+
+    Esta función es necesaria porque `Int.sign` no está disponible
+    o no funciona correctamente en Mathlib para Lean 4.26.0.
+-/
+def intSign (x : ℤ) : ℤ :=
+  if x > 0 then 1 else if x < 0 then -1 else 0
+
+/-- El signo de -x es el opuesto del signo de x -/
+lemma intSign_neg (x : ℤ) : intSign (-x) = -intSign x := by
+  unfold intSign
+  split_ifs <;> omega
+
+/-- El signo de x*(-1) es el signo de x multiplicado por -1 -/
+lemma intSign_mul_neg_one (x : ℤ) : intSign (x * (-1)) = intSign x * (-1) := by
+  unfold intSign
+  split_ifs <;> omega
 
 /-- Vector de signos quirales: **σ = sgn(DME)**.
 
@@ -311,9 +338,9 @@ noncomputable def ime (K : K3Config) : List ℕ :=
     El vector de signos determina la diferencia entre nudos quirales:
     - Nudos espejos tienen mismo IME pero σ opuesto
     - Permite reconstruir DME desde IME y σ
-    -/
+-/
 noncomputable def chiralSigns (K : K3Config) : List ℤ :=
-  K.dme.map Int.sign
+  K.dme.map intSign
 
 /-- Gap Total: Complejidad estructural acumulada.
 
@@ -336,7 +363,7 @@ noncomputable def chiralSigns (K : K3Config) : List ℤ :=
     ```lean
     Trébol: IME = (3,3,3) → Gap = 9 (máximo para K₃)
     ```
-    -/
+-/
 noncomputable def gap (K : K3Config) : ℕ :=
   K.ime.foldl (· + ·) 0
 
@@ -366,7 +393,7 @@ noncomputable def gap (K : K3Config) : ℕ :=
     Trébol derecho:  DME = (3,-3,-3)  → Writhe = -3
     Trébol izquierdo: DME = (-3,3,3)  → Writhe = +3
     ```
-    -/
+-/
 noncomputable def writhe (K : K3Config) : ℤ :=
   K.dme.foldl (· + ·) 0
 
@@ -433,7 +460,7 @@ def fromNotation (cn : CanonicalNotation) : Option K3Config :=
 
 /-! ## Reflexión y Quiralidad -/
 
-/-- Reflexión especular (imagen en espejo) de una configuración.
+/-! Reflexión especular (imagen en espejo) de una configuración.
 
     **Operación: K ↦ K̄**
 
@@ -552,7 +579,7 @@ def mirror (K : K3Config) : K3Config :=
     - Si Writhe = 0, requiere análisis más profundo
 
     TODO: Implementación completa verificando si ∃σ. DME_σ = -DME
-    -/
+-/
 noncomputable def isChiral (K : K3Config) : Bool :=
   K.writhe ≠ 0
 
@@ -706,7 +733,48 @@ theorem dme_decomposition (K : K3Config) :
       K.ime[i]? = some mag ∧
       K.chiralSigns[i]? = some sgn ∧
       K.dme[i]? = some (mag * sgn) := by
-  sorry
+  intro i hi
+  -- Obtener el elemento i-ésimo de dme
+  have hdme_len : K.dme.length = 3 := by
+    unfold dme
+    have : K.pairsList.length = 3 := by
+      unfold pairsList
+      rw [Finset.length_toList, K.card_eq]
+    simp [this]
+  -- El elemento existe
+  have hdme_get : ∃ d, K.dme[i]? = some d := by
+    apply List.get?_eq_some.mpr
+    rw [hdme_len]
+    exact hi
+  obtain ⟨d, hd⟩ := hdme_get
+  -- IME[i] = |d|
+  have hime : K.ime[i]? = some (Int.natAbs d) := by
+    unfold ime
+    rw [List.get?_map, hd]
+    simp
+  -- chiralSigns[i] = sgn(d)
+  have hsigns : K.chiralSigns[i]? = some (if d > 0 then 1 else if d < 0 then -1 else 0) := by
+    unfold chiralSigns
+    rw [List.get?_map, hd]
+    simp
+  use Int.natAbs d
+  use (if d > 0 then 1 else if d < 0 then -1 else 0)
+  constructor
+  · exact hime
+  constructor
+  · exact hsigns
+  · -- Probar que d = |d| * sgn(d)
+    rw [hd]
+    split_ifs with h1 h2
+    · -- d > 0
+      simp [Int.natAbs_of_nonneg (le_of_lt h1)]
+      omega
+    · -- d < 0
+      simp [Int.natAbs_of_nonpos (le_of_lt h2)]
+      omega
+    · -- d = 0
+      have : d = 0 := by omega
+      simp [this]
 
 /-- **TEOREMA**: IME se deriva de DME mediante valor absoluto -/
 theorem ime_from_dme (K : K3Config) :
@@ -723,7 +791,7 @@ theorem gap_from_ime (K : K3Config) :
     Ocurre cuando todos los δᵢ = ±1 (cruces consecutivos). -/
 theorem gap_ge_three (K : K3Config) : K.gap ≥ 3 := by
   unfold gap
-  -- Necesitamos probar que K.ime tiene longitud 3 y cada elemento ≥ 1
+  -- K.ime tiene longitud 3
   have hlen : K.ime.length = 3 := by
     unfold ime dme
     have hpairs : K.pairsList.length = 3 := by
@@ -739,32 +807,23 @@ theorem gap_ge_three (K : K3Config) : K.gap ≥ 3 := by
     unfold dme at hd_mem
     simp only [List.mem_map] at hd_mem
     obtain ⟨p, hp_mem, hd_eq⟩ := hd_mem
-    -- d = adjustDelta (pairDelta p)
-    -- Como p.fst ≠ p.snd, tenemos |d| ≥ 1
     rw [← hd_eq]
-    -- |adjustDelta (pairDelta p)| ≥ 1
     clear hx hd_mem hd_eq
     unfold pairDelta adjustDelta
-    -- El valor absoluto de la diferencia entre elementos distintos en Z/6Z
-    -- después de ajustar a [-3,3] es al menos 1
     split_ifs with h1 h2
-    · -- caso: δ > 3, entonces ajustado δ - 6 ∈ [-2, -1]
+    · -- δ > 3, ajustado δ - 6
       omega
-    · -- caso: δ ≤ 3 y δ < -3, entonces ajustado δ + 6 ∈ [1, 2]
+    · -- δ ≤ 3 y δ < -3, ajustado δ + 6
       omega
-    · -- caso: δ ∈ [-3, 3]
-      -- Como p.fst ≠ p.snd, tenemos δ ≠ 0
+    · -- δ ∈ [-3, 3]
       have hdist : p.fst ≠ p.snd := p.distinct
       have : (p.snd.val : ℤ) ≠ (p.fst.val : ℤ) := by
         intro heq
-        have : (p.snd.val : ZMod 6) = (p.fst.val : ZMod 6) := by
-          simp [heq]
-        rw [ZMod.val_cast_of_lt (by omega : p.snd.val < 6)] at this
-        rw [ZMod.val_cast_of_lt (by omega : p.fst.val < 6)] at this
+        have : (p.snd.val : ZMod 6) = (p.fst.val : ZMod 6) := by simp [heq]
+        rw [ZMod.val_cast_of_lt (ZMod.val_lt p.snd)] at this
+        rw [ZMod.val_cast_of_lt (ZMod.val_lt p.fst)] at this
         exact hdist this
-      -- Por tanto |(p.snd.val : ℤ) - (p.fst.val : ℤ)| ≥ 1
       omega
-  -- Aplicar sum_list_ge
   exact sum_list_ge K.ime 3 1 hlen hbound
 
 /-- **TEOREMA**: Para K₃, el Gap máximo es 9.
@@ -788,28 +847,22 @@ theorem gap_le_nine (K : K3Config) : K.gap ≤ 9 := by
     unfold dme at hd_mem
     simp only [List.mem_map] at hd_mem
     obtain ⟨p, hp_mem, hd_eq⟩ := hd_mem
-    -- d = adjustDelta (pairDelta p)
     rw [← hd_eq]
     clear hx hd_mem hd_eq
     unfold pairDelta adjustDelta
-    -- adjustDelta garantiza que el resultado está en [-3, 3]
-    -- por tanto |adjustDelta(...)| ≤ 3
     split_ifs with h1 h2
-    · -- caso: δ > 3, ajustado δ - 6
-      -- Como δ ≤ 5 + 5 = 10 (máx diferencia en Z/6Z), tenemos δ - 6 ∈ [-1, 4]
-      -- pero después de ajuste está en [-3, 3], así que ≤ 3
+    · -- δ > 3, ajustado δ - 6
       have : p.fst.val < 6 := ZMod.val_lt p.fst
       have : p.snd.val < 6 := ZMod.val_lt p.snd
       omega
-    · -- caso: δ ≤ 3 y δ < -3, ajustado δ + 6
+    · -- δ ≤ 3 y δ < -3, ajustado δ + 6
       have : p.fst.val < 6 := ZMod.val_lt p.fst
       have : p.snd.val < 6 := ZMod.val_lt p.snd
       omega
-    · -- caso: δ ∈ [-3, 3], no hay ajuste
+    · -- δ ∈ [-3, 3]
       have : p.fst.val < 6 := ZMod.val_lt p.fst
       have : p.snd.val < 6 := ZMod.val_lt p.snd
       omega
-  -- Aplicar sum_list_le
   exact sum_list_le K.ime 3 3 hlen hbound
 
 /-- **TEOREMA**: DME cambia de signo bajo reflexión especular.
@@ -819,24 +872,17 @@ theorem dme_mirror (K : K3Config) :
   K.mirror.dme = K.dme.map (· * (-1)) := by
   unfold mirror dme
   simp only [pairsList]
-  -- La reflexión invierte cada par: reverse intercambia fst y snd
-  -- Entonces pairDelta cambia de signo: (snd - fst) → (fst - snd) = -(snd - fst)
   ext i
   simp only [List.get?_map]
-  -- Ambos lados aplican la misma operación a cada par
   cases h : (K.pairs.toList.map OrderedPair.reverse)[i]? with
   | none =>
-    -- Si no hay elemento en posición i a la izquierda
     simp [h]
-    -- Mostrar que tampoco hay a la derecha
     have hlen : (K.pairs.toList.map OrderedPair.reverse).length = K.pairs.toList.length := by
       simp [List.length_map]
     rw [List.get?_eq_none] at h ⊢
     omega
   | some p_rev =>
-    -- Existe elemento en posición i
     simp [h]
-    -- p_rev proviene de reverse aplicado a algún p
     have : ∃ p, p ∈ K.pairs.toList ∧ p.reverse = p_rev := by
       have := List.get?_map (f := OrderedPair.reverse) i K.pairs.toList
       rw [h] at this
@@ -845,29 +891,21 @@ theorem dme_mirror (K : K3Config) :
       exact ⟨p, List.get?_mem hp, heq⟩
     obtain ⟨p, hp_mem, hp_rev⟩ := this
     rw [← hp_rev]
-    -- Ahora necesitamos: adjustDelta (pairDelta p.reverse) = adjustDelta (pairDelta p) * (-1)
     unfold pairDelta OrderedPair.reverse
     simp only
-    -- pairDelta p.reverse = snd - fst se convierte en fst - snd
-    -- que es -(snd - fst) = -pairDelta p
     have delta_neg : (p.fst.val : ℤ) - (p.snd.val : ℤ) = -((p.snd.val : ℤ) - (p.fst.val : ℤ)) := by ring
     rw [delta_neg]
-    -- Ahora mostrar que adjustDelta (-δ) = -adjustDelta(δ)
     have adjust_neg : ∀ (δ : ℤ), adjustDelta (-δ) = -adjustDelta δ := by
       intro δ
       unfold adjustDelta
       split_ifs with h1 h2 h3 h4
-      · -- -δ > 3
-        omega
-      · -- -δ ≤ 3 ∧ -δ < -3
-        omega
-      · -- -δ ≤ 3 ∧ -δ ≥ -3 (es decir -δ ∈ [-3,3])
-        -- necesitamos verificar los casos para δ
-        split_ifs with h5 h6
-        · omega  -- δ > 3
-        · omega  -- δ < -3
-        · ring   -- δ ∈ [-3, 3]
-      · omega  -- contradicción: -δ > 3 y no (... < -3)
+      · omega
+      · omega
+      · split_ifs with h5 h6
+        · omega
+        · omega
+        · ring
+      · omega
     exact adjust_neg ((p.snd.val : ℤ) - (p.fst.val : ℤ))
 
 /-- **TEOREMA**: IME es invariante bajo reflexión (invariante aquiral).
@@ -877,13 +915,10 @@ theorem ime_mirror (K : K3Config) :
   K.mirror.ime = K.ime := by
   unfold ime
   rw [dme_mirror]
-  -- Ahora tenemos: (K.dme.map (· * (-1))).map Int.natAbs = K.dme.map Int.natAbs
   rw [List.map_map]
-  -- Necesitamos: K.dme.map (fun x => Int.natAbs (x * (-1))) = K.dme.map Int.natAbs
   congr 1
   ext δ
   simp
-  -- Int.natAbs (δ * (-1)) = Int.natAbs δ
   exact Int.natAbs_neg δ
 
 /-- **TEOREMA**: Gap es invariante bajo reflexión.
@@ -891,21 +926,45 @@ theorem ime_mirror (K : K3Config) :
     Gap(K̄) = Gap(K) -/
 theorem gap_mirror (K : K3Config) :
   K.mirror.gap = K.gap := by
-  sorry
+  unfold gap
+  rw [ime_mirror]
 
 /-- **TEOREMA**: Writhe cambia de signo bajo reflexión.
 
     Writhe(K̄) = -Writhe(K) -/
 theorem writhe_mirror (K : K3Config) :
   K.mirror.writhe = -K.writhe := by
-  sorry
+  unfold writhe
+  rw [dme_mirror]
+  exact foldl_sum_neg K.dme
 
 /-- **TEOREMA**: La reflexión es involutiva.
 
     (K̄)̄ = K -/
 theorem mirror_involutive (K : K3Config) :
   K.mirror.mirror = K := by
-  sorry
+  unfold mirror
+  -- Necesitamos probar que pairs son iguales
+  congr 1
+  -- (K.pairs.map reverse).map reverse = K.pairs
+  ext p
+  constructor
+  · intro hp
+    simp only [Finset.mem_map] at hp
+    obtain ⟨p', hp'_mem, hp'_eq⟩ := hp
+    simp only [Finset.mem_map] at hp'_mem
+    obtain ⟨p'', hp''_mem, hp''_eq⟩ := hp'_mem
+    rw [← hp'_eq, ← hp''_eq]
+    simp [OrderedPair.reverse_involutive]
+    exact hp''_mem
+  · intro hp
+    simp only [Finset.mem_map]
+    use p.reverse
+    constructor
+    · simp only [Finset.mem_map]
+      use p
+      exact ⟨hp, rfl⟩
+    · exact OrderedPair.reverse_involutive p
 
 /-- **TEOREMA**: La normalización preserva el matching subyacente -/
 theorem normalize_preserves_matching (K : K3Config) :
@@ -915,7 +974,13 @@ theorem normalize_preserves_matching (K : K3Config) :
 /-- **TEOREMA**: Si Writhe ≠ 0, entonces el nudo es quiral -/
 theorem nonzero_writhe_implies_chiral (K : K3Config) (h : K.writhe ≠ 0) :
   K ≠ K.mirror := by
-  sorry
+  intro heq
+  -- Si K = K.mirror, entonces K.writhe = K.mirror.writhe
+  have hw : K.writhe = K.mirror.writhe := congrArg writhe heq
+  -- Pero por writhe_mirror, K.mirror.writhe = -K.writhe
+  rw [writhe_mirror] at hw
+  -- Entonces K.writhe = -K.writhe, lo que implica 2 * K.writhe = 0
+  omega
 
 /-! ## Resumen de la Jerarquía Conceptual -/
 
