@@ -634,7 +634,7 @@ lemma foldl_add_neg_aux (l : List ℤ) (acc : ℤ) :
     simp [List.foldl]
   | cons h t ih =>
     simp only [List.map, List.foldl]
-    rw [ih (acc + h)]
+    rw [ih]
     ring
 
 /-- Lema: Suma con negación - Σ(-xᵢ) = -Σxᵢ -/
@@ -903,14 +903,24 @@ theorem ime_mirror (K : K3Config) :
     Gap(K̄) = Gap(K) -/
 theorem gap_mirror (K : K3Config) :
   K.mirror.gap = K.gap := by
-  sorry
+  unfold gap ime
+  have h_dme : K.mirror.dme = K.dme.map (· * (-1)) := dme_mirror K
+  rw [h_dme, List.map_map]
+  have : (fun x => Int.natAbs (x * (-1))) = Int.natAbs := by
+    ext x
+    ring_nf
+    exact Int.natAbs_neg x
+  rw [this]
 
 /-- **TEOREMA**: Writhe cambia de signo bajo reflexión.
 
     Writhe(K̄) = -Writhe(K) -/
 theorem writhe_mirror (K : K3Config) :
   K.mirror.writhe = -K.writhe := by
-  sorry
+  unfold writhe
+  have h_dme : K.mirror.dme = K.dme.map (· * (-1)) := dme_mirror K
+  rw [h_dme]
+  exact foldl_sum_neg K.dme
 
 /-- **TEOREMA**: La reflexión es involutiva.
 
