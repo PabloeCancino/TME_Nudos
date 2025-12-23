@@ -40,11 +40,12 @@ variable {K : K3Config}
 /-! ## Lema Auxiliar: Suma de Valores Absolutos es Invariante bajo Negación -/
 
 /-- La suma de valores absolutos de una lista negada es igual a la original -/
+
 lemma foldl_natAbs_neg (l : List ℤ) :
-    (l.map (· * (-1))).map Int.natAbs |>.foldl (· + ·) 0 = 
+    (l.map (· * (-1))).map Int.natAbs |>.foldl (· + ·) 0 =
     l.map Int.natAbs |>.foldl (· + ·) 0 := by
   induction l with
-  | nil => 
+  | nil =>
     simp [List.map, List.foldl]
   | cons h t ih =>
     simp only [List.map, List.foldl]
@@ -54,7 +55,7 @@ lemma foldl_natAbs_neg (l : List ℤ) :
       ring_nf
       exact Int.natAbs_neg h
     -- Ahora la inducción sobre el resto
-    conv_lhs => 
+    conv_lhs =>
       arg 1
       rw [← List.map_foldl_eq_foldl_map]
     conv_rhs =>
@@ -77,9 +78,9 @@ lemma natAbs_map_neg_eq (l : List ℤ) :
 /-! ## Teorema 1: gap_mirror -/
 
 /-- **TEOREMA COMPLETO**: Gap es invariante bajo reflexión.
-    
+
     Gap(K̄) = Gap(K)
-    
+
     **Estrategia de Prueba**:
     1. Expandir definiciones: gap = sum(ime), ime = |dme|
     2. Usar dme_mirror: K̄.dme = K.dme.map (· * -1)
@@ -91,22 +92,22 @@ theorem gap_mirror (K : K3Config) :
   unfold gap ime
   -- K.mirror.ime = K.mirror.dme.map Int.natAbs
   -- K.ime = K.dme.map Int.natAbs
-  
+
   -- Paso 1: Usar dme_mirror
   have h_dme : K.mirror.dme = K.dme.map (· * (-1)) := dme_mirror K
-  
+
   -- Paso 2: Sustituir en ime
   rw [h_dme]
-  
+
   -- Paso 3: Reorganizar maps
   rw [List.map_map]
-  
+
   -- Paso 4: Usar invarianza de natAbs bajo negación
   have : (fun x => Int.natAbs (x * (-1))) = Int.natAbs := by
     ext x
     ring_nf
     exact Int.natAbs_neg x
-  
+
   rw [this]
 
 /-! ## Teorema 2: writhe_mirror -/
@@ -119,7 +120,7 @@ lemma foldl_add_neg (l : List ℤ) :
   | cons h t ih =>
     simp only [List.map, List.foldl]
     -- Necesitamos relacionar foldl en cola
-    have : (t.map (· * (-1))).foldl (· + ·) (0 + h * (-1)) = 
+    have : (t.map (· * (-1))).foldl (· + ·) (0 + h * (-1)) =
            -(t.foldl (· + ·) (0 + h)) := by
       -- Versión generalizada del lema de inducción
       sorry
@@ -127,9 +128,9 @@ lemma foldl_add_neg (l : List ℤ) :
     ring
 
 /-- **TEOREMA COMPLETO**: Writhe cambia de signo bajo reflexión.
-    
+
     Writhe(K̄) = -Writhe(K)
-    
+
     **Estrategia de Prueba**:
     1. Expandir: writhe = sum(dme)
     2. Usar dme_mirror: K̄.dme = -K.dme
@@ -164,9 +165,9 @@ lemma image_reverse_twice (s : Finset OrderedPair) :
     · exact OrderedPair.reverse_involutive p
 
 /-- **TEOREMA COMPLETO**: La reflexión es involutiva.
-    
+
     (K̄)̄ = K
-    
+
     **Estrategia de Prueba**:
     1. Probar que K.pairs = K.mirror.mirror.pairs
     2. Usar que reverse ∘ reverse = id
@@ -199,7 +200,7 @@ theorem mirror_involutive (K : K3Config) :
 /-! ## Teorema 4: nonzero_writhe_implies_chiral -/
 
 /-- Lema auxiliar: si dos listas de enteros tienen sumas distintas, son distintas -/
-lemma foldl_ne_of_sum_ne {l1 l2 : List ℤ} 
+lemma foldl_ne_of_sum_ne {l1 l2 : List ℤ}
     (h : l1.foldl (· + ·) 0 ≠ l2.foldl (· + ·) 0) :
     l1 ≠ l2 := by
   intro heq
@@ -215,9 +216,9 @@ lemma dme_ne_of_ne_mirror {K : K3Config} (h : K ≠ K.mirror) :
   sorry  -- Requiere teorema más profundo sobre unicidad de (E, DME)
 
 /-- **TEOREMA COMPLETO**: Si Writhe ≠ 0, entonces el nudo es quiral.
-    
+
     Writhe(K) ≠ 0 → K ≠ K̄
-    
+
     **Estrategia de Prueba**:
     1. Suponer K = K̄ (contradicción)
     2. Entonces writhe(K) = writhe(K̄)
@@ -225,27 +226,27 @@ lemma dme_ne_of_ne_mirror {K : K3Config} (h : K ≠ K.mirror) :
     4. Entonces writhe(K) = -writhe(K), implica writhe(K) = 0
     5. Contradicción con hipótesis
  -/
-theorem nonzero_writhe_implies_chiral (K : K3Config) 
+theorem nonzero_writhe_implies_chiral (K : K3Config)
     (h : K.writhe ≠ 0) :
     K ≠ K.mirror := by
   intro heq
   -- Si K = K.mirror, entonces K.writhe = K.mirror.writhe
   have hw : K.writhe = K.mirror.writhe := by rw [heq]
-  
+
   -- Pero también K.mirror.writhe = -K.writhe
   have hw_mirror : K.mirror.writhe = -K.writhe := writhe_mirror K
-  
+
   -- Combinando: K.writhe = -K.writhe
   rw [hw_mirror] at hw
-  
+
   -- Esto implica 2 * K.writhe = 0, por tanto K.writhe = 0
   have : K.writhe + K.writhe = 0 := by
-    calc K.writhe + K.writhe 
+    calc K.writhe + K.writhe
         = K.writhe + (-K.writhe) := by rw [← hw]
       _ = 0 := by ring
-  
+
   have : K.writhe = 0 := by omega
-  
+
   -- Contradicción con la hipótesis
   exact h this
 
@@ -279,7 +280,7 @@ theorem achiral_has_zero_writhe (K : K3Config) (h : K = K.mirror) :
 
 Hemos completado las pruebas de:
 
-1. ✅ **gap_mirror**: Gap(K̄) = Gap(K) 
+1. ✅ **gap_mirror**: Gap(K̄) = Gap(K)
    - Usa: dme_mirror + invarianza de |·|
 
 2. ✅ **writhe_mirror**: Writhe(K̄) = -Writhe(K)
@@ -294,7 +295,7 @@ Hemos completado las pruebas de:
 ## Técnicas Clave
 
 - **Inducción estructural** sobre listas
-- **Extensionalidad** para igualdad de configuraciones  
+- **Extensionalidad** para igualdad de configuraciones
 - **Contradicción** para pruebas de desigualdad
 - **Lemas algebraicos** sobre foldl y operaciones
 

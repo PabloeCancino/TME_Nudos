@@ -906,11 +906,12 @@ theorem gap_mirror (K : K3Config) :
   unfold gap ime
   have h_dme : K.mirror.dme = K.dme.map (· * (-1)) := dme_mirror K
   rw [h_dme]
-  simp_rw [List.map_map]
-  congr 1
-  ext x
-  ring_nf
-  exact Int.natAbs_neg x
+  have h_eq : (K.dme.map (· * (-1))).map Int.natAbs = K.dme.map Int.natAbs := by
+    rw [List.map_map]
+    congr
+    funext x
+    simp [Int.natAbs_neg]
+  rw [h_eq]
 
 /-- **TEOREMA**: Writhe cambia de signo bajo reflexión.
 
