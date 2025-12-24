@@ -947,8 +947,8 @@ private lemma image_reverse_twice (s : Finset OrderedPair) :
     exact hr
   · intro hp
     use p.reverse
-    constructor
-    · use p, hp, rfl
+    · use p
+      exact ⟨hp, rfl⟩
     · exact OrderedPair.reverse_involutive p
 
 theorem mirror_involutive (K : K3Config) :
@@ -958,10 +958,7 @@ theorem mirror_involutive (K : K3Config) :
   have h_pairs : (K.pairs.image OrderedPair.reverse).image OrderedPair.reverse = K.pairs :=
     image_reverse_twice K.pairs
   cases K
-    have h_pairs : (K.pairs.image OrderedPair.reverse).image OrderedPair.reverse = K.pairs :=
-      image_reverse_twice K.pairs
-    cases K
-    simp [h_pairs]
+  simp [h_pairs]
 
 /-- **TEOREMA**: La normalización preserva el matching subyacente -/
 theorem normalize_preserves_matching (K : K3Config) :
@@ -988,7 +985,7 @@ theorem achiral_has_zero_writhe (K : K3Config) (h : K = K.mirror) :
     K.writhe = 0 := by
   have : K.writhe = K.mirror.writhe := by rw [h]
   rw [writhe_mirror] at this
-  omegafl
+  omega
 
 /-! ## Resumen de la Jerarquía Conceptual -/
 
