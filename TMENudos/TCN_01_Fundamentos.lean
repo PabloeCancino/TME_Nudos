@@ -779,26 +779,16 @@ theorem gap_ge_three (K : K3Config) : K.gap ≥ 3 := by
     · -- caso: δ ≤ 3 y δ < -3, entonces ajustado δ + 6 ∈ [1, 2]
       omega
     · -- caso: δ ∈ [-3, 3]
-      -- Si δ ∈ [-3, 3] y δ ≠ 0, entonces |δ| ∈ {1, 2, 3}
-      have : Int.natAbs d ≥ 1 ∧ Int.natAbs d ≤ 3 := by
-        have hdist : p.fst ≠ p.snd := p.distinct
-        by_contra h_zero
-        simp only [not_and_or, not_le] at h_zero
-        cases h_zero with
-        | inl h_le_zero =>
-          -- Int.natAbs d < 1, so Int.natAbs d = 0, which means d = 0
-          have : d = 0 := Int.natAbs_eq_zero.mp h_le_zero
-          -- d is (p.snd.val : ℤ) - (p.fst.val : ℤ)
-          have : (p.snd.val : ℤ) - (p.fst.val : ℤ) = 0 := this
-          have : p.snd.val = p.fst.val := by omega
-          -- If the `val` fields are equal, the ZMod elements are equal
-          have : p.snd = p.fst := ZMod.val_injective this
-          -- This contradicts p.distinct
-          exact hdist this
-        | inr h_gt_three =>
-          -- Int.natAbs d > 3, but we are in the case where d ∈ [-3, 3]
-          -- so Int.natAbs d ≤ 3. This is a contradiction.
-          omega
+      -- Como p.fst ≠ p.snd, tenemos δ ≠ 0
+      have hdist : p.fst ≠ p.snd := p.distinct
+      have : (p.snd.val : ℤ) ≠ (p.fst.val : ℤ) := by
+        intro heq
+        have : (p.snd.val : ZMod 6) = (p.fst.val : ZMod 6) := by
+          simp [heq]
+        rw [ZMod.val_cast_of_lt (by omega : p.snd.val < 6)] at this
+        rw [ZMod.val_cast_of_lt (by omega : p.fst.val < 6)] at this
+        exact hdist this
+      -- Por tanto |(p.snd.val : ℤ) - (p.fst.val : ℤ)| ≥ 1
       omega
   -- Aplicar sum_list_ge
   exact sum_list_ge K.ime 3 1 hlen hbound
@@ -971,12 +961,12 @@ theorem normalize_preserves_matching (K : K3Config) :
   K.normalize.toMatching = K.toMatching := by
   sorry
 
+/-- **TEOREMA**: Si Writhe ≠ 0, entonces el nudo es quiral -/
 theorem nonzero_writhe_implies_chiral (K : K3Config)
     (h : K.writhe ≠ 0) :
     K ≠ K.mirror := by
   intro heq
-  have hw : K.writhe = K.mirror.writhe := by
-    rw [heq]
+  have hw : K.writhe = K.mirror.writhe := by rw [heq]
   have hw_mirror : K.mirror.writhe = -K.writhe := writhe_mirror K
   rw [hw_mirror] at hw
   have : K.writhe + K.writhe = 0 := by
@@ -989,10 +979,8 @@ theorem nonzero_writhe_implies_chiral (K : K3Config)
 /-- Corolario: Un nudo aquiral tiene writhe = 0 -/
 theorem achiral_has_zero_writhe (K : K3Config) (h : K = K.mirror) :
     K.writhe = 0 := by
-  have hw : K.writhe = K.mirror.writhe := by
-    congr 1
-    exact h
-  rw [writhe_mirror] at hw
+  have : K.writhe = K.mirror.writhe := by rw [h]
+  rw [writhe_mirror] at this
   omega
 
 /-! ## Resumen de la Jerarquía Conceptual -/
