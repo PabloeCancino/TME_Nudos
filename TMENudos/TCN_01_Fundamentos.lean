@@ -934,7 +934,6 @@ theorem writhe_mirror (K : K3Config) :
 
     (K̄)̄ = K -/
 
-/-- Lema auxiliar: aplicar reverse dos veces a un Finset da la identidad -/
 private lemma image_reverse_twice (s : Finset OrderedPair) :
     (s.image OrderedPair.reverse).image OrderedPair.reverse = s := by
   ext p
@@ -946,10 +945,7 @@ private lemma image_reverse_twice (s : Finset OrderedPair) :
     rw [this]
     exact hr
   · intro hp
-    use p.reverse
-    · use p
-      exact ⟨hp, rfl⟩
-    · exact OrderedPair.reverse_involutive p
+    refine ⟨p.reverse, ⟨p, hp, rfl⟩, OrderedPair.reverse_involutive p⟩
 
 theorem mirror_involutive (K : K3Config) :
   K.mirror.mirror = K := by
