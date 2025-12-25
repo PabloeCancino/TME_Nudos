@@ -40,6 +40,6 @@ Este trabajo establece un precedente metodológico para la verificación formal 
 Unidad Académica de Ciencias Básicas e Ingenierías  
 Programa Académico de Licenciatura en Matemáticas  
 **Autor**: Dr. Pablo Eduardo Cancino Marentes  
-**Verificación**: Lean 4.14.0 + Mathlib  
+**Verificación**: Lean 4.25.0 + Mathlib  
 **Estado**: Proyecto completado (Diciembre 2025)
 
