@@ -1,5 +1,10 @@
 # Clasificación Formal de Nudos de Tres Cruces: Primera Verificación Completa en Lean 4
 
+[![CI Build](https://github.com/PabloeCancino/TME_Nudos/actions/workflows/build.yml/badge.svg)](https://github.com/PabloeCancino/TME_Nudos/actions/workflows/build.yml)
+[![Lean 4](https://img.shields.io/badge/Lean-4.26.0-blue)](https://leanprover.github.io/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Public](https://img.shields.io/badge/Repository-Public-green)](https://github.com/PabloeCancino/TME_Nudos)
+
 ## Descripción General del Proyecto
 
 Este proyecto presenta la **primera clasificación formalmente verificada** de configuraciones de nudos de tres cruces (K₃) utilizando el asistente de pruebas Lean 4. El trabajo establece, mediante verificación mecánica completa, que existen exactamente **dos nudos no equivalentes** de tres cruces: el nudo trefoil derecho y su imagen especular, el trefoil izquierdo.
