@@ -1,49 +1,64 @@
-# Lean build artifacts
-/.lake
-*.olean
+# Documentos de trabajo y versiones preliminares
+Documentos/
+Documentos_Kn_General/
+Documentos_TCN_00_criticos/
+Documentos_TCN_01/
+Documentos_TCN_02/
+Documentos_TCN_03/
+Documentos_TCN_04/
+Documentos_TCN_05/
+Documentos_TCN_06/
+Documentos_TCN_07/
+Documentos_TCN_08/
+Horst Schubert/
+Isomorfismo_Topologia_Algebra/
+Reidemeister_Extension_K_n/
+Rolfsen_Knot_Table/
+Scrape_Knotinfo/
+Sugerencias_de_correccion/
+Teorema_Realizabilidad/
+Teoria_Combinatoria_Nudos/
+Test_Combinatoria/
+TMEN_modulos_funcionales/
+
+# Archivos temporales de Lean
+.lake/
+lake-packages/
 build/
 
-# Logs and temporary outputs
-*.log
-*_log.txt
-*_output.txt
-build_*.log
-
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-.pytest_cache/
-.venv/
-venv/
-ENV/
-env/
-
-# IDEs
-.vscode/
-.idea/
+# Archivos de sistema
+.DS_Store
+Thumbs.db
 *.swp
 *.swo
 *~
 
-# OS
-.DS_Store
-Thumbs.db
-desktop.ini
+# Archivos de IDE
+.vscode/
+.idea/
+*.code-workspace
 
-# Temporary files
-*.tmp
-*.temp
+# Archivos de LaTeX temporales
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+
+# Archivos de backup
 *.bak
+*.backup
+*~
 
-# Large configuration files (can be regenerated)
-Test_Combinatoria/configuraciones_nudos.json
-**/configuraciones_nudos.json
-**/configuraciones_nudos_n1_n2_n3*.json
-BD_Nudos/*.json
+# Archivos de Python (si existen)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
 
-# Backup logs
-backup.log
-backup.log.old
+# Otros
+.gemini/
+Actualizacion/
