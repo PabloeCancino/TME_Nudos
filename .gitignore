@@ -1,4 +1,9 @@
 # Documentos de trabajo y versiones preliminares
+Articulo_K_3/
+Anfiquirial/
+Alternancia/
+Actualizacion/
+Codigo/
 Documentos/
 Documentos_Kn_General/
 Documentos_TCN_00_criticos/
@@ -12,6 +17,7 @@ Documentos_TCN_07/
 Documentos_TCN_08/
 Horst Schubert/
 Isomorfismo_Topologia_Algebra/
+Procesos/
 Reidemeister_Extension_K_n/
 Rolfsen_Knot_Table/
 Scrape_Knotinfo/
@@ -20,14 +26,7 @@ Teorema_Realizabilidad/
 Teoria_Combinatoria_Nudos/
 Test_Combinatoria/
 TMEN_modulos_funcionales/
-
-# Carpetas adicionales de trabajo
 TMENudostxt/
-Codigo/
-Articulo_K_3/
-Anfiquirial/
-Alternancia/
-Actualizacion/
 
 # ZMod_Helpers - Lemas auxiliares y documentación técnica
 # Excluido del repositorio público
