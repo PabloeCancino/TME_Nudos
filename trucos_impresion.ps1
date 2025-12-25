@@ -1,3 +1,0 @@
-cd 'c:\Users\pablo\OneDrive\Documentos\TME_Nudos\Articulo_K_3'
-xelatex -interaction=nonstopmode "Fundamentos_TMEN_v3.0.tex"
-cd 'c:\Users\pablo\OneDrive\Documentos\TME_Nudos\'

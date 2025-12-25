@@ -1,9 +1,7 @@
 {
-	"folders": [
-		{
-			"name": "TME_Nudos",
-			"path": "."
-		}
-	],
-	"settings": {}
+    "folders": [
+        {
+            "path": "TMENudos"
+        }
+    ]
 }
