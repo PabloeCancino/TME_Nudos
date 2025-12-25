@@ -29,10 +29,9 @@ Anfiquirial/
 Alternancia/
 Actualizacion/
 
-# ⚠️ ADVERTENCIA: ZMod_Helpers contiene código Lean
-# Si excluyes esta carpeta, perderás lemas auxiliares importantes
-# Descomenta la siguiente línea solo si estás seguro:
-# ZMod_Helpers/
+# ZMod_Helpers - Lemas auxiliares y documentación técnica
+# Excluido del repositorio público
+ZMod_Helpers/
 
 # Archivos temporales de Lean
 .lake/
