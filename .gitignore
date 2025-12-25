@@ -21,6 +21,19 @@ Teoria_Combinatoria_Nudos/
 Test_Combinatoria/
 TMEN_modulos_funcionales/
 
+# Carpetas adicionales de trabajo
+TMENudostxt/
+Codigo/
+Articulo_K_3/
+Anfiquirial/
+Alternancia/
+Actualizacion/
+
+# ⚠️ ADVERTENCIA: ZMod_Helpers contiene código Lean
+# Si excluyes esta carpeta, perderás lemas auxiliares importantes
+# Descomenta la siguiente línea solo si estás seguro:
+# ZMod_Helpers/
+
 # Archivos temporales de Lean
 .lake/
 lake-packages/
