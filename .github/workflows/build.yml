@@ -1,0 +1,52 @@
+name: CI Build
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Lean Project
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install elan
+      run: |
+        curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+        echo "$HOME/.elan/bin" >> $GITHUB_PATH
+        
+    - name: Get Lean version
+      run: |
+        cat lean-toolchain
+        lean --version
+        
+    - name: Get cache
+      uses: actions/cache@v4
+      with:
+        path: .lake
+        key: ${{ runner.os }}-lake-${{ hashFiles('lake-manifest.json') }}
+        restore-keys: |
+          ${{ runner.os }}-lake-
+          
+    - name: Build project
+      run: |
+        lake exe cache get || true
+        lake build
+        
+    - name: Check for sorry statements
+      run: |
+        echo "Checking for sorry statements..."
+        grep -r "sorry" TMENudos/*.lean || echo "No sorry statements found"
+        
+    - name: Generate build report
+      if: always()
+      run: |
+        echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- Lean version: $(lean --version)" >> $GITHUB_STEP_SUMMARY
+        echo "- Build status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY

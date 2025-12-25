@@ -1,0 +1,76 @@
+name: Update Lean and Mathlib
+
+on:
+  schedule:
+    # Run weekly on Monday at 9:00 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    inputs:
+      lean_version:
+        description: 'Lean version to update to (e.g., v4.27.0)'
+        required: false
+        default: 'latest'
+
+jobs:
+  update:
+    name: Update Dependencies
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Install elan
+      run: |
+        curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+        echo "$HOME/.elan/bin" >> $GITHUB_PATH
+        
+    - name: Update Lean version
+      if: github.event.inputs.lean_version != 'latest'
+      run: |
+        echo "leanprover/lean4:${{ github.event.inputs.lean_version }}" > lean-toolchain
+        
+    - name: Update to latest stable Lean
+      if: github.event.inputs.lean_version == 'latest' || github.event_name == 'schedule'
+      run: |
+        # Get latest stable version from GitHub releases
+        LATEST=$(curl -s https://api.github.com/repos/leanprover/lean4/releases/latest | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+        echo "leanprover/lean4:$LATEST" > lean-toolchain
+        echo "Updated to Lean $LATEST"
+        
+    - name: Update Mathlib
+      run: |
+        lake update
+        
+    - name: Try to build
+      id: build
+      continue-on-error: true
+      run: |
+        lake exe cache get || true
+        lake build
+        
+    - name: Create Pull Request
+      if: steps.build.outcome == 'success'
+      uses: peter-evans/create-pull-request@v5
+      with:
+        commit-message: 'chore: update Lean and Mathlib dependencies'
+        title: 'Update Lean and Mathlib'
+        body: |
+          Automated update of Lean and Mathlib dependencies.
+          
+          - Updated `lean-toolchain`
+          - Updated `lake-manifest.json`
+          
+          Build status: ✅ Success
+          
+          Please review and merge if tests pass.
+        branch: update-dependencies
+        delete-branch: true
+        
+    - name: Report failure
+      if: steps.build.outcome == 'failure'
+      run: |
+        echo "::warning::Build failed after update. Manual intervention required."
+        echo "Check the build logs for compilation errors."
