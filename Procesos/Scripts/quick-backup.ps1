@@ -4,6 +4,10 @@
 # Uso: .\quick-backup.ps1
 # Este script hace commits locales de TODOS tus archivos sin sincronizar
 # con GitHub, protegiendo tu trabajo completo en tu PC.
+#
+# NOTA: Este script no hace push a GitHub, solo hace commits locales.
+#
+# .\Procesos\Scripts\quick-backup.ps1
 # ============================================================================
 
 $RepoPath = "C:\Users\pablo\OneDrive\Documentos\TME_Nudos\"
