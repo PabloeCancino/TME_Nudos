@@ -651,12 +651,24 @@ lemma adjustDelta_bounded (δ : ℤ) (h_bound : -5 ≤ δ ∧ δ ≤ 5) :
 /-- Lema auxiliar: foldl con acumulador negado -/
 lemma foldl_add_neg_aux (l : List ℤ) (acc : ℤ) :
   (l.map (· * (-1))).foldl (· + ·) (-acc) = -(l.foldl (· + ·) acc) := by
-  sorry  -- TODO: Fix rewrite issue with induction hypothesis
+  induction l generalizing acc with
+  | nil =>
+    simp [List.foldl]
+  | cons x xs ih =>
+    simp only [List.map_cons, List.foldl_cons]
+    -- Necesitamos: foldl (· + ·) (-acc + x * -1) (map (· * -1) xs) = -(foldl (· + ·) (acc + x) xs)
+    -- Normalizar: -acc + x * -1 = -(acc + x)
+    have h_norm : -acc + x * -1 = -(acc + x) := by ring
+    rw [h_norm]
+    -- Ahora aplicar ih con (acc + x)
+    exact ih (acc + x)
 
 /-- Lema: Suma con negación - Σ(-xᵢ) = -Σxᵢ -/
 lemma foldl_sum_neg (l : List ℤ) :
   (l.map (· * (-1))).foldl (· + ·) 0 = -(l.foldl (· + ·) 0) := by
-  sorry  -- TODO: Depends on foldl_add_neg_aux
+  have h := foldl_add_neg_aux l 0
+  simp only [neg_zero] at h
+  exact h
 
 /-- Mapear natAbs después de negar da el mismo resultado -/
 lemma natAbs_map_neg_eq (l : List ℤ) :
@@ -742,7 +754,26 @@ theorem dme_decomposition (K : K3Config) :
       K.ime[i]? = some mag ∧
       K.chiralSigns[i]? = some sgn ∧
       K.dme[i]? = some (mag * sgn) := by
-  sorry  -- TODO: Rewrite using current Mathlib List API (List.getElem? changed)
+  intro i hi
+
+  -- Probar que dme tiene longitud 3
+  have hdme_len : K.dme.length = 3 := dme_length K
+  have hi_valid : i < K.dme.length := hdme_len ▸ hi
+
+  -- Usar directamente K.dme[i] con la prueba hi_valid
+  use (K.dme[i]'hi_valid).natAbs, (K.dme[i]'hi_valid).sign
+
+  constructor
+  · unfold ime
+    simp [List.getElem?_map, List.getElem?_eq_getElem hi_valid]
+
+  constructor
+  · unfold chiralSigns
+    simp [List.getElem?_map, List.getElem?_eq_getElem hi_valid]
+
+  · simp only [List.getElem?_eq_getElem hi_valid, Option.some.injEq]
+    rw [mul_comm]
+    exact (Int.sign_mul_natAbs _).symm
 
 /-- **TEOREMA**: IME se deriva de DME mediante valor absoluto -/
 theorem ime_from_dme (K : K3Config) :
