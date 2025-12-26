@@ -32,6 +32,9 @@ Thumbs.db
 *.backup
 *~
 
+# Archivos de Powershell
+*.ps1
+
 # Archivos de Python (si existen)
 __pycache__/
 *.py[cod]
