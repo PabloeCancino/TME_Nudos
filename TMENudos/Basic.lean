@@ -665,7 +665,7 @@ Triple (cᵢ, cⱼ, cₖ) es tipo R3 si tiene grafo de interlazado adecuado y pa
 
 /-- Verifica si una lista de posiciones sigue un orden cíclico -/
 def is_cyclic_order {n : ℕ} (l : List (ℝ[n])) : Prop :=
-  ∃ k, List.Sorted (fun a b => a.val < b.val) (l.rotate k)
+  ∃ k, List.Chain' (fun a b => a.val < b.val) (l.rotate k)
 
 def is_R3_candidate {n : ℕ} (K : RationalConfiguration n) (i j k : Fin n) : Prop :=
   let ci := K.crossings i
