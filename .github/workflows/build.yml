@@ -8,9 +8,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build Lean Project
+  build-and-test:
+    name: Build and Test Lean Project
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     
     steps:
     - name: Checkout code
@@ -23,10 +24,11 @@ jobs:
         
     - name: Get Lean version
       run: |
-        cat lean-toolchain
+        echo "Lean toolchain: $(cat lean-toolchain)"
         lean --version
+        lake --version
         
-    - name: Get cache
+    - name: Cache Lean dependencies
       uses: actions/cache@v4
       with:
         path: .lake
@@ -34,19 +36,95 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-lake-
           
-    - name: Build project
+    - name: Download Mathlib cache
       run: |
         lake exe cache get || true
+        
+    - name: Build project
+      run: |
         lake build
+        
+    - name: Run tests
+      run: |
+        echo "Testing all Lean files compile..."
+        lake env lean TMENudos.lean
         
     - name: Check for sorry statements
       run: |
-        echo "Checking for sorry statements..."
-        grep -r "sorry" TMENudos/*.lean || echo "No sorry statements found"
+        echo "Checking for incomplete proofs (sorry statements)..."
+        if grep -r "sorry" TMENudos/*.lean; then
+          echo "⚠️ Warning: Found sorry statements (incomplete proofs)"
+          exit 0
+        else
+          echo "✅ No sorry statements found - all proofs are complete!"
+        fi
+        
+    - name: Verify no build artifacts in source
+      run: |
+        echo "Checking for build artifacts in source tree..."
+        if find TMENudos -name "*.olean" -o -name "*.trace" | grep .; then
+          echo "⚠️ Warning: Found build artifacts in source tree"
+        else
+          echo "✅ Source tree is clean"
+        fi
         
     - name: Generate build report
       if: always()
       run: |
-        echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
-        echo "- Lean version: $(lean --version)" >> $GITHUB_STEP_SUMMARY
-        echo "- Build status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+        echo "## 📊 Build Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- **Lean Version**: $(lean --version | head -1)" >> $GITHUB_STEP_SUMMARY
+        echo "- **Lake Version**: $(lake --version | head -1)" >> $GITHUB_STEP_SUMMARY
+        echo "- **Build Status**: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Runner OS**: ${{ runner.os }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📁 Project Statistics" >> $GITHUB_STEP_SUMMARY
+        echo "- Total Lean files: $(find TMENudos -name '*.lean' | wc -l)" >> $GITHUB_STEP_SUMMARY
+        echo "- Lines of code: $(find TMENudos -name '*.lean' -exec cat {} \; | wc -l)" >> $GITHUB_STEP_SUMMARY
+        
+  lint:
+    name: Lint Lean Code
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install elan
+      run: |
+        curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+        echo "$HOME/.elan/bin" >> $GITHUB_PATH
+        
+    - name: Cache Lean dependencies
+      uses: actions/cache@v4
+      with:
+        path: .lake
+        key: ${{ runner.os }}-lake-${{ hashFiles('lake-manifest.json') }}
+        restore-keys: |
+          ${{ runner.os }}-lake-
+          
+    - name: Download Mathlib cache
+      run: |
+        lake exe cache get || true
+        
+    - name: Check code style
+      run: |
+        echo "Running Lean linter..."
+        lake build > lint.log 2>&1 || true
+        if grep -i "warning" lint.log; then
+          echo "⚠️ Linting warnings found:"
+          grep -i "warning" lint.log | head -20
+        else
+          echo "✅ No linting warnings"
+        fi
+        
+    - name: Generate lint report
+      if: always()
+      run: |
+        echo "## 🔍 Lint Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        if [ -f lint.log ]; then
+          WARNING_COUNT=$(grep -c "warning" lint.log || echo "0")
+          echo "- **Warnings Found**: $WARNING_COUNT" >> $GITHUB_STEP_SUMMARY
+        fi

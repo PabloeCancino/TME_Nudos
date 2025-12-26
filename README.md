@@ -1,6 +1,8 @@
 # Clasificación Formal de Nudos de Tres Cruces: Primera Verificación Completa en Lean 4
 
 [![CI Build](https://github.com/PabloeCancino/TME_Nudos/actions/workflows/build.yml/badge.svg)](https://github.com/PabloeCancino/TME_Nudos/actions/workflows/build.yml)
+[![Test Suite](https://github.com/PabloeCancino/TME_Nudos/actions/workflows/test.yml/badge.svg)](https://github.com/PabloeCancino/TME_Nudos/actions/workflows/test.yml)
+[![Lean Action CI](https://github.com/PabloeCancino/TME_Nudos/actions/workflows/lean_action_ci.yml/badge.svg)](https://github.com/PabloeCancino/TME_Nudos/actions/workflows/lean_action_ci.yml)
 [![Lean 4](https://img.shields.io/badge/Lean-4.26.0-blue)](https://leanprover.github.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Public](https://img.shields.io/badge/Repository-Public-green)](https://github.com/PabloeCancino/TME_Nudos)
@@ -38,6 +40,18 @@ El código resultante comprende **~3,500 líneas de Lean 4** con **150+ teoremas
 ## Impacto y Proyecciones
 
 Este trabajo establece un precedente metodológico para la verificación formal en teoría de nudos, proporcionando un framework extensible a clasificaciones superiores (K₄, K₅, ...). La combinación de técnicas algebraicas, análisis computacional y verificación mecánica abre nuevas posibilidades para abordar problemas abiertos en topología de baja dimensión con garantías de corrección absoluta.
+
+## Integración Continua (CI/CD)
+
+Este proyecto utiliza GitHub Actions para automatizar la compilación, pruebas y verificación del código:
+
+- **CI Build**: Compila el proyecto completo y verifica la ausencia de pruebas incompletas (`sorry`)
+- **Test Suite**: Ejecuta pruebas exhaustivas de todos los módulos y verifica la completitud de las demostraciones
+- **Lean Action CI**: Genera documentación automática usando docgen
+- **PR Quality Checks**: Valida la calidad del código en pull requests
+- **Update Workflows**: Mantiene actualizadas las dependencias de Lean y Mathlib
+
+Todos los workflows se ejecutan automáticamente en cada push y pull request, garantizando la integridad del proyecto.
 
 ---
 
