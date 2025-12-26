@@ -71,7 +71,7 @@ __pycache__/
 *.so
 
 # Powershell
-.ps1
+*.ps1
 
 # Otros
 .gemini/

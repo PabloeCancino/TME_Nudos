@@ -12,13 +12,13 @@
 # - Respeta automáticamente las reglas de .gitignore
 #
 # Backup normal (aborta si hay conflictos)
-# .\github-backup.ps1
+# .\Procesos\Scripts\github-backup.ps1
 # Backup forzado (sobrescribe GitHub con tu versión local)
-# .\github-backup.ps1 -Force
+# .\Procesos\Scripts\github-backup.ps1 -Force
 # Ver qué haría sin hacer cambios
-# .\github-backup.ps1 -DryRun
+# .\Procesos\Scripts\github-backup.ps1 -DryRun
 # Con mensaje personalizado
-# .\github-backup.ps1 -Message "Mi backup" -Force
+# .\Procesos\Scripts\github-backup.ps1 -Message "Mi backup" -Force
 # ============================================================================
 
 param(
