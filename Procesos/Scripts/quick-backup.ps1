@@ -5,7 +5,7 @@
 # C:\Users\pablo\OneDrive\Documentos\TME_Nudos\Procesos\Scripts\
 # ============================================================================
 
-$RepoPath = "C:\Users\pablo\OneDrive\Documentos\TME_Nudos"
+$RepoPath = "C:\Users\pablo\OneDrive\Documentos\TME_Nudos\"
 
 Set-Location $RepoPath
 
