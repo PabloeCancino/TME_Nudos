@@ -191,38 +191,71 @@ try {
         exit 1
     }
     
-    # Sincronizar con GitHub
+    # Sincronizar con GitHub (Local es la fuente de verdad)
     Write-Info "`n🔄 Sincronizando con GitHub..."
-    Write-Info "   1. Obteniendo cambios remotos..."
+    Write-Info "   1. Obteniendo estado remoto..."
     
-    # Primero hacer fetch para ver si hay cambios remotos
+    # Hacer fetch para ver el estado del remoto
     git fetch origin master 2>&1 | Out-Null
     
-    # Verificar si estamos detrás del remoto
+    # Verificar si hay divergencia con el remoto
     $localCommit = git rev-parse HEAD
     $remoteCommit = git rev-parse origin/master 2>&1
     
     if ($localCommit -ne $remoteCommit) {
-        Write-Warning "⚠️  Hay cambios en GitHub que no tienes localmente"
-        Write-Info "   2. Integrando cambios remotos..."
+        # Verificar si el local está adelante, atrás, o divergente
+        $behind = git rev-list --count HEAD..origin/master 2>&1
+        $ahead = git rev-list --count origin/master..HEAD 2>&1
         
-        $pullOutput = git pull --rebase origin master 2>&1
-        
-        if ($LASTEXITCODE -ne 0) {
-            Write-Error "❌ Error al integrar cambios remotos"
-            Write-Error "   $pullOutput"
-            Write-Log "Error en pull: $pullOutput" "ERROR"
-            Write-Warning "`n⚠️  Resuelve los conflictos manualmente y vuelve a ejecutar el script"
-            exit 1
+        if ($behind -gt 0 -and $ahead -gt 0) {
+            Write-Warning "⚠️  ADVERTENCIA: Repositorio local y GitHub han divergido"
+            Write-Warning "   Local tiene $ahead commits adelante y $behind commits atrás de GitHub"
+            Write-Warning "   El repositorio LOCAL es la fuente de verdad"
+            Write-Info "`n   Opciones:"
+            Write-Info "   1. Usar -Force para sobrescribir GitHub con el estado local"
+            Write-Info "   2. Revisar manualmente con 'git log --all --graph --oneline'"
+            
+            if (-not $Force) {
+                Write-Error "`n❌ Sincronización cancelada para prevenir pérdida de datos"
+                Write-Error "   Usa -Force si estás seguro de sobrescribir GitHub"
+                Write-Log "Sincronización cancelada: divergencia detectada" "WARN"
+                exit 1
+            }
+            else {
+                Write-Warning "   ⚠️  Modo -Force activado: GitHub será sobrescrito"
+                Write-Log "Forzando push: sobrescribiendo GitHub" "WARN"
+            }
         }
-        
-        Write-Success "   ✅ Cambios remotos integrados"
-        Write-Log "Pull exitoso" "INFO"
+        elseif ($behind -gt 0) {
+            Write-Warning "⚠️  GitHub tiene $behind commits que no están en local"
+            Write-Warning "   El repositorio LOCAL es la fuente de verdad"
+            
+            if (-not $Force) {
+                Write-Error "`n❌ Sincronización cancelada para prevenir pérdida de datos"
+                Write-Error "   Usa -Force si estás seguro de sobrescribir GitHub"
+                Write-Log "Sincronización cancelada: GitHub tiene commits nuevos" "WARN"
+                exit 1
+            }
+            else {
+                Write-Warning "   ⚠️  Modo -Force activado: GitHub será sobrescrito"
+                Write-Log "Forzando push: sobrescribiendo GitHub" "WARN"
+            }
+        }
+        else {
+            Write-Info "   ✅ Local está $ahead commits adelante de GitHub"
+        }
     }
     
     # Push a GitHub
-    Write-Info "   3. Subiendo cambios a GitHub..."
-    $pushOutput = git push origin master 2>&1
+    Write-Info "   2. Subiendo cambios a GitHub..."
+    
+    # Usar --force-with-lease si se especificó -Force, sino push normal
+    if ($Force) {
+        $pushOutput = git push --force-with-lease origin master 2>&1
+    }
+    else {
+        $pushOutput = git push origin master 2>&1
+    }
     
     if ($LASTEXITCODE -eq 0) {
         Write-Success "`n✅ Sincronización exitosa con GitHub"
