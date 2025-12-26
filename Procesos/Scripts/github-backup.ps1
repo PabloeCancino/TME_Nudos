@@ -6,6 +6,9 @@
 #
 # IMPORTANTE: Este script sincroniza con GitHub usando el .gitignore local
 # Solo sube archivos de código Lean y archivos esenciales del proyecto
+#
+# .\Procesos\Scripts\github-backup.ps1
+# .\Procesos\Scripts\github-backup.ps1 -Force
 # ============================================================================
 
 param(
