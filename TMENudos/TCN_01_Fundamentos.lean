@@ -547,11 +547,9 @@ private lemma partition_reverse (K : K3Config) :
       · rcases hq_has with hi_qfst | hi_qsnd
         · right
           unfold OrderedPair.reverse at hi_qfst
-          simp at hi_qfst
           exact hi_qfst
         · left
           unfold OrderedPair.reverse at hi_qsnd
-          simp at hi_qsnd
           exact hi_qsnd
     rw [hr_eq]
 
@@ -622,25 +620,23 @@ lemma adjustDelta_nonzero_of_distinct {a b : ZMod 6} (h : a ≠ b) :
     have : b = a := ZMod.val_injective 6 this
     exact h this.symm
 
-/-- Lema: adjustDelta mantiene valores en [-3, 3] -/
-lemma adjustDelta_bounded (δ : ℤ) :
+/-- Lema: adjustDelta mantiene valores en [-3, 3] cuando δ proviene de Z/6Z.
+
+    Para pares en Z/6Z, δ = s - e donde s, e ∈ [0, 5], entonces δ ∈ [-5, 5].
+    adjustDelta ajusta este rango a [-3, 3]. -/
+lemma adjustDelta_bounded (δ : ℤ) (h_bound : -5 ≤ δ ∧ δ ≤ 5) :
   -3 ≤ adjustDelta δ ∧ adjustDelta δ ≤ 3 := by
   unfold adjustDelta
   split_ifs with h1 h2
   · -- Caso 1: δ > 3, entonces adjustDelta δ = δ - 6
-    constructor
-    · have : δ ≤ 5 := by omega
-      omega  -- -3 ≤ δ - 6
-    · omega  -- δ - 6 ≤ 3
+    -- Tenemos: 3 < δ ≤ 5, entonces -3 ≤ δ - 6 ≤ -1
+    omega
   · -- Caso 2: δ ≤ 3 y δ < -3, entonces adjustDelta δ = δ + 6
-    constructor
-    · have : δ ≥ -5 := by omega
-      omega  -- -3 ≤ δ + 6
-    · omega  -- δ + 6 ≤ 3
-  · -- Caso 3: δ ≤ 3 y δ ≥ -3, entonces adjustDelta δ = δ
-    constructor
-    · omega  -- -3 ≤ δ
-    · omega  -- δ ≤ 3
+    -- Tenemos: -5 ≤ δ < -3, entonces 1 ≤ δ + 6 < 3
+    omega
+  · -- Caso 3: -3 ≤ δ ≤ 3, entonces adjustDelta δ = δ
+    -- Ya está en el rango correcto
+    omega
 
 /-- Lema auxiliar: foldl con acumulador negado -/
 lemma foldl_add_neg_aux (l : List ℤ) (acc : ℤ) :
@@ -686,7 +682,7 @@ lemma sum_list_ge (l : List ℕ) (n m : ℕ)
   (hbound : ∀ x ∈ l, x ≥ m) :
   l.foldl (· + ·) 0 ≥ n * m := by
   have h := foldl_add_ge_aux l m 0 hbound
-  simp at h
+  simp only [Nat.zero_add] at h
   calc l.foldl (· + ·) 0
       ≥ l.length * m := h
     _ = n * m := by rw [hlen]
@@ -717,7 +713,7 @@ lemma sum_list_le (l : List ℕ) (n m : ℕ)
   (hbound : ∀ x ∈ l, x ≤ m) :
   l.foldl (· + ·) 0 ≤ n * m := by
   have h := foldl_add_le_aux l m 0 hbound
-  simp at h
+  simp only [Nat.zero_add] at h
   calc l.foldl (· + ·) 0
       ≤ l.length * m := h
     _ = n * m := by rw [hlen]
