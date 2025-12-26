@@ -1,11 +1,22 @@
 # ============================================================================
 # Script de Backup SEGURO a GitHub para TME_Nudos
 # ============================================================================
-# Descripción: Realiza commits y push a GitHub respetando .gitignore
+# Descripción: Backup UNIDIRECCIONAL (Local → GitHub) respetando .gitignore
 # Uso: .\github-backup.ps1 [-Message "mensaje"] [-Force] [-Verbose] [-DryRun]
 #
-# IMPORTANTE: Este script sincroniza con GitHub usando el .gitignore local
-# Solo sube archivos de código Lean y archivos esenciales del proyecto
+# IMPORTANTE: 
+# - Este script NUNCA modificará tu repositorio local
+# - Solo sube cambios locales a GitHub (backup unidireccional)
+# - Si GitHub tiene cambios diferentes, el script ABORTA por seguridad
+# - Usa -Force para sobrescribir GitHub con tu versión local
+# - Respeta automáticamente las reglas de .gitignore
+# .\github-backup.ps1 -DryRun
+# .\github-backup.ps1 -DryRun -Verbose
+# 
+# 
+# 
+# 
+# 
 # ============================================================================
 
 param(
@@ -284,11 +295,11 @@ try {
         exit 1
     }
     
-    # Sincronizar con GitHub
-    Write-Info "`n🔄 Sincronizando con GitHub..."
-    Write-Info "   1. Obteniendo cambios remotos..."
+    # Sincronizar con GitHub (SOLO BACKUP - NUNCA MODIFICAR LOCAL)
+    Write-Info "`n🔄 Subiendo backup a GitHub..."
+    Write-Info "   1. Verificando estado del remoto..."
     
-    # Primero hacer fetch para ver si hay cambios remotos
+    # Hacer fetch para ver si hay cambios remotos
     git fetch origin master 2>&1 | Out-Null
     
     # Verificar si estamos detrás del remoto
@@ -296,30 +307,42 @@ try {
     $remoteCommit = git rev-parse origin/master 2>&1
     
     if ($localCommit -ne $remoteCommit) {
-        Write-Warning "⚠️  Hay cambios en GitHub que no tienes localmente"
-        Write-Info "   2. Integrando cambios remotos..."
+        # Verificar si hay divergencia (historiales diferentes)
+        $mergeBase = git merge-base HEAD origin/master 2>&1
         
-        # Usar merge en lugar de rebase para ser más seguro
-        $pullOutput = git pull --no-rebase origin master 2>&1
-        
-        if ($LASTEXITCODE -ne 0) {
-            Write-Error "❌ Error al integrar cambios remotos"
-            Write-Error "   $pullOutput"
-            Write-Log "Error en pull: $pullOutput" "ERROR"
-            Write-Warning "`n⚠️  Resuelve los conflictos manualmente y vuelve a ejecutar el script"
+        if ($mergeBase -ne $localCommit -and $mergeBase -ne $remoteCommit) {
+            Write-Error "❌ PELIGRO: GitHub y tu repositorio local tienen historiales divergentes"
+            Write-Error "   Esto podría causar pérdida de datos si se fuerza el push"
+            Write-Error ""
+            Write-Warning "⚠️  OPCIONES SEGURAS:"
+            Write-Warning "   1. Revisa manualmente qué cambios hay en GitHub"
+            Write-Warning "   2. Si GitHub tiene cambios que NO quieres, usa: git push --force-with-lease origin master"
+            Write-Warning "   3. Si quieres integrar cambios de GitHub, hazlo manualmente con git pull"
+            Write-Log "Abortado: historiales divergentes" "ERROR"
             exit 1
         }
         
-        Write-Success "   ✅ Cambios remotos integrados"
-        Write-Log "Pull exitoso" "INFO"
+        Write-Warning "⚠️  GitHub tiene commits que no están en tu repositorio local"
+        Write-Warning "   Este script NUNCA modificará tu repositorio local"
+        Write-Warning "   Si quieres sobrescribir GitHub con tu versión local, usa -Force"
+        Write-Log "Abortado: remoto tiene commits nuevos" "WARN"
+        exit 1
     }
     
     # Push a GitHub
-    Write-Info "   3. Subiendo cambios a GitHub..."
-    $pushOutput = git push origin master 2>&1
+    Write-Info "   2. Subiendo cambios a GitHub..."
+    
+    # Si se usa -Force, sobrescribir GitHub con versión local
+    if ($Force) {
+        Write-Warning "⚠️  Usando -Force: Sobrescribiendo GitHub con tu versión local..."
+        $pushOutput = git push --force-with-lease origin master 2>&1
+    }
+    else {
+        $pushOutput = git push origin master 2>&1
+    }
     
     if ($LASTEXITCODE -eq 0) {
-        Write-Success "`n✅ Sincronización exitosa con GitHub"
+        Write-Success "`n✅ Backup exitoso a GitHub"
         Write-Log "Push exitoso a GitHub" "INFO"
     }
     else {
