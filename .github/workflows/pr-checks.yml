@@ -1,0 +1,80 @@
+name: PR Quality Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  quality:
+    name: Code Quality Verification
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Check PR title
+      run: |
+        PR_TITLE="${{ github.event.pull_request.title }}"
+        echo "PR Title: $PR_TITLE"
+        
+        # Check if title follows conventional commit format (optional)
+        if [[ "$PR_TITLE" =~ ^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?:\ .+ ]]; then
+          echo "✅ PR title follows conventional commit format"
+        else
+          echo "ℹ️ PR title doesn't follow conventional commit format (optional)"
+        fi
+        
+    - name: Check for large files
+      run: |
+        echo "Checking for large files..."
+        LARGE_FILES=$(find . -type f -size +1M -not -path "./.git/*" -not -path "./.lake/*" || true)
+        
+        if [ -n "$LARGE_FILES" ]; then
+          echo "⚠️ Warning: Large files detected:"
+          echo "$LARGE_FILES"
+        else
+          echo "✅ No large files detected"
+        fi
+        
+    - name: Check for sensitive data patterns
+      run: |
+        echo "Checking for potential sensitive data..."
+        
+        # Check for common sensitive patterns
+        SENSITIVE_PATTERNS="password|secret|api_key|private_key|token"
+        
+        if grep -r -i -E "$SENSITIVE_PATTERNS" --include="*.lean" --include="*.toml" --include="*.json" . 2>/dev/null | grep -v "Binary file" | grep -v ".git" | grep -v ".lake"; then
+          echo "⚠️ Warning: Potential sensitive data patterns found"
+          echo "Please review the above matches"
+        else
+          echo "✅ No obvious sensitive data patterns detected"
+        fi
+        
+    - name: Check file structure
+      run: |
+        echo "Verifying project structure..."
+        
+        REQUIRED_FILES="lakefile.toml lean-toolchain README.md LICENSE"
+        
+        for file in $REQUIRED_FILES; do
+          if [ -f "$file" ]; then
+            echo "✅ $file exists"
+          else
+            echo "❌ $file is missing"
+          fi
+        done
+        
+    - name: Generate PR quality report
+      if: always()
+      run: |
+        echo "## 📋 PR Quality Report" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Basic Checks" >> $GITHUB_STEP_SUMMARY
+        echo "- PR opened by: @${{ github.event.pull_request.user.login }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Target branch: ${{ github.event.pull_request.base.ref }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Source branch: ${{ github.event.pull_request.head.ref }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Quality checks completed" >> $GITHUB_STEP_SUMMARY
