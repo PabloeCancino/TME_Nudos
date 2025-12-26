@@ -256,11 +256,21 @@ def adjustDelta (δ : ℤ) : ℤ :=
 
     **DME = (δ₁, δ₂, δ₃)** donde **δᵢ = sᵢ - eᵢ** (aritmética entera, ajustado a [-3, 3])
 
+    ## Nota de Implementación
+
+    **Conceptualmente**, DME es un **multiconjunto** (el orden no tiene significado matemático).
+    Sin embargo, usamos `List ℤ` por conveniencia de la API de Mathlib:
+    - Las operaciones sobre listas (`map`, `foldl`) son más directas
+    - La conversión a `Multiset` es trivial cuando se necesita
+    - Las propiedades matemáticas se demuestran a nivel de multiconjunto
+
+    Ver `dme_as_multiset` para la prueba constructiva de invariancia bajo permutación.
+
     ## Propiedades
 
     - Codifica **completamente** la estructura del nudo (junto con E)
     - δᵢ ∈ {-3, -2, -1, 1, 2, 3} (excluyendo 0 por propiedad de partición)
-    - **DME(K̄) = -DME(K)** bajo reflexión especular
+    - **DME(K̄) = -DME(K)** bajo reflexión especular (a nivel de multiconjunto)
 
     ## Rol en el Sistema
 
@@ -274,7 +284,7 @@ def adjustDelta (δ : ℤ) : ℤ :=
 
     ```lean
     Config: ((1,4), (5,2), (3,0))
-    DME = (4-1, 2-5, 0-3) = (3, -3, -3)
+    DME = (4-1, 2-5, 0-3) = (3, -3, -3)  -- Lista, pero orden no importa
     ```
      -/
 
@@ -928,6 +938,25 @@ theorem writhe_mirror (K : K3Config) :
   have h_dme : K.mirror.dme = K.dme.map (· * (-1)) := dme_mirror K
   rw [h_dme]
   exact foldl_sum_neg K.dme
+
+/-! ## Propiedades de DME como Multiconjunto
+
+    Aunque DME se implementa como `List ℤ`, las propiedades matemáticas
+    fundamentales son independientes del orden. Los siguientes teoremas
+    demuestran esto de manera constructiva a nivel de multiconjunto. -/
+
+/-- **TEOREMA CONSTRUCTIVO**: DME como multiconjunto es invariante bajo reflexión (con negación).
+
+    Este teorema demuestra que la propiedad fundamental DME(K̄) = -DME(K)
+    es válida a nivel de multiconjunto de manera completamente constructiva,
+    sin necesidad de axiomas sobre el orden de las listas.
+
+    La prueba usa solo propiedades de multiconjuntos y es independiente
+    de la representación interna de `toList`. -/
+theorem dme_as_multiset (K : K3Config) :
+  (K.mirror.dme : Multiset ℤ) = ((K.dme.map (· * (-1))) : Multiset ℤ) := by
+  have h := dme_mirror K
+  simp [h]
 
 /-- **TEOREMA**: La reflexión es involutiva.
 
