@@ -86,13 +86,13 @@ theorem ratio_ne_zero (p : OrderedPair n) : p.ratio ≠ 0 := by
   have : p.snd = p.fst := by
     rw [sub_eq_zero] at h
     exact h
-  exact p.distinct this
+  exact p.distinct this.symm
 
 /-- Rotación de un par ordenado (desplazamiento circular) -/
 def rotate (p : OrderedPair n) (k : ZMod (2*n)) : OrderedPair n :=
   ⟨p.fst + k, p.snd + k, by
     intro h
-    have : p.fst = p.snd := by omega
+    have : p.fst = p.snd := add_right_cancel h
     exact p.distinct this⟩
 
 /-- La rotación preserva la razón modular -/
@@ -136,7 +136,7 @@ theorem ext_iff {K₁ K₂ : KnConfig n} : K₁ = K₂ ↔ K₁.pairs = K₂.pai
   · intro h
     cases K₁; cases K₂
     simp only [mk.injEq]
-    exact ⟨h, rfl, rfl⟩
+    exact h
 
 instance : DecidableEq (KnConfig n) := by
   intro K₁ K₂
@@ -168,12 +168,10 @@ def rotate (K : KnConfig n) (k : ZMod (2*n)) : KnConfig n where
       cases p₁; cases p₂
       simp only [OrderedPair.rotate, mk.injEq] at h
       obtain ⟨h1, h2⟩ := h
-      ext
-      · omega
-      · omega
+      simp_all
   coverage := by
     intro i
-    obtain ⟨p, hp, (h : p.fst = i ∨ p.snd = i)⟩ := K.coverage (i - k)
+    obtain ⟨p, hp, h⟩ := K.coverage (i - k)
     use p.rotate k
     constructor
     · exact Finset.mem_image_of_mem _ hp
@@ -206,7 +204,7 @@ def reflect (K : KnConfig n) : KnConfig n where
 @[simp]
 theorem rotate_add (K : KnConfig n) (k₁ k₂ : ZMod (2*n)) :
     (K.rotate k₁).rotate k₂ = K.rotate (k₁ + k₂) := by
-  ext
+  cases K
   simp [rotate]
   ext p
   constructor
@@ -222,7 +220,7 @@ theorem rotate_add (K : KnConfig n) (k₁ k₂ : ZMod (2*n)) :
 /-- La reflexión es involutiva -/
 @[simp]
 theorem reflect_reflect (K : KnConfig n) : K.reflect.reflect = K := by
-  ext
+  cases K
   simp [reflect]
   ext p
   simp
@@ -267,8 +265,8 @@ def k1_example : KnConfig 1 where
   coverage := by
     intro i
     fin_cases i
-    · use ⟨0, 1, by decide⟩; simp; left; rfl
-    · use ⟨0, 1, by decide⟩; simp; right; rfl
+    · use ⟨0, 1, by decide⟩; simp
+    · use ⟨0, 1, by decide⟩; simp
 
 /-- Configuración ejemplo para K₂ (2 cruces) -/
 def k2_example : KnConfig 2 where
@@ -277,10 +275,10 @@ def k2_example : KnConfig 2 where
   coverage := by
     intro i
     fin_cases i
-    · use ⟨0, 1, by decide⟩; simp; left; rfl
-    · use ⟨0, 1, by decide⟩; simp; right; rfl
-    · use ⟨2, 3, by decide⟩; simp; left; rfl
-    · use ⟨2, 3, by decide⟩; simp; right; rfl
+    · use ⟨0, 1, by decide⟩; simp
+    · use ⟨0, 1, by decide⟩; simp
+    · use ⟨2, 3, by decide⟩; simp
+    · use ⟨2, 3, by decide⟩; simp
 
 end Examples
 
