@@ -145,17 +145,17 @@ theorem toMatching_card (K : KnConfig n) : K.toMatching.card = n := by
     have h1 : p1 = q := hq_unique p1 ⟨hp1, Or.inl rfl⟩
     -- Necesitamos mostrar que p2 también coincide con q
     unfold OrderedPairN.toEdge at h_edge
-    -- CORRECCIÓN: Usar ← h_edge para reescribir en la dirección correcta
+    -- CORRECCIÓN: Usar h_edge para reescribir {p1.fst, p1.snd} → {p2.fst, p2.snd}
     have hp2_fst_mem : p2.fst ∈ ({p1.fst, p1.snd} : Finset (ZMod (2 * n))) := by
-      rw [← h_edge]
-      simp [OrderedPairN.toEdge]
+      rw [h_edge]
+      simp
     simp only [Finset.mem_insert, Finset.mem_singleton] at hp2_fst_mem
     rcases hp2_fst_mem with hf1 | hf2
     · -- p2.fst = p1.fst
-      -- CORRECCIÓN: Usar ← h_edge para reescribir en la dirección correcta
+      -- CORRECCIÓN: Usar h_edge para reescribir {p1.fst, p1.snd} → {p2.fst, p2.snd}
       have hp2_snd_mem : p2.snd ∈ ({p1.fst, p1.snd} : Finset (ZMod (2 * n))) := by
-        rw [← h_edge]
-        simp [OrderedPairN.toEdge]
+        rw [h_edge]
+        simp
       simp only [Finset.mem_insert, Finset.mem_singleton] at hp2_snd_mem
       rcases hp2_snd_mem with hs1 | hs2
       · -- p2.snd = p1.fst, pero p2.fst = p1.fst → contradicción
@@ -169,10 +169,10 @@ theorem toMatching_card (K : KnConfig n) : K.toMatching.card = n := by
       have hp2_snd_eq : p2.snd = p1.fst := by
         -- Sabemos p2.fst = p1.snd (por hf2)
         -- p2.snd debe estar en {p1.fst, p1.snd}
-        -- CORRECCIÓN: Usar ← h_edge para reescribir en la dirección correcta
+        -- CORRECCIÓN: Usar h_edge para reescribir {p1.fst, p1.snd} → {p2.fst, p2.snd}
         have hp2_snd_mem : p2.snd ∈ ({p1.fst, p1.snd} : Finset (ZMod (2 * n))) := by
-          rw [← h_edge]
-          simp [OrderedPairN.toEdge]
+          rw [h_edge]
+          simp
         simp only [Finset.mem_insert, Finset.mem_singleton] at hp2_snd_mem
         rcases hp2_snd_mem with hs1 | hs2
         · exact hs1
@@ -259,7 +259,7 @@ private lemma card_image_reverse {n : ℕ} (K : KnConfig n) :
   (K.pairs.image OrderedPairN.reverse).card = n := by
   have h_inv : ∀ x : OrderedPairN n, x.reverse.reverse = x :=
     OrderedPairN.reverse_involutive
-  -- Usar injOn para la prueba
+  -- CORRECCIÓN LÍNEA 249: Cambiar estrategia para usar injOn
   rw [Finset.card_image_of_injOn]
   · exact K.card_eq
   · -- Probar que reverse es inyectiva sobre K.pairs
@@ -296,11 +296,11 @@ private lemma partition_reverse {n : ℕ} (K : KnConfig n) :
       · rcases hq_has with hi_qfst | hi_qsnd
         · right
           unfold OrderedPairN.reverse at hi_qfst
-          simp at hi_qfst
+          simp only at hi_qfst
           exact hi_qfst
         · left
           unfold OrderedPairN.reverse at hi_qsnd
-          simp at hi_qsnd
+          simp only at hi_qsnd
           exact hi_qsnd
     rw [hr_eq]
 
