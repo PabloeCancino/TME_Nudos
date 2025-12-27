@@ -3,6 +3,9 @@
 		{
 			"name": "TME_Nudos",
 			"path": "."
+		},
+		{
+			"path": "../TME_Nudos_marco_teorico"
 		}
 	],
 	"settings": {}
