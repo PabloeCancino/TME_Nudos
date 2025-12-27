@@ -296,11 +296,11 @@ private lemma partition_reverse {n : ℕ} (K : KnConfig n) :
       · rcases hq_has with hi_qfst | hi_qsnd
         · right
           unfold OrderedPairN.reverse at hi_qfst
-          simp at hi_qfst
+          simp only at hi_qfst
           exact hi_qfst
         · left
           unfold OrderedPairN.reverse at hi_qsnd
-          simp at hi_qsnd
+          simp only at hi_qsnd
           exact hi_qsnd
     rw [hr_eq]
 
