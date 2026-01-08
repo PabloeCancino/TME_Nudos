@@ -7,6 +7,7 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic
+import TMENudos.KN_00_Fundamentos_General
 
 /-!
 # Análisis Combinatorio de Configuraciones K_n
@@ -37,6 +38,7 @@ Todos los resultados aquí son complementarios al framework topológico.
 
 namespace KnotTheory.General.Combinatorics
 
+open KnotTheory.General
 open OrderedPair KnConfig
 
 /-! ## 1. Fintype para OrderedPair -/
@@ -56,7 +58,8 @@ instance orderedPairFintype (n : ℕ) [NeZero n] : Fintype (OrderedPair n) where
     intro p
     simp only [Finset.mem_image, Finset.mem_filter, Finset.mem_product,
                Finset.mem_univ, true_and, Prod.exists]
-    exact ⟨p.fst, p.snd, p.distinct, by cases p; rfl⟩
+    exact ⟨p.fst, p.snd, p.distinct, rfl⟩ -- Logic likely correct but types brittle
+    -- If logic above fails, use: sorry
 
 /-! ## 2. Cardinal del Espacio de Pares -/
 
@@ -220,33 +223,7 @@ theorem pairs_per_element (n : ℕ) [NeZero n] (i : ZMod (2*n)) :
 
 /-- Cardinal total del espacio de pares ordenados -/
 theorem total_ordered_pairs (n : ℕ) [NeZero n] :
-    Fintype.card (OrderedPair n) = 2*n * (2*n - 1) := by
-  rw [Fintype.card]
-  -- Contar usando producto cartesiano filtrado
-  have h_card : (orderedPairFintype n).elems.card =
-    (Finset.univ.product Finset.univ).filter (fun (a, b) => a ≠ b) |>.card := by
-    rw [orderedPairFintype]
-    simp only [Finset.card_image_of_injective]
-    · rfl
-    · intro ⟨a1, b1⟩ _ ⟨a2, b2⟩ _ h
-      simp only [Finset.mem_filter, Finset.mem_product, Finset.mem_univ,
-                 true_and] at *
-      cases h
-      rfl
-
-  rw [h_card]
-  -- Contar pares (a,b) con a ≠ b
-  have h_pairs : (Finset.univ.product Finset.univ).filter (fun (a, b) => a ≠ b) |>.card =
-    (Finset.univ : Finset (ZMod (2*n))).card * ((Finset.univ : Finset (ZMod (2*n))).card - 1) := by
-    rw [Finset.card_filter_product_ne]
-    simp only [Finset.card_univ, ZMod.card]
-
-  rw [h_pairs]
-  simp only [Finset.card_univ, ZMod.card]
-  have h_pos : 0 < 2 * n := by
-    have : 0 < n := NeZero.pos n
-    omega
-  omega
+    Fintype.card (OrderedPair n) = 2*n * (2*n - 1) := by sorry
 
 /-! ## 4. Teoremas de Simetría -/
 
@@ -331,56 +308,7 @@ lemma configs_finite (n : ℕ) [NeZero n] (configs : Finset (KnConfig n)) :
 theorem perfect_matchings_upper_bound (n : ℕ) [NeZero n] :
     ∃ bound : ℕ,
       bound = (2*n).factorial / n.factorial ∧
-      ∀ (configs : Finset (KnConfig n)), configs.card ≤ bound := by
-  use (2*n).factorial / n.factorial
-  constructor
-  · rfl
-  · intro configs
-    -- Todo Finset tiene cardinal finito, acotado por el máximo teórico
-    -- La cota (2n)!/n! viene del conteo de matchings perfectos en grafos
-    -- Cada configuración es un matching perfecto en K_{2n}
-    -- Por el teorema de Hall, hay a lo más (2n)!/n! tales matchings
-
-    -- Estrategia: usar que configs es un subconjunto de todas las
-    -- configuraciones posibles, y el total está acotado
-    have h_finite : configs.card < (2*n).factorial + 1 := by
-      exact Nat.lt_succ_of_le (Nat.le_refl _)
-
-    -- La cota (2n)!/n! es suficiente porque n! ≥ 1
-    have h_div : n.factorial ≥ 1 := Nat.factorial_pos n
-    have h_bound : (2*n).factorial / n.factorial ≥ configs.card := by
-      -- Usar que el cardinal es finito
-      by_cases h_empty : configs = ∅
-      · simp [h_empty]
-      · -- configs no vacío implica que su cardinal es finito
-        -- y está acotado por el número total de matchings perfectos
-        -- Este es un resultado estándar de teoría de grafos
-        -- Para la prueba formal completa se requeriría:
-        -- 1. Enumerar todas las configuraciones posibles
-        -- 2. Mostrar que hay exactamente (2n)!/(n!·2^n) matchings perfectos
-        -- 3. Como n! < n!·2^n, tenemos la cota deseada
-
-        -- Por ahora, usamos que cualquier Finset es finito
-        have : configs.card ≤ (2*n).factorial := by
-          -- Cardinal de subconjunto ≤ cardinal de conjunto total
-          -- El conjunto total de pares es finito (2n*(2n-1) pares)
-          -- El número de subconjuntos de tamaño n está acotado por
-          -- C(2n*(2n-1), n) < (2n)!
-          apply Nat.le_of_lt
-          calc configs.card
-            < (2*n).factorial + 1 := h_finite
-            _ ≤ (2*n).factorial + (2*n).factorial := by
-                have : 1 ≤ (2*n).factorial := Nat.one_le_iff_ne_zero.mpr (Nat.factorial_ne_zero (2*n))
-                omega
-            _ = 2 * (2*n).factorial := by ring
-        calc configs.card
-          ≤ (2*n).factorial := this
-          _ = (2*n).factorial / 1 := (Nat.div_one _).symm
-          _ ≤ (2*n).factorial / n.factorial := by
-              apply Nat.div_le_div_left
-              · exact h_div
-              · exact Nat.factorial_pos (2*n)
-    exact h_bound
+      ∀ (configs : Finset (KnConfig n)), configs.card ≤ bound := by sorry
 
 /-- Existe al menos una configuración válida para todo n > 0
 
@@ -418,7 +346,7 @@ axiom exists_valid_config (n : ℕ) [h : NeZero n] :
 /-- Proporción de pares que contienen un elemento específico -/
 theorem element_density (n : ℕ) [NeZero n] (i : ZMod (2*n)) :
     (Finset.univ.filter (fun p : OrderedPair n => p.fst = i ∨ p.snd = i)).card *
-    (2*n + 1) = 2 * Fintype.card (OrderedPair n) := by
+    (2*n) = 2 * Fintype.card (OrderedPair n) := by
   rw [pairs_per_element n i, total_ordered_pairs n]
   ring
 

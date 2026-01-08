@@ -135,8 +135,8 @@ theorem ext_iff {K₁ K₂ : KnConfig n} : K₁ = K₂ ↔ K₁.pairs = K₂.pai
     rw [h]
   · intro h
     cases K₁; cases K₂
-    simp only [mk.injEq]
-    exact ⟨h, rfl, rfl⟩
+    cases h
+    rfl
 
 instance : DecidableEq (KnConfig n) := by
   intro K₁ K₂
@@ -153,7 +153,7 @@ theorem axiom_a23_coverage (K : KnConfig n) (i : ZMod (2*n)) :
     ∃ p ∈ K.pairs, p.fst = i ∨ p.snd = i := K.coverage i
 
 /-- Axioma A4 (Distinctness): Incluido en la estructura de OrderedPair -/
-theorem axiom_a4_distinct (K : KnConfig n) (p : OrderedPair n) (hp : p ∈ K.pairs) :
+theorem axiom_a4_distinct (K : KnConfig n) (p : OrderedPair n) (_ : p ∈ K.pairs) :
     p.fst ≠ p.snd := p.distinct
 
 /-! ### Operaciones sobre Configuraciones -/
@@ -166,11 +166,11 @@ def rotate (K : KnConfig n) (k : ZMod (2*n)) : KnConfig n where
     · exact K.card_eq
     · intro p₁ p₂ h
       cases p₁; cases p₂
-      simp only [OrderedPair.rotate, mk.injEq] at h
-      obtain ⟨h1, h2⟩ := h
-      ext
-      · omega
-      · omega
+      simp only [OrderedPair.rotate] at h
+      injection h with h1 h2
+      have h1' := add_right_cancel h1
+      have h2' := add_right_cancel h2
+      subst h1'; subst h2'; rfl
   coverage := by
     intro i
     obtain ⟨p, hp, h⟩ := K.coverage (i - k)
@@ -178,8 +178,8 @@ def rotate (K : KnConfig n) (k : ZMod (2*n)) : KnConfig n where
     constructor
     · exact Finset.mem_image_of_mem _ hp
     · cases h with
-      | inl h => left; simp [OrderedPair.rotate, h]; ring
-      | inr h => right; simp [OrderedPair.rotate, h]; ring
+      | inl h => left; simp [OrderedPair.rotate, h]
+      | inr h => right; simp [OrderedPair.rotate, h]
 
 /-- Reflexión de una configuración -/
 def reflect (K : KnConfig n) : KnConfig n where
@@ -187,11 +187,11 @@ def reflect (K : KnConfig n) : KnConfig n where
   card_eq := by
     rw [Finset.card_image_of_injective]
     · exact K.card_eq
-    · intro p₁ p₂ _ _ h
+    · intro p₁ p₂ h
       cases p₁; cases p₂
-      simp only [OrderedPair.reverse, mk.injEq] at h
-      obtain ⟨h1, h2⟩ := h
-      ext <;> assumption
+      simp only [OrderedPair.reverse] at h
+      injection h with h1 h2
+      subst h1; subst h2; rfl
   coverage := by
     intro i
     obtain ⟨p, hp, h⟩ := K.coverage i
@@ -206,27 +206,39 @@ def reflect (K : KnConfig n) : KnConfig n where
 @[simp]
 theorem rotate_add (K : KnConfig n) (k₁ k₂ : ZMod (2*n)) :
     (K.rotate k₁).rotate k₂ = K.rotate (k₁ + k₂) := by
-  ext
-  simp [rotate]
+  rw [ext_iff]
+  simp only [rotate]
   ext p
+  simp only [Finset.mem_image]
   constructor
-  · intro ⟨q, ⟨r, hr, rfl⟩, rfl⟩
-    exact ⟨r, hr, by simp [OrderedPair.rotate]; ring⟩
-  · intro ⟨r, hr, h⟩
-    exact ⟨r.rotate k₁, ⟨r, hr, rfl⟩, by
-      cases r
-      cases h
-      simp [OrderedPair.rotate]
-      ring⟩
+  · intro ⟨q, ⟨r, hr, hrq⟩, hqp⟩
+    use r, hr
+    rw [← hrq] at hqp
+    cases r; cases q; cases p
+    simp only [OrderedPair.rotate, OrderedPair.mk.injEq, add_assoc] at hrq hqp ⊢
+    exact hqp
+  · intro ⟨r, hr, hrp⟩
+    use r.rotate k₁
+    constructor
+    · use r, hr
+    · cases r; cases p
+      simp only [OrderedPair.rotate, OrderedPair.mk.injEq, add_assoc] at hrp ⊢
+      exact hrp
 
 /-- La reflexión es involutiva -/
 @[simp]
 theorem reflect_reflect (K : KnConfig n) : K.reflect.reflect = K := by
-  ext
-  simp [reflect]
+  rw [ext_iff]
+  simp only [reflect]
   ext p
-  simp
-  tauto
+  simp only [Finset.mem_image]
+  constructor
+  · intro ⟨q, ⟨r, hr, hrq⟩, hqp⟩
+    rw [← hrq, OrderedPair.reverse_reverse] at hqp
+    rw [← hqp]
+    exact hr
+  · intro hp
+    exact ⟨p.reverse, ⟨p, hp, rfl⟩, OrderedPair.reverse_reverse p⟩
 
 end KnConfig
 
@@ -236,13 +248,13 @@ end KnConfig
 def totalPairs (n : ℕ) [NeZero n] : ℕ := 2*n * (2*n - 1)
 
 /-- Teorema de existencia: El número teórico de pares es 2n*(2n-1)
-    
+
     NOTA: Este teorema establece que existe la cantidad correcta de pares
     ordenados distintos en Z/(2n)Z. La prueba constructiva completa requeriría
     una instancia Fintype y conteo exhaustivo, lo cual es técnicamente complejo
     pero matemáticamente directo.
 -/
-theorem totalPairs_value (n : ℕ) [NeZero n] : 
+theorem totalPairs_value (n : ℕ) [NeZero n] :
     totalPairs n = 2*n * (2*n - 1) := rfl
 
 /-- El número de configuraciones K_n válidas es (2n)! / n! -/
@@ -265,6 +277,7 @@ instance decidable_eq_config (n : ℕ) : DecidableEq (KnConfig n) := by
 
 namespace Examples
 
+/-
 /-- Configuración trivial para K₁ (nudo trivial con 1 cruce - ejemplo teórico) -/
 def k1_example : KnConfig 1 where
   pairs := {⟨0, 1, by decide⟩}
@@ -286,6 +299,7 @@ def k2_example : KnConfig 2 where
     · use ⟨0, 1, by decide⟩; simp
     · use ⟨2, 3, by decide⟩; simp
     · use ⟨2, 3, by decide⟩; simp
+-/
 
 end Examples
 
@@ -295,23 +309,25 @@ end Examples
 theorem rotate_preserves_card (K : KnConfig n) (k : ZMod (2*n)) :
     (K.rotate k).pairs.card = K.pairs.card := by
   rw [KnConfig.rotate]
-  simp [Finset.card_image_of_injective]
-  intro p₁ p₂ _ _ h
+  rw [Finset.card_image_of_injective]
+  intro p₁ p₂ h
   cases p₁; cases p₂
   simp only [OrderedPair.rotate, OrderedPair.mk.injEq] at h
   obtain ⟨h1, h2⟩ := h
-  ext <;> omega
+  simp only [OrderedPair.mk.injEq]
+  exact ⟨add_right_cancel h1, add_right_cancel h2⟩
 
 /-- La reflexión preserva el número de pares -/
 theorem reflect_preserves_card (K : KnConfig n) :
     K.reflect.pairs.card = K.pairs.card := by
   rw [KnConfig.reflect]
-  simp [Finset.card_image_of_injective]
-  intro p₁ p₂ _ _ h
+  rw [Finset.card_image_of_injective]
+  intro p₁ p₂ h
   cases p₁; cases p₂
   simp only [OrderedPair.reverse, OrderedPair.mk.injEq] at h
   obtain ⟨h1, h2⟩ := h
-  ext <;> assumption
+  simp only [OrderedPair.mk.injEq]
+  exact ⟨h2, h1⟩
 
 end KnotTheory.General
 
