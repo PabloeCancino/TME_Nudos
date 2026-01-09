@@ -178,6 +178,6 @@ theorem IME_eq_of_mem_orbit (K₁ K₂ : KnConfig n) :
   · -- Case: K₂ = (K₁.mirror).rotate k
     rw [← hkm]
     simp
-    sorry  -- Requires mirror invariance of IME
+    rw [KnConfig.IME_rotate, KnConfig.IME_mirror]
 
 end KnotTheory.General
