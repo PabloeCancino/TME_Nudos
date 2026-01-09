@@ -227,6 +227,46 @@ theorem r2_symmetric (p q : OrderedPair) :
     · rw [h1]; ring
     · rw [h2]; ring
 
+
+/-! ## Movimiento Reidemeister R3 -/
+
+/-- Tres tuplas [p, q, r] forman un patrón R3 si son distintas dos a dos.
+    En el contexto de K3, esto corresponde a la configuración global de 3 tuplas.
+
+    Interpretación geométrica: "Movimiento de Triángulo".
+    Permite deslizar una hebra sobre el cruce de las otras dos. -/
+def formsR3Pattern (p q r : OrderedPair) : Prop :=
+  p ≠ q ∧ q ≠ r ∧ r ≠ p
+
+/-- Decidibilidad del patrón R3 -/
+instance (p q r : OrderedPair) : Decidable (formsR3Pattern p q r) := by
+  unfold formsR3Pattern
+  infer_instance
+
+/-- Una configuración tiene movimiento R3 si contiene 3 tuplas distintas que forman el patrón.
+    NOTA: En K3, esto es siempre verdadero por definición (card = 3). -/
+def hasR3 (K : K3Config) : Prop :=
+  ∃ p ∈ K.pairs, ∃ q ∈ K.pairs, ∃ r ∈ K.pairs, formsR3Pattern p q r
+
+/-- Decidibilidad de hasR3 -/
+instance (K : K3Config) : Decidable (hasR3 K) := by
+  unfold hasR3
+  infer_instance
+
+/-- Teorema: Toda configuración K3 tiene movimiento R3 (siempre existen 3 pares distintos) -/
+theorem k3_always_has_r3 (K : K3Config) : hasR3 K := by
+  unfold hasR3 formsR3Pattern
+  have h_card : K.pairs.card = 3 := K.card_eq
+  rw [Finset.card_eq_three] at h_card
+  obtain ⟨p, q, r, hpq, hpr, hqr, h_eq⟩ := h_card
+  use p; constructor
+  · rw [h_eq]; simp
+  use q; constructor
+  · rw [h_eq]; simp
+  use r; constructor
+  · rw [h_eq]; simp
+  exact ⟨hpq, hqr, hpr.symm⟩
+
 /-! ## Resumen del Bloque 2 -/
 
 /-
