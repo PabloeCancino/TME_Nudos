@@ -49,7 +49,14 @@ theorem sign_rotate (p : OrderedPair n) (k : ZMod (2 * n)) :
 /-- Encompasses is preserved under simultaneous rotation -/
 theorem encompasses_rotate (p : OrderedPair n) (x : ZMod (2 * n)) (k : ZMod (2 * n)) :
     (p.rotate k).encompasses (x + k) ↔ p.encompasses x := by
-  sorry
+  simp only [encompasses, rotate]
+  have h1 : (x + k - (p.fst + k)).val = (x - p.fst).val := by
+    congr 1
+    ring
+  have h2 : (p.snd + k - (p.fst + k)).val = (p.snd - p.fst).val := by
+    congr 1
+    ring
+  rw [h1, h2]
 
 /-- Interlacing is preserved under simultaneous rotation -/
 theorem isInterlaced_rotate (p q : OrderedPair n) (k : ZMod (2 * n)) :
@@ -116,11 +123,6 @@ theorem IDE_rotate (K : KnConfig n) (p : OrderedPair n) (k : ZMod (2 * n)) :
     exact add_right_cancel this
   cases p₁; cases p₂
   simp_all
-
-/-- IME es invariante bajo rotación -/
-theorem IME_rotate (K : KnConfig n) (k : ZMod (2 * n)) :
-    (K.rotate k).IME = K.IME := by
-  sorry
 
 end KnConfig
 
