@@ -3,7 +3,7 @@
 -- Autor: Dr. Pablo Eduardo Cancino Marentes
 -- Fecha: Diciembre 21, 2025
 
-import KN_00_Fundamentos_General
+import TMENudos.KN_00_Fundamentos_General
 
 /-!
 # Movimientos de Reidemeister para K_n
@@ -84,28 +84,35 @@ instance (p : OrderedPair n) : Decidable (isConsecutive n p) := by
 /-- Caracterización alternativa usando valor absoluto modular -/
 theorem characterization (p : OrderedPair n) :
     isConsecutive n p ↔
-    (p.snd - p.fst = 1 ∨ p.snd - p.fst = (2*n : ZMod (2*n)) - 1) := by
+    (p.snd - p.fst = 1 ∨ p.snd - p.fst = (2 * n : ZMod (2 * n)) - 1) := by
   unfold isConsecutive
   constructor
   · intro h
     cases h with
-    | inl h => left; rw [h]; ring
-    | inr h => right; rw [h]; ring
+    | inl h =>
+      left
+      have h' : p.snd = 1 + p.fst := sub_eq_iff_eq_add.mp h
+      rw [h']; ring
+    | inr h =>
+      right
+      have h' : p.snd = -1 + p.fst := sub_eq_iff_eq_add.mp h
+      have h_zero : (2 * n : ZMod (2 * n)) = 0 := by simp [ZMod.natCast_self]
+      rw [h_zero]
+      simp
+      rw [h']; ring
   · intro h
     cases h with
     | inl h =>
       left
-      have : p.snd = p.fst + 1 := by omega
-      exact this
+      rw [sub_eq_iff_eq_add] at h
+      rw [h]; ring
     | inr h =>
       right
-      have : p.snd = p.fst - 1 := by
-        have : p.snd - p.fst = -1 := by
-          have : (2*n : ZMod (2*n)) = 0 := ZMod.cast_self' (2*n) (2*n)
-          rw [this] at h
-          omega
-        omega
-      exact this
+      rw [sub_eq_iff_eq_add] at h
+      have h_zero : (2 * n : ZMod (2 * n)) = 0 := by simp [ZMod.natCast_self]
+      rw [h_zero] at h
+      ring_nf at h ⊢
+      exact h
 
 /-- Un par consecutivo hacia adelante -/
 example (i : ZMod (2*3)) : isConsecutive 3 ⟨i, i+1, by omega⟩ := by
@@ -133,7 +140,7 @@ theorem reverse_consecutive (p : OrderedPair n) :
   | inr h => left; rw [h]; ring
 
 /-- La rotación preserva consecutividad -/
-theorem rotate_consecutive (p : OrderedPair n) (k : ZMod (2*n)) :
+theorem rotate_consecutive (p : OrderedPair n) (k : ZMod (2 * n)) :
     isConsecutive n p → isConsecutive n (p.rotate k) := by
   intro h
   unfold isConsecutive at h ⊢
@@ -183,7 +190,7 @@ theorem elim_r1 (K : KnConfig n) :
   rfl
 
 /-- La rotación preserva hasR1 -/
-theorem rotate_preserves_hasR1 (K : KnConfig n) (k : ZMod (2*n)) :
+theorem rotate_preserves_hasR1 (K : KnConfig n) (k : ZMod (2 * n)) :
     hasR1 K → hasR1 (K.rotate k) := by
   intro ⟨p, hp, hc⟩
   use p.rotate k
@@ -210,12 +217,12 @@ end hasR1
 -/
 axiom apply_R1 {n : ℕ} [NeZero n] (K : KnConfig n) (p : OrderedPair n)
     (hp : p ∈ K.pairs) (hc : isConsecutive n p) :
-    ∃ (m : ℕ) [NeZero m], KnConfig m
+    Σ (m : ℕ), KnConfig m
 
 /-- Aplicar R1 reduce el número de cruces en 1 -/
 axiom apply_R1_reduces_crossings {n : ℕ} [NeZero n] (K : KnConfig n)
     (p : OrderedPair n) (hp : p ∈ K.pairs) (hc : isConsecutive n p) :
-    let ⟨m, _, _⟩ := apply_R1 K p hp hc
+    let ⟨m, _⟩ := apply_R1 K p hp hc
     m = n - 1
 
 /-! ## 2. Movimiento Reidemeister R2 -/
@@ -292,28 +299,32 @@ theorem symmetric (p q : OrderedPair n) :
     · rw [h2]; ring
 
 /-- La rotación preserva el patrón R2 -/
-theorem rotate_preserves_r2 (p q : OrderedPair n) (k : ZMod (2*n)) :
+theorem rotate_preserves_r2 (p q : OrderedPair n) (k : ZMod (2 * n)) :
     formsR2Pattern n p q → formsR2Pattern n (p.rotate k) (q.rotate k) := by
   intro h
   unfold formsR2Pattern at h ⊢
   unfold OrderedPair.rotate
   simp only
   rcases h with ⟨h1, h2⟩ | ⟨h1, h2⟩ | ⟨h1, h2⟩ | ⟨h1, h2⟩ <;>
-  · tauto_group
+  · -- tauto_group replacement
     constructor
     · rw [h1]; ring
     · rw [h2]; ring
 
-/-- Lema auxiliar: En ZMod (2*n) con n ≥ 1, tenemos 1 ≠ 0 -/
-private lemma one_ne_zero_of_two_n : (1 : ZMod (2*n)) ≠ 0 := by
+/-- Lema auxiliar: En ZMod (2 * n) con n ≥ 1, tenemos 1 ≠ 0 -/
+/-- Lema auxiliar: En ZMod (2 * n) con n ≥ 1, tenemos 1 ≠ 0 -/
+private lemma one_ne_zero_of_two_n : (1 : ZMod (2 * n)) ≠ 0 := by
+  have h_gt : 2 * n > 1 := by
+    rw [← mul_one 2]
+    apply Nat.mul_lt_mul_of_pos_left
+    · exact Nat.lt_of_sub_eq_succ rfl
+    · decide
   intro h
-  -- Si 1 = 0 en ZMod (2*n), entonces 2*n divide a 1
-  have : (2*n : ℕ) ∣ 1 := ZMod.natCast_zmod_eq_zero_iff_dvd.mp h
-  -- Pero 2*n ≥ 2 (porque n ≥ 1 por NeZero)
-  have hn : n ≥ 1 := NeZero.one_le
-  have : 2*n ≥ 2 := by omega
-  -- Y 2*n no puede dividir a 1
-  omega
+  have val_one : (1 : ZMod (2 * n)).val = 1 := ZMod.val_cast_of_lt h_gt
+  have val_zero : (0 : ZMod (2 * n)).val = 0 := ZMod.val_zero
+  rw [h] at val_one
+  rw [val_zero] at val_one
+  contradiction
 
 /-- Un par no forma R2 consigo mismo -/
 theorem not_self (p : OrderedPair n) : ¬formsR2Pattern n p p := by
@@ -321,30 +332,38 @@ theorem not_self (p : OrderedPair n) : ¬formsR2Pattern n p p := by
   push_neg
   constructor
   · -- Caso paralelo +: p.fst + 1 = p.fst ∧ p.snd + 1 = p.snd
-    intro h1 h2
-    have : (1 : ZMod (2*n)) = 0 := by omega
+    intro h1 _
+    have : (1 : ZMod (2 * n)) = 0 := by
+      rw [← add_left_cancel_iff p.fst]
+      simp [h1]
     exact one_ne_zero_of_two_n this
   constructor
-  · -- Caso paralelo -: p.fst - 1 = p.fst ∧ p.snd - 1 = p.snd
-    intro h1 h2
-    have : (-1 : ZMod (2*n)) = 0 := by omega
-    have : (1 : ZMod (2*n)) = 0 := by
-      calc (1 : ZMod (2*n)) = -(- 1) := by ring
-        _ = -0 := by rw [this]
-        _ = 0 := by ring
+  · -- Caso paralelo -: p.fst - 1 = p.fst
+    intro h1 _
+    have : (-1 : ZMod (2 * n)) = 0 := by
+      rw [← add_left_cancel_iff p.fst]
+      simp [sub_eq_add_neg, h1]
+    have : (1 : ZMod (2 * n)) = 0 := by
+      rw [← neg_eq_zero] at this
+      simp at this ⊢
+      exact this
     exact one_ne_zero_of_two_n this
   constructor
-  · -- Caso antiparalelo +: p.fst + 1 = p.fst ∧ p.snd - 1 = p.snd
-    intro h1 h2
-    have : (1 : ZMod (2*n)) = 0 := by omega
+  · -- Caso antiparalelo +
+    intro h1 _
+    have : (1 : ZMod (2 * n)) = 0 := by
+      rw [← add_left_cancel_iff p.fst]
+      simp [h1]
     exact one_ne_zero_of_two_n this
-  · -- Caso antiparalelo -: p.fst - 1 = p.fst ∧ p.snd + 1 = p.snd
-    intro h1 h2
-    have : (-1 : ZMod (2*n)) = 0 := by omega
-    have : (1 : ZMod (2*n)) = 0 := by
-      calc (1 : ZMod (2*n)) = -(- 1) := by ring
-        _ = -0 := by rw [this]
-        _ = 0 := by ring
+  · -- Caso antiparalelo -
+    intro h1 _
+    have : (-1 : ZMod (2 * n)) = 0 := by
+      rw [← add_left_cancel_iff p.fst]
+      simp [sub_eq_add_neg, h1]
+    have : (1 : ZMod (2 * n)) = 0 := by
+      rw [← neg_eq_zero] at this
+      simp at this ⊢
+      exact this
     exact one_ne_zero_of_two_n this
 
 end formsR2Pattern
@@ -389,7 +408,7 @@ theorem elim_r2 (K : KnConfig n) :
   rfl
 
 /-- La rotación preserva hasR2 -/
-theorem rotate_preserves_hasR2 (K : KnConfig n) (k : ZMod (2*n)) :
+theorem rotate_preserves_hasR2 (K : KnConfig n) (k : ZMod (2 * n)) :
     hasR2 K → hasR2 (K.rotate k) := by
   intro ⟨p, hp, q, hq, hne, hr2⟩
   use p.rotate k
@@ -404,7 +423,8 @@ theorem rotate_preserves_hasR2 (K : KnConfig n) (k : ZMod (2*n)) :
     cases p; cases q
     simp only [OrderedPair.rotate, OrderedPair.mk.injEq] at h
     obtain ⟨h1, h2⟩ := h
-    ext <;> omega
+    simp only [OrderedPair.mk.injEq]
+    constructor <;> omega
   · exact formsR2Pattern.rotate_preserves_r2 p q k hr2
 
 end hasR2
@@ -428,16 +448,63 @@ end hasR2
 axiom apply_R2 {n : ℕ} [NeZero n] (K : KnConfig n) (p q : OrderedPair n)
     (hp : p ∈ K.pairs) (hq : q ∈ K.pairs)
     (hne : p ≠ q) (hr2 : formsR2Pattern n p q) :
-    ∃ (m : ℕ) [NeZero m], KnConfig m
+    Σ (m : ℕ), KnConfig m
 
 /-- Aplicar R2 reduce el número de cruces en 2 -/
 axiom apply_R2_reduces_crossings {n : ℕ} [NeZero n] (K : KnConfig n)
     (p q : OrderedPair n) (hp : p ∈ K.pairs) (hq : q ∈ K.pairs)
     (hne : p ≠ q) (hr2 : formsR2Pattern n p q) :
-    let ⟨m, _, _⟩ := apply_R2 K p q hp hq hne hr2
+    let ⟨m, _⟩ := apply_R2 K p q hp hq hne hr2
     m = n - 2
 
-/-! ## 3. Configuraciones Irreducibles -/
+/-! ## 3. Movimiento Reidemeister R3 (Triangle Move) -/
+
+/-- Tres pares forman un patrón R3 si son distintos dos a dos.
+
+    **Interpretación geométrica:**
+    Representa un triángulo de cruces formado por tres hebras.
+    El movimiento permite deslizar una hebra sobre el cruce de las otras dos.
+
+    **Importancia en K4:**
+    En n=4, este movimiento es fundamental para transformar configuraciones
+    en sus espejos (anfiquiralidad), conectando estados que no son
+    equivalentes por movimientos R1/R2 ni por rotación rígida.
+-/
+def formsR3Pattern (n : ℕ) [NeZero n] (p q r : OrderedPair n) : Prop :=
+  p ≠ q ∧ q ≠ r ∧ r ≠ p
+
+namespace formsR3Pattern
+
+variable {n : ℕ} [NeZero n]
+
+instance (p q r : OrderedPair n) : Decidable (formsR3Pattern n p q r) := by
+  unfold formsR3Pattern
+  infer_instance
+
+end formsR3Pattern
+
+/-- Una configuración tiene movimiento R3 si contiene 3 pares distintos. -/
+def hasR3 {n : ℕ} [NeZero n] (K : KnConfig n) : Prop :=
+  ∃ p ∈ K.pairs, ∃ q ∈ K.pairs, ∃ r ∈ K.pairs, formsR3Pattern n p q r
+
+namespace hasR3
+
+variable {n : ℕ} [NeZero n]
+
+instance (K : KnConfig n) : Decidable (hasR3 K) := by
+  unfold hasR3
+  infer_instance
+
+end hasR3
+
+/-! ## 3.5. Aplicación del Movimiento R3 -/
+
+/-- Aplicar movimiento R3: Preserva el número de cruces (n → n). -/
+axiom apply_R3 {n : ℕ} [NeZero n] (K : KnConfig n) (p q r : OrderedPair n)
+    (h_distinct : formsR3Pattern n p q r) :
+    KnConfig n
+
+/-! ## 4. Configuraciones Irreducibles -/
 
 /-- Una configuración es irreducible si no tiene movimientos R1 ni R2.
 
@@ -479,7 +546,7 @@ theorem iff_no_moves (K : KnConfig n) :
     · rw [hasR2.elim_r2]; exact h2
 
 /-- La rotación preserva irreducibilidad -/
-theorem rotate_preserves_irreducible (K : KnConfig n) (k : ZMod (2*n)) :
+theorem rotate_preserves_irreducible (K : KnConfig n) (k : ZMod (2 * n)) :
     IsIrreducible K → IsIrreducible (K.rotate k) := by
   intro ⟨h1, h2⟩
   constructor
@@ -492,8 +559,16 @@ theorem rotate_preserves_irreducible (K : KnConfig n) (k : ZMod (2*n)) :
       unfold OrderedPair.rotate at hc
       simp only at hc
       cases hc with
-      | inl h => left; omega
-      | inr h => right; omega)
+      | inl h =>
+        left
+        rw [← sub_eq_zero]; rw [← sub_eq_zero] at h
+        have eq : (q.snd - (q.fst + 1)) = (q.snd + k - (q.fst + k + 1)) := by ring
+        rw [eq]; exact h
+      | inr h =>
+        right
+        rw [← sub_eq_zero]; rw [← sub_eq_zero] at h
+        have eq : (q.snd - (q.fst - 1)) = (q.snd + k - (q.fst + k - 1)) := by ring
+        rw [eq]; exact h)
   · intro h
     exact h2 (by
       obtain ⟨p, hp, q, hq, hne, hr2⟩ := h
@@ -504,32 +579,36 @@ theorem rotate_preserves_irreducible (K : KnConfig n) (k : ZMod (2*n)) :
       · intro heq
         apply hne
         rw [heq]
-      · unfold formsR2Pattern at hr2 ⊢
-        unfold OrderedPair.rotate at hr2
-        simp only at hr2
-        rcases hr2 with ⟨h1, h2⟩ | ⟨h1, h2⟩ | ⟨h1, h2⟩ | ⟨h1, h2⟩ <;>
-        · tauto_group
-          constructor <;> omega)
+      · -- Use the fact that rotation by -k is the inverse
+        have h_rot := formsR2Pattern.rotate_preserves_r2 (p'.rotate k) (q'.rotate k) (-k) hr2
+        have h_back_p : (p'.rotate k).rotate (-k) = p' := by
+          cases p'
+          simp [OrderedPair.rotate]
+        have h_back_q : (q'.rotate k).rotate (-k) = q' := by
+          cases q'
+          simp [OrderedPair.rotate]
+        rw [h_back_p, h_back_q] at h_rot
+        exact h_rot)
 
 end IsIrreducible
 
-/-! ## 4. Conteos y Fórmulas -/
+/-! ## 5. Conteos y Fórmulas -/
 
 /-- Número de pares consecutivos en Z/(2n)Z -/
-def countConsecutivePairs (n : ℕ) [NeZero n] : ℕ := 2*n
+def countConsecutivePairs (n : ℕ) [NeZero n] : ℕ := 2 * n
 
 /-- Fórmula: Exactamente 2n pares consecutivos -/
 theorem consecutive_pairs_formula (n : ℕ) [NeZero n] :
-    countConsecutivePairs n = 2*n := rfl
+    countConsecutivePairs n = 2 * n := rfl
 
 /-- Número de pares R2 en Z/(2n)Z -/
-def countR2Pairs (n : ℕ) [NeZero n] : ℕ := 8*n
+def countR2Pairs (n : ℕ) [NeZero n] : ℕ := 8 * n
 
 /-- Fórmula: Exactamente 8n pares R2 -/
 theorem r2_pairs_formula (n : ℕ) [NeZero n] :
-    countR2Pairs n = 8*n := rfl
+    countR2Pairs n = 8 * n := rfl
 
-/-! ## 5. Casos Especiales Verificados -/
+/-! ## 6. Casos Especiales Verificados -/
 
 namespace SpecialCases
 
