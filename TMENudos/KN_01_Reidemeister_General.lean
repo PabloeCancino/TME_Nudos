@@ -91,15 +91,15 @@ theorem characterization (p : OrderedPair n) :
     cases h with
     | inl h =>
       left
-      have h' : p.snd = 1 + p.fst := sub_eq_iff_eq_add.mp h
-      rw [h']; ring
+      rw [sub_eq_iff_eq_add]
+      rw [h]; ring
     | inr h =>
       right
-      have h' : p.snd = -1 + p.fst := sub_eq_iff_eq_add.mp h
+      rw [sub_eq_iff_eq_add]
       have h_zero : (2 * n : ZMod (2 * n)) = 0 := by simp [ZMod.natCast_self]
       rw [h_zero]
       simp
-      rw [h']; ring
+      rw [h]; ring
   · intro h
     cases h with
     | inl h =>
@@ -314,17 +314,11 @@ theorem rotate_preserves_r2 (p q : OrderedPair n) (k : ZMod (2 * n)) :
 /-- Lema auxiliar: En ZMod (2 * n) con n ≥ 1, tenemos 1 ≠ 0 -/
 /-- Lema auxiliar: En ZMod (2 * n) con n ≥ 1, tenemos 1 ≠ 0 -/
 private lemma one_ne_zero_of_two_n : (1 : ZMod (2 * n)) ≠ 0 := by
-  have h_gt : 2 * n > 1 := by
-    rw [← mul_one 2]
-    apply Nat.mul_lt_mul_of_pos_left
-    · exact Nat.lt_of_sub_eq_succ rfl
-    · decide
   intro h
-  have val_one : (1 : ZMod (2 * n)).val = 1 := ZMod.val_cast_of_lt h_gt
-  have val_zero : (0 : ZMod (2 * n)).val = 0 := ZMod.val_zero
-  rw [h] at val_one
-  rw [val_zero] at val_one
-  contradiction
+  have : (2 * n : ℕ) ∣ 1 := (ZMod.natCast_eq_zero_iff _ _ _).mp h
+  have hn : n ≥ 1 := NeZero.one_le
+  have : 2 * n ≥ 2 := Nat.mul_le_mul_left 2 hn
+  omega
 
 /-- Un par no forma R2 consigo mismo -/
 theorem not_self (p : OrderedPair n) : ¬formsR2Pattern n p p := by
@@ -334,8 +328,7 @@ theorem not_self (p : OrderedPair n) : ¬formsR2Pattern n p p := by
   · -- Caso paralelo +: p.fst + 1 = p.fst ∧ p.snd + 1 = p.snd
     intro h1 _
     have : (1 : ZMod (2 * n)) = 0 := by
-      rw [← add_left_cancel_iff p.fst]
-      simp [h1]
+      simp [h1, add_left_cancel_iff]
     exact one_ne_zero_of_two_n this
   constructor
   · -- Caso paralelo -: p.fst - 1 = p.fst
@@ -352,8 +345,7 @@ theorem not_self (p : OrderedPair n) : ¬formsR2Pattern n p p := by
   · -- Caso antiparalelo +
     intro h1 _
     have : (1 : ZMod (2 * n)) = 0 := by
-      rw [← add_left_cancel_iff p.fst]
-      simp [h1]
+      simp [h1, add_left_cancel_iff]
     exact one_ne_zero_of_two_n this
   · -- Caso antiparalelo -
     intro h1 _
@@ -424,7 +416,7 @@ theorem rotate_preserves_hasR2 (K : KnConfig n) (k : ZMod (2 * n)) :
     simp only [OrderedPair.rotate, OrderedPair.mk.injEq] at h
     obtain ⟨h1, h2⟩ := h
     simp only [OrderedPair.mk.injEq]
-    constructor <;> omega
+    simp
   · exact formsR2Pattern.rotate_preserves_r2 p q k hr2
 
 end hasR2
