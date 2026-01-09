@@ -96,9 +96,9 @@ theorem characterization (p : OrderedPair n) :
     | inr h =>
       right
       rw [sub_eq_iff_eq_add]
-      have h_zero : (2 * n : ZMod (2 * n)) = 0 := by simp [ZMod.natCast_self]
+      have h_zero : ((2 * n : ℕ) : ZMod (2 * n)) = 0 := by apply ZMod.natCast_self
+      have h_zero : 2 * (n : ZMod (2 * n)) = 0 := by norm_cast
       rw [h_zero]
-      simp
       rw [h]; ring
   · intro h
     cases h with
@@ -109,17 +109,18 @@ theorem characterization (p : OrderedPair n) :
     | inr h =>
       right
       rw [sub_eq_iff_eq_add] at h
-      have h_zero : (2 * n : ZMod (2 * n)) = 0 := by simp [ZMod.natCast_self]
+      have h_zero : ((2 * n : ℕ) : ZMod (2 * n)) = 0 := by apply ZMod.natCast_self
+      have h_zero : 2 * (n : ZMod (2 * n)) = 0 := by norm_cast
       rw [h_zero] at h
       ring_nf at h ⊢
       exact h
 
 /-- Un par consecutivo hacia adelante -/
-example (i : ZMod (2*3)) : isConsecutive 3 ⟨i, i+1, by omega⟩ := by
+example (i : ZMod (2 * 3)) : isConsecutive 3 ⟨i, i+1, by revert i; decide⟩ := by
   left; rfl
 
 /-- Un par consecutivo hacia atrás -/
-example (i : ZMod (2*3)) : isConsecutive 3 ⟨i, i-1, by omega⟩ := by
+example (i : ZMod (2 * 3)) : isConsecutive 3 ⟨i, i-1, by revert i; decide⟩ := by
   right; rfl
 
 /-- Un par NO consecutivo -/
@@ -305,54 +306,59 @@ theorem rotate_preserves_r2 (p q : OrderedPair n) (k : ZMod (2 * n)) :
   unfold formsR2Pattern at h ⊢
   unfold OrderedPair.rotate
   simp only
-  rcases h with ⟨h1, h2⟩ | ⟨h1, h2⟩ | ⟨h1, h2⟩ | ⟨h1, h2⟩ <;>
-  · -- tauto_group replacement
+  rcases h with ⟨h1, h2⟩ | ⟨h1, h2⟩ | ⟨h1, h2⟩ | ⟨h1, h2⟩
+  · left
+    constructor
+    · rw [h1]; ring
+    · rw [h2]; ring
+  · right; left
+    constructor
+    · rw [h1]; ring
+    · rw [h2]; ring
+  · right; right; left
+    constructor
+    · rw [h1]; ring
+    · rw [h2]; ring
+  · right; right; right
     constructor
     · rw [h1]; ring
     · rw [h2]; ring
 
-/-- Lema auxiliar: En ZMod (2 * n) con n ≥ 1, tenemos 1 ≠ 0 -/
 private lemma one_ne_zero_of_two_n : (1 : ZMod (2 * n)) ≠ 0 := by
-  have h_gt : 2 * n > 1 := by
-    rw [← mul_one 2]
-    apply Nat.mul_lt_mul_of_pos_left
-    · exact Nat.lt_of_sub_eq_succ rfl
-    · decide
   intro h
-  have val_one : (1 : ZMod (2 * n)).val = 1 := ZMod.val_cast_of_lt h_gt
-  have val_zero : (0 : ZMod (2 * n)).val = 0 := ZMod.val_zero
-  rw [h] at val_one
-  rw [val_zero] at val_one
-  contradiction
+  rw [← Nat.cast_one] at h
+  rw [ZMod.natCast_eq_zero_iff] at h
+  have h2 : 2 * n ≤ 1 := Nat.le_of_dvd (by decide) h
+  have h3 : n ≥ 1 := NeZero.one_le
+  have h4 : 2 * n ≥ 2 := Nat.mul_le_mul_left 2 h3
+  omega
 
 /-- Un par no forma R2 consigo mismo -/
 theorem not_self (p : OrderedPair n) : ¬formsR2Pattern n p p := by
   unfold formsR2Pattern
   push_neg
   constructor
-  · -- Caso paralelo +
-    intro h1 _
-    have : (1 : ZMod (2 * n)) = 0 := by ring_nf at h1; exact h1
+  · intro h _
+    nth_rewrite 1 [← add_zero p.fst] at h
+    have : (0 : ZMod (2 * n)) = 1 := add_left_cancel (a := p.fst) h
+    exact one_ne_zero_of_two_n this.symm
+  constructor
+  · intro h _
+    rw [sub_eq_add_neg] at h
+    nth_rewrite 1 [← add_zero p.fst] at h
+    have : (0 : ZMod (2 * n)) = -1 := add_left_cancel (a := p.fst) h
+    have : (1 : ZMod (2 * n)) = 0 := by rw [← neg_eq_zero, ← this]
     exact one_ne_zero_of_two_n this
   constructor
-  · -- Caso paralelo -
-    intro h1 _
-    have : (-1 : ZMod (2 * n)) = 0 := by ring_nf at h1; exact h1
-    have : (1 : ZMod (2 * n)) = 0 := by
-      rw [← neg_eq_zero, ← this]
-      ring
-    exact one_ne_zero_of_two_n this
-  constructor
-  · -- Caso antiparalelo +
-    intro h1 _
-    have : (1 : ZMod (2 * n)) = 0 := by ring_nf at h1; exact h1
-    exact one_ne_zero_of_two_n this
-  · -- Caso antiparalelo -
-    intro h1 _
-    have : (-1 : ZMod (2 * n)) = 0 := by ring_nf at h1; exact h1
-    have : (1 : ZMod (2 * n)) = 0 := by
-      rw [← neg_eq_zero, ← this]
-      ring
+  · intro h _
+    nth_rewrite 1 [← add_zero p.fst] at h
+    have : (0 : ZMod (2 * n)) = 1 := add_left_cancel (a := p.fst) h
+    exact one_ne_zero_of_two_n this.symm
+  · intro h _
+    rw [sub_eq_add_neg] at h
+    nth_rewrite 1 [← add_zero p.fst] at h
+    have : (0 : ZMod (2 * n)) = -1 := add_left_cancel (a := p.fst) h
+    have : (1 : ZMod (2 * n)) = 0 := by rw [← neg_eq_zero, ← this]
     exact one_ne_zero_of_two_n this
 
 end formsR2Pattern
@@ -409,9 +415,11 @@ theorem rotate_preserves_hasR2 (K : KnConfig n) (k : ZMod (2 * n)) :
   constructor
   · intro h
     apply hne
-    cases p; cases q
+    rcases p with ⟨p1, p2, dp⟩
+    rcases q with ⟨q1, q2, dq⟩
     simp only [OrderedPair.rotate, OrderedPair.mk.injEq] at h
     obtain ⟨h1, h2⟩ := h
+    simp only [OrderedPair.mk.injEq]
     constructor
     · exact add_right_cancel h1
     · exact add_right_cancel h2
