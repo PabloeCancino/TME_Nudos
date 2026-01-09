@@ -34,11 +34,22 @@ theorem IME_rotate (K : KnConfig n) (k : ZMod (2 * n)) :
 /-- IME es invariante bajo reflexión -/
 theorem IME_mirror (K : KnConfig n) :
     K.mirror.IME = K.IME := by
-  -- Mirror is involutive: K.mirror.mirror = K
-  have h_inv : K.mirror.mirror = K := KnConfig.mirror_mirror K
-  -- Therefore IME(K.mirror) = IME(K.mirror.mirror) = IME(K)
-  conv_lhs => rw [← h_inv]
-  sorry  -- Requires showing IME is well-defined under mirror
+  simp only [IME, KnConfig.mirror]
+  rw [Finset.sum_image]
+  · congr 1
+    ext p
+    exact IDE_mirror K p
+  · intro p₁ _ p₂ _ heq
+    have h1 : p₁.fst = p₂.fst := by
+      have := congr_arg OrderedPair.fst heq
+      simp only [OrderedPair.mirror] at this
+      exact neg_inj.mp this
+    have h2 : p₁.snd = p₂.snd := by
+      have := congr_arg OrderedPair.snd heq
+      simp only [OrderedPair.mirror] at this
+      exact neg_inj.mp this
+    cases p₁; cases p₂
+    simp_all
 
 end KnConfig
 

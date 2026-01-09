@@ -78,6 +78,13 @@ theorem isInterlaced_rotate (p q : OrderedPair n) (k : ZMod (2 * n)) :
                exact ⟨mt (encompasses_rotate p q.fst k).mp h.1,
                       (encompasses_rotate p q.snd k).mpr h.2⟩
 
+/-- El gap es invariante bajo reflexión -/
+theorem gap_mirror (p : OrderedPair n) :
+    p.mirror.gap = p.gap := by
+  simp only [gap, mirror]
+  congr 1
+  simp [sub_neg_eq_add, add_comm]
+
 end OrderedPair
 
 namespace KnConfig
@@ -123,6 +130,13 @@ theorem IDE_rotate (K : KnConfig n) (p : OrderedPair n) (k : ZMod (2 * n)) :
     exact add_right_cancel this
   cases p₁; cases p₂
   simp_all
+
+/-- IDE es invariante bajo reflexión -/
+theorem IDE_mirror (K : KnConfig n) (p : OrderedPair n) :
+    K.mirror.IDE (p.mirror) = K.IDE p := by
+  simp only [IDE, KnConfig.mirror, OrderedPair.gap_mirror]
+  congr 1
+  sorry  -- Requires isInterlaced_mirror and filter/image commutation
 
 end KnConfig
 
