@@ -276,7 +276,11 @@ example : has_uniform_IME K3_special := by
 /-- Para K₃: r = 3, 2n = 6, 6/3 = 2 > 1 → es divisoria! -/
 example : is_dividing_ratio 3 3 := by
   unfold is_dividing_ratio
-  norm_num
+  constructor
+  · norm_num
+  constructor
+  · norm_num
+  · norm_num
 
 /-- Predicción: specialClass tiene 2 componentes!? -/
 example : predicted_components 3 3 = 2 := by
@@ -337,8 +341,8 @@ def rotate_crossing {n : ℕ} (c : RationalCrossing n) (k : ℕ) : RationalCross
     under_pos := c.under_pos + k
     distinct := by
       intro h
-      have := c.distinct
-      exact this (add_right_cancel h) }
+      have : c.over_pos = c.under_pos := add_left_cancel h
+      exact c.distinct this }
 
 /-- Una configuración es cerrada bajo rotación por k -/
 def closed_under_rotation {n : ℕ} (K : RationalConfiguration n) (k : ℕ) : Prop :=
