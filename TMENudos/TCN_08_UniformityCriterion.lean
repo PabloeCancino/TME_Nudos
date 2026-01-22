@@ -335,7 +335,7 @@ Para K₃,special:
 def rotate_crossing {n : ℕ} (c : RationalCrossing n) (k : ℕ) : RationalCrossing n :=
   { over_pos := c.over_pos + k
     under_pos := c.under_pos + k
-    distinct := fun h => c.distinct (by omega) }
+    distinct := fun h => c.distinct (add_right_cancel h) }
 
 /-- Una configuración es cerrada bajo rotación por k -/
 def closed_under_rotation {n : ℕ} (K : RationalConfiguration n) (k : ℕ) : Prop :=
