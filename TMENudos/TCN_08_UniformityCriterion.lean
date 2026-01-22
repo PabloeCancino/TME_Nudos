@@ -281,7 +281,7 @@ example : is_dividing_ratio 3 3 := by
 /-- Predicción: specialClass tiene 2 componentes!? -/
 example : predicted_components 3 3 = 2 := by
   unfold predicted_components is_dividing_ratio_dec
-  norm_num
+  decide
 
 /-!
 **CONTRADICCIÓN DETECTADA**
