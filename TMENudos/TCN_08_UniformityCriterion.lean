@@ -1,6 +1,7 @@
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Tactic.IntervalCases
 
 /-!
 # Criterio de Uniformidad para Detección de Enlaces
@@ -158,13 +159,7 @@ def K2_1 : RationalConfiguration 2 := {
     match i with
     | ⟨0, _⟩ => ⟨1, 0, by decide⟩
     | ⟨1, _⟩ => ⟨2, 3, by decide⟩
-  coverage := by
-    intro x
-    interval_cases x.val <;>
-    [exact ⟨0, Or.inr rfl⟩,  -- 0 es under de cruce 0
-     exact ⟨0, Or.inl rfl⟩,  -- 1 es over de cruce 0
-     exact ⟨1, Or.inl rfl⟩,  -- 2 es over de cruce 1
-     exact ⟨1, Or.inr rfl⟩]  -- 3 es under de cruce 1
+  coverage := by decide
 }
 
 /-- K₂,₂ = {(1,3), (2,0)} en ℤ/4ℤ -/
@@ -173,13 +168,7 @@ def K2_2 : RationalConfiguration 2 := {
     match i with
     | ⟨0, _⟩ => ⟨1, 3, by decide⟩
     | ⟨1, _⟩ => ⟨2, 0, by decide⟩
-  coverage := by
-    intro x
-    interval_cases x.val <;>
-    [exact ⟨1, Or.inr rfl⟩,  -- 0 es under de cruce 1
-     exact ⟨0, Or.inl rfl⟩,  -- 1 es over de cruce 0
-     exact ⟨1, Or.inl rfl⟩,  -- 2 es over de cruce 1
-     exact ⟨0, Or.inr rfl⟩]  -- 3 es under de cruce 0
+  coverage := by decide
 }
 
 /-! ### Cálculo de IME -/
@@ -206,10 +195,12 @@ example : ¬has_uniform_IME K2_1 := by
   intro ⟨r, hr⟩
   have h0 := hr ⟨0, by decide⟩
   have h1 := hr ⟨1, by decide⟩
-  simp at h0 h1
-  -- h0: 3 = r, h1: (3 - 2).val = r
-  have : (3 - 2 : ZMod 4).val = 1 := by decide
-  rw [this] at h1
+  -- h0: (0 - 1 : ZMod 4).val = r
+  -- h1: (3 - 2 : ZMod 4).val = r
+  have eq0 : (0 - 1 : ZMod 4).val = 3 := by decide
+  have eq1 : (3 - 2 : ZMod 4).val = 1 := by decide
+  rw [eq0] at h0
+  rw [eq1] at h1
   -- Ahora h0: 3 = r, h1: 1 = r
   omega
 
@@ -255,9 +246,7 @@ def K3_special : RationalConfiguration 3 := {
     if h0 : i = 0 then ⟨0, 3, by decide⟩
     else if h1 : i = 1 then ⟨1, 4, by decide⟩
     else ⟨2, 5, by decide⟩
-  coverage := by
-    intro x
-    interval_cases x.val <;> decide
+  coverage := by decide
 }
 
 /-- IME de specialClass = [3, 3, 3] -/
