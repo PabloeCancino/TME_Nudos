@@ -138,10 +138,11 @@ theorem uniform_not_simple_knot {n : ℕ} [NeZero n] (K : RationalConfiguration 
     (h_ratio : ∀ i : Fin n, ratio_val (K.crossings i) = r)
     (h_div : is_dividing_ratio n r) :
     predicted_components n r > 1 := by
-  have ⟨k, hk, _⟩ := uniformity_criterion K r h_uniform h_ratio h_div
-  unfold predicted_components
-  simp [is_dividing_ratio_dec]
-  sorry
+  have ⟨k, hk, heq⟩ := uniformity_criterion K r h_uniform h_ratio h_div
+  -- heq : predicted_components n r = k
+  -- hk : k > 1
+  rw [heq]
+  exact hk
 
 /-!
 ## 5. CASOS DE PRUEBA: K₂
