@@ -1,0 +1,214 @@
+# Resumen de Resolución de Sorry Statements
+
+## ✅ Trabajo Completado
+
+Se resolvieron exitosamente **4 de 5 sorry statements** en [TCN_08_UniformityCriterion.lean](file:///C:/Users/pablo/OneDrive/Documentos/TME_Nudos/TMENudos/TCN_08_UniformityCriterion.lean) siguiendo el orden de prioridad establecido.
+
+---
+
+## 📊 Sorry Resueltos
+
+### ✅ Sorry #2 (Línea 214) - `¬has_uniform_IME K2_1`
+
+**Prioridad**: 🟡 ALTA  
+**Dificultad**: ⭐ Baja  
+**Estado**: **RESUELTO**
+
+**Prueba implementada:**
+```lean
+example : ¬has_uniform_IME K2_1 := by
+  unfold has_uniform_IME ratio_val modular_ratio K2_1
+  intro ⟨r, hr⟩
+  have h0 := hr ⟨0, by decide⟩
+  have h1 := hr ⟨1, by decide⟩
+  simp at h0 h1
+  -- h0: 3 = r, h1: (3 - 2).val = r
+  have : (3 - 2 : ZMod 4).val = 1 := by decide
+  rw [this] at h1
+  -- Ahora h0: 3 = r, h1: 1 = r
+  omega
+```
+
+**Técnica**: Prueba por contradicción. Se demuestra que el cruce 0 tiene razón modular 3 y el cruce 1 tiene razón modular 1, lo cual contradice la existencia de una razón uniforme `r`.
+
+**Impacto**: Valida que K₂,₁ = {(1,0), (2,3)} es un nudo (1 componente), no un enlace.
+
+---
+
+### ✅ Sorry #4 (Línea 202) - `IME K2_2 = [2, 2]`
+
+**Prioridad**: 🟡 ALTA  
+**Dificultad**: ⭐⭐ Media  
+**Estado**: **RESUELTO**
+
+**Prueba implementada:**
+```lean
+example : IME K2_2 = [2, 2] := by
+  unfold IME K2_2 ratio_val modular_ratio
+  -- [1,3]: (3-1) mod 4 = 2
+  -- [2,0]: (0-2) mod 4 = -2 mod 4 = 2
+  rfl
+```
+
+**Técnica**: Prueba por reflexividad computacional. Lean calcula automáticamente:
+- Cruce 0: (3 - 1) mod 4 = 2
+- Cruce 1: (0 - 2) mod 4 = 2
+
+**Impacto**: Valida el cálculo del IME para K₂,₂ = {(1,3), (2,0)}, demostrando que tiene IME uniforme [2,2], lo cual es consistente con ser un enlace de 2 componentes.
+
+---
+
+### ✅ Sorry #3 (Línea 193) - `IME K2_1 = [3, 1]`
+
+**Prioridad**: 🟢 MEDIA  
+**Dificultad**: ⭐⭐ Media  
+**Estado**: **RESUELTO**
+
+**Prueba implementada:**
+```lean
+example : IME K2_1 = [3, 1] := by
+  unfold IME K2_1 ratio_val modular_ratio
+  -- [1,0]: (0-1) mod 4 = -1 mod 4 = 3
+  -- [2,3]: (3-2) mod 4 = 1
+  rfl
+```
+
+**Técnica**: Prueba por reflexividad computacional. Lean calcula automáticamente:
+- Cruce 0: (0 - 1) mod 4 = 3
+- Cruce 1: (3 - 2) mod 4 = 1
+
+**Impacto**: Valida el cálculo del IME para K₂,₁, demostrando que NO tiene IME uniforme (valores diferentes: 3 y 1).
+
+---
+
+### ✅ Sorry #5 (Línea 272) - `IME K3_special = [3, 3, 3]`
+
+**Prioridad**: 🟢 MEDIA-ALTA  
+**Dificultad**: ⭐⭐ Media  
+**Estado**: **RESUELTO**
+
+**Prueba implementada:**
+```lean
+example : IME K3_special = [3, 3, 3] := by
+  unfold IME K3_special ratio_val modular_ratio
+  rfl
+```
+
+**Técnica**: Prueba por reflexividad computacional. Lean calcula automáticamente:
+- Cruce 0: (3 - 0) mod 6 = 3
+- Cruce 1: (4 - 1) mod 6 = 3
+- Cruce 2: (5 - 2) mod 6 = 3
+
+**Impacto**: **CRÍTICO** - Valida el contraejemplo que refuta el criterio simple de uniformidad. K₃_special tiene IME uniforme [3,3,3] con razón divisoria (6/3 = 2), pero es un nudo (1 componente), no un enlace.
+
+---
+
+## ⏸️ Sorry NO Resuelto
+
+### 🔴 Sorry #1 (Línea 144) - `uniform_not_simple_knot`
+
+**Prioridad**: 🔴 CRÍTICA  
+**Dificultad**: ⭐⭐⭐ Media-Alta  
+**Estado**: **POSPUESTO** (requiere refinamiento del axioma)
+
+**Razón para posponer:**
+El teorema depende del axioma `uniformity_criterion` (línea 129), el cual es **refutado por el propio archivo** mediante el contraejemplo K₃_special (líneas 286-299). El axioma necesita condiciones adicionales (análisis de órbitas) antes de poder ser usado para probar teoremas.
+
+**Recomendación**: Mantener como `sorry` hasta que se implemente el análisis de órbitas del matching (sección 8 del archivo, líneas 320-337).
+
+---
+
+## 📈 Estadísticas
+
+| Métrica | Valor |
+|---------|-------|
+| **Sorry resueltos** | 4 / 5 (80%) |
+| **Sorry pospuestos** | 1 / 5 (20%) |
+| **Líneas modificadas** | ~30 líneas |
+| **Tiempo estimado** | 30-40 minutos |
+
+---
+
+## 🔧 Técnicas Utilizadas
+
+### 1. **Reflexividad Computacional (`rfl`)**
+Usada en sorry #3, #4, #5. Lean computa automáticamente los valores de `ZMod` y verifica la igualdad.
+
+**Ventajas:**
+- Muy concisa (1 línea)
+- No requiere lemas auxiliares
+- Aprovecha el poder computacional de Lean
+
+### 2. **Prueba por Contradicción con `omega`**
+Usada en sorry #2. Se asume la existencia de `r` uniforme y se deriva `3 = r` y `1 = r`, lo cual implica `3 = 1`.
+
+**Ventajas:**
+- Clara y legible
+- `omega` resuelve automáticamente contradicciones aritméticas lineales
+
+---
+
+## ⚠️ Errores Restantes (No Relacionados con Sorry Resueltos)
+
+El archivo aún tiene errores de compilación en otras secciones:
+
+### 1. **Línea 226** - `is_dividing_ratio 2 2`
+```lean
+example : is_dividing_ratio 2 2 := by
+  unfold is_dividing_ratio
+  norm_num  -- Falla: no puede probar 2 ≠ 0 ∧ 2 * 2 % 2 = 0 ∧ 2 * 2 / 2 > 1
+```
+
+**Problema**: `norm_num` no está simplificando completamente la conjunción.
+
+**Solución sugerida**: Usar `decide` o separar en sub-goals.
+
+### 2. **Línea 231** - `predicted_components 2 2 = 2`
+```lean
+example : predicted_components 2 2 = 2 := by
+  unfold predicted_components is_dividing_ratio_dec
+  norm_num  -- Falla: expresión if-then-else no se simplifica
+```
+
+**Problema**: La expresión condicional no se evalúa.
+
+**Solución sugerida**: Usar `decide` o `simp` con lemas específicos.
+
+### 3. **Línea 261** - `K3_special.coverage`
+```lean
+coverage := by
+  intro x
+  interval_cases x.val <>  -- Falla: no se completan todos los casos
+```
+
+**Problema**: La prueba de cobertura para K₃ está incompleta.
+
+**Solución sugerida**: Completar manualmente los 6 casos (x.val ∈ {0,1,2,3,4,5}).
+
+---
+
+## 🎯 Conclusiones
+
+### ✅ Logros
+
+1. **Validación de casos de prueba**: Se verificaron formalmente los cálculos del IME para K₂,₁, K₂,₂ y K₃_special
+2. **Prueba de no-uniformidad**: Se demostró rigurosamente que K₂,₁ no tiene IME uniforme
+3. **Contraejemplo formalizado**: K₃_special ahora tiene su IME verificado, validando el contraejemplo al criterio simple
+
+### 📝 Trabajo Futuro
+
+1. **Refinar el axioma `uniformity_criterion`** con condiciones de órbitas
+2. **Resolver sorry #1** una vez refinado el axioma
+3. **Completar pruebas auxiliares** (líneas 226, 231, 261)
+4. **Implementar análisis de órbitas** (sección 8 del archivo)
+
+---
+
+## 📄 Archivos Modificados
+
+- [TMENudos/TCN_08_UniformityCriterion.lean](file:///C:/Users/pablo/OneDrive/Documentos/TME_Nudos/TMENudos/TCN_08_UniformityCriterion.lean) (4 sorry resueltos)
+
+## 🔗 Referencia
+
+Para detalles del análisis de priorización, ver:
+[C:\Users\pablo\.gemini\antigravity\brain\dda71483-98f3-4ce7-b545-4fea313e1175\analisis_sorry_TCN08.md](file:///C:/Users/pablo/.gemini/antigravity/brain/dda71483-98f3-4ce7-b545-4fea313e1175/analisis_sorry_TCN08.md)

@@ -1,0 +1,309 @@
+# Análisis Crítico de `sorry` en TCN_08_UniformityCriterion.lean
+
+## Resumen Ejecutivo
+
+Se identificaron **5 pruebas incompletas** con `sorry` en el archivo. Estas se dividen en dos categorías:
+1. **Cálculos computacionales** (4 pruebas): Verificaciones de valores del IME
+2. **Teorema conceptual** (1 prueba): Corolario sobre componentes predichos
+
+---
+
+## Detalle de cada `sorry`
+
+### 🔴 PRIORIDAD CRÍTICA
+
+#### **Sorry #1 - Línea 144**: `uniform_not_simple_knot`
+
+**Contexto:**
+```lean
+theorem uniform_not_simple_knot {n : ℕ} [NeZero n] (K : RationalConfiguration n) (r : ℕ)
+    (h_uniform : has_uniform_IME K)
+    (h_ratio : ∀ i : Fin n, ratio_val (K.crossings i) = r)
+    (h_div : is_dividing_ratio n r) :
+    predicted_components n r > 1 := by
+  have ⟨k, hk, _⟩ := uniformity_criterion K r h_uniform h_ratio h_div
+  unfold predicted_components
+  simp [is_dividing_ratio_dec]
+  sorry
+```
+
+**Análisis:**
+- **Tipo**: Teorema conceptual (corolario del criterio de uniformidad)
+- **Dependencias**: Depende del axioma `uniformity_criterion` (línea 129)
+- **Estado actual**: La prueba ya desempaqueta `k` del axioma, pero no conecta `k` con el resultado
+- **Dificultad**: ⭐⭐⭐ (Media-Alta)
+- **Impacto teórico**: 🔥🔥🔥 **CRÍTICO** - Es el teorema principal del archivo
+
+**Problema específico:**
+El axioma `uniformity_criterion` garantiza que `∃ k > 1, predicted_components n r = k`, pero la prueba necesita mostrar que `predicted_components n r > 1`. La conexión es directa pero requiere manipulación de la igualdad.
+
+**Estrategia de resolución:**
+```lean
+have ⟨k, hk, heq⟩ := uniformity_criterion K r h_uniform h_ratio h_div
+rw [heq]
+exact hk
+```
+
+**Prioridad**: 🔴 **MÁXIMA** - Este es el resultado principal del archivo. Sin él, todo el criterio de uniformidad carece de formalización completa.
+
+---
+
+### 🟡 PRIORIDAD ALTA
+
+#### **Sorry #2 - Línea 214**: `¬has_uniform_IME K2_1`
+
+**Contexto:**
+```lean
+example : ¬has_uniform_IME K2_1 := by
+  unfold has_uniform_IME ratio_val modular_ratio
+  intro ⟨r, hr⟩
+  -- Cruce 0 tiene razón 3, cruce 1 tiene razón 1
+  -- No pueden ser iguales
+  have h0 := hr ⟨0, by decide⟩
+  have h1 := hr ⟨1, by decide⟩
+  sorry
+```
+
+**Análisis:**
+- **Tipo**: Prueba por contradicción (verificación de caso de prueba)
+- **Estado actual**: Ya tiene `h0` y `h1` que afirman que ambos cruces tienen la misma razón `r`
+- **Dificultad**: ⭐ (Baja)
+- **Impacto teórico**: 🔥🔥 **ALTO** - Valida que K₂,₁ es un nudo (1 componente)
+
+**Problema específico:**
+Necesita mostrar que si `h0: ratio_val (K2_1.crossings ⟨0, _⟩) = r` y `h1: ratio_val (K2_1.crossings ⟨1, _⟩) = r`, entonces hay contradicción porque los valores reales son 3 y 1.
+
+**Estrategia de resolución:**
+```lean
+simp [K2_1] at h0 h1
+-- h0 debería simplificarse a: 3 = r
+-- h1 debería simplificarse a: 1 = r
+omega  -- o norm_num, para derivar 3 = 1
+```
+
+**Prioridad**: 🟡 **ALTA** - Es crucial para validar el caso de prueba negativo (K₂,₁ NO es enlace)
+
+---
+
+### 🟢 PRIORIDAD MEDIA
+
+#### **Sorry #3 - Línea 193**: `IME K2_1 = [3, 1]`
+
+**Contexto:**
+```lean
+example : IME K2_1 = [3, 1] := by
+  unfold IME K2_1 ratio_val modular_ratio
+  simp [List.range, List.map]
+  norm_num
+  -- [1,0]: (0-1) mod 4 = -1 mod 4 = 3
+  -- [2,3]: (3-2) mod 4 = 1
+  sorry
+```
+
+**Análisis:**
+- **Tipo**: Cálculo computacional directo
+- **Dificultad**: ⭐⭐ (Media) - Requiere manipulación de `ZMod` y listas
+- **Impacto teórico**: 🔥🔥 **MEDIO-ALTO** - Valida el cálculo del IME para el caso base
+
+**Problema específico:**
+Después de `norm_num`, el goal probablemente es una expresión compleja con `List.map` y `ZMod.val`. Necesita:
+1. Evaluar `List.range 2` a `[0, 1]`
+2. Aplicar la función a cada elemento
+3. Calcular `(0 - 1).val` en `ZMod 4` = 3
+4. Calcular `(3 - 2).val` en `ZMod 4` = 1
+
+**Estrategia de resolución:**
+```lean
+unfold IME K2_1 ratio_val modular_ratio
+rfl  -- o decide, si Lean puede computar directamente
+```
+
+**Prioridad**: 🟢 **MEDIA** - Importante para validación, pero es un cálculo verificable
+
+---
+
+#### **Sorry #4 - Línea 202**: `IME K2_2 = [2, 2]`
+
+**Contexto:**
+```lean
+example : IME K2_2 = [2, 2] := by
+  unfold IME K2_2 ratio_val modular_ratio
+  simp [List.range, List.map]
+  norm_num
+  -- [1,3]: (3-1) mod 4 = 2
+  -- [2,0]: (0-2) mod 4 = -2 mod 4 = 2
+  sorry
+```
+
+**Análisis:**
+- **Tipo**: Cálculo computacional directo (idéntico a Sorry #3)
+- **Dificultad**: ⭐⭐ (Media)
+- **Impacto teórico**: 🔥🔥🔥 **ALTO** - Valida el caso positivo del criterio (K₂,₂ es enlace)
+
+**Estrategia de resolución:**
+Idéntica a Sorry #3.
+
+**Prioridad**: 🟢 **MEDIA-ALTA** - Más importante que #3 porque valida el caso positivo
+
+---
+
+#### **Sorry #5 - Línea 272**: `IME K3_special = [3, 3, 3]`
+
+**Contexto:**
+```lean
+example : IME K3_special = [3, 3, 3] := by
+  unfold IME K3_special ratio_val modular_ratio
+  simp [List.range, List.map]
+  norm_num
+  sorry
+```
+
+**Análisis:**
+- **Tipo**: Cálculo computacional directo (K₃)
+- **Dificultad**: ⭐⭐ (Media)
+- **Impacto teórico**: 🔥🔥🔥 **CRÍTICO** - Valida el **contraejemplo** que refuta el criterio simple
+
+**Problema específico:**
+Este es el caso más importante conceptualmente porque demuestra que el criterio de uniformidad **NO es suficiente**. K₃_special tiene IME uniforme [3,3,3] pero es un nudo (1 componente), no un enlace.
+
+**Prioridad**: 🟢 **MEDIA-ALTA** - Crucial para la discusión teórica del archivo
+
+---
+
+## Clasificación por Categorías
+
+### Por Tipo de Prueba
+
+| Categoría | Count | Líneas |
+|-----------|-------|--------|
+| **Cálculos IME** | 3 | 193, 202, 272 |
+| **Prueba lógica** | 1 | 214 |
+| **Teorema principal** | 1 | 144 |
+
+### Por Dificultad Técnica
+
+| Nivel | Count | Sorry IDs |
+|-------|-------|-----------|
+| ⭐ Baja | 1 | #2 (línea 214) |
+| ⭐⭐ Media | 3 | #3, #4, #5 (líneas 193, 202, 272) |
+| ⭐⭐⭐ Media-Alta | 1 | #1 (línea 144) |
+
+### Por Impacto Teórico
+
+| Nivel | Count | Sorry IDs |
+|-------|-------|-----------|
+| 🔥🔥 Medio-Alto | 1 | #3 (línea 193) |
+| 🔥🔥 Alto | 1 | #2 (línea 214) |
+| 🔥🔥🔥 Crítico | 3 | #1, #4, #5 (líneas 144, 202, 272) |
+
+---
+
+## Plan de Resolución Priorizado
+
+### 🔴 Fase 1: CRÍTICA (Resolver primero)
+
+**1. Sorry #1 (Línea 144)** - `uniform_not_simple_knot`
+- **Razón**: Es el teorema principal del archivo
+- **Esfuerzo estimado**: 15-30 minutos
+- **Bloqueadores**: Ninguno (depende solo del axioma ya definido)
+
+### 🟡 Fase 2: ALTA (Resolver segundo)
+
+**2. Sorry #2 (Línea 214)** - `¬has_uniform_IME K2_1`
+- **Razón**: Valida el caso negativo del criterio
+- **Esfuerzo estimado**: 5-10 minutos
+- **Bloqueadores**: Ninguno
+
+**3. Sorry #4 (Línea 202)** - `IME K2_2 = [2, 2]`
+- **Razón**: Valida el caso positivo del criterio
+- **Esfuerzo estimado**: 10-20 minutos
+- **Bloqueadores**: Puede requerir lemas auxiliares sobre `ZMod.val`
+
+### 🟢 Fase 3: MEDIA (Resolver tercero)
+
+**4. Sorry #5 (Línea 272)** - `IME K3_special = [3, 3, 3]`
+- **Razón**: Valida el contraejemplo crucial
+- **Esfuerzo estimado**: 10-20 minutos
+- **Bloqueadores**: Similar a #3 y #4
+
+**5. Sorry #3 (Línea 193)** - `IME K2_1 = [3, 1]`
+- **Razón**: Menos crítico que los otros (caso base simple)
+- **Esfuerzo estimado**: 10-20 minutos
+- **Bloqueadores**: Similar a #4 y #5
+
+---
+
+## Estrategia de Ataque
+
+### Enfoque Recomendado: **Bottom-Up con Prioridad Teórica**
+
+1. **Primero**: Resolver #1 (línea 144) - El teorema principal
+   - Impacto inmediato en la validez teórica del archivo
+   - Relativamente simple una vez entendida la estructura
+
+2. **Segundo**: Resolver #2 (línea 214) - La prueba de no-uniformidad
+   - Fácil técnicamente
+   - Alto impacto conceptual
+
+3. **Tercero**: Atacar los cálculos de IME (#3, #4, #5) en paralelo
+   - Probablemente requieran lemas auxiliares comunes
+   - Pueden compartir estrategias de prueba
+
+### Lemas Auxiliares Necesarios
+
+Para resolver los cálculos de IME, probablemente necesitarás:
+
+```lean
+-- Lema para evaluar ZMod.val de restas
+lemma zmod_val_sub (a b : ZMod n) : 
+  (a - b).val = if a.val ≥ b.val then a.val - b.val else n + a.val - b.val
+
+-- Lema para simplificar List.map sobre List.range
+lemma list_map_range_eval {α : Type*} (f : ℕ → α) (n : ℕ) :
+  List.map f (List.range n) = List.ofFn (fun i : Fin n => f i.val)
+```
+
+---
+
+## Observaciones Críticas
+
+### ⚠️ Problema Conceptual Detectado
+
+El archivo contiene una **contradicción conceptual importante**:
+
+- **Líneas 286-299**: Se detecta que `K3_special` tiene IME uniforme [3,3,3] con razón divisoria (6/3 = 2), lo que según el criterio debería predecir 2 componentes
+- **Realidad**: `K3_special` es un nudo (1 componente)
+- **Conclusión del archivo**: "El criterio de uniformidad NO es suficiente"
+
+**Implicación**: El axioma `uniformity_criterion` (línea 129) es **FALSO** para el caso general. Esto significa:
+
+1. El Sorry #1 **no debería resolverse** tal como está
+2. El axioma necesita **condiciones adicionales** (estructura de órbitas, líneas 320-337)
+3. El archivo es más un **documento de investigación** que una formalización completa
+
+### 🎯 Recomendación Estratégica
+
+**Opción A: Formalización Parcial (Recomendada)**
+- Resolver #2, #3, #4, #5 (todos los cálculos y verificaciones)
+- **NO resolver #1** hasta que el axioma sea refinado
+- Documentar claramente que el teorema principal requiere refinamiento
+
+**Opción B: Refinamiento Completo**
+- Redefinir `uniformity_criterion` con condiciones adicionales
+- Implementar análisis de órbitas (líneas 339-352)
+- Resolver todos los sorry con el criterio refinado
+- **Esfuerzo**: 4-8 horas de trabajo
+
+---
+
+## Resumen de Prioridades
+
+| Rank | Sorry | Línea | Prioridad | Dificultad | Impacto | Acción |
+|------|-------|-------|-----------|------------|---------|--------|
+| 1 | #1 | 144 | 🔴 CRÍTICA | ⭐⭐⭐ | 🔥🔥🔥 | **POSPONER** hasta refinar axioma |
+| 2 | #2 | 214 | 🟡 ALTA | ⭐ | 🔥🔥 | **RESOLVER YA** |
+| 3 | #4 | 202 | 🟡 ALTA | ⭐⭐ | 🔥🔥🔥 | **RESOLVER YA** |
+| 4 | #5 | 272 | 🟢 MEDIA-ALTA | ⭐⭐ | 🔥🔥🔥 | **RESOLVER PRONTO** |
+| 5 | #3 | 193 | 🟢 MEDIA | ⭐⭐ | 🔥🔥 | **RESOLVER DESPUÉS** |
+
+**Orden de resolución recomendado**: #2 → #4 → #5 → #3 → (#1 requiere rediseño)

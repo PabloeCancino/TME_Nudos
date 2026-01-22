@@ -10,7 +10,7 @@ basándose en la estructura del Invariante Modular Estructural (IME).
 
 ## Teorema Principal (Conjetura)
 
-**Si una configuración tiene IME uniforme (todas las razones modulares iguales) 
+**Si una configuración tiene IME uniforme (todas las razones modulares iguales)
 y esa razón divide a 2n uniformemente, entonces la configuración tiene múltiples componentes.**
 
 ## Casos Motivadores
@@ -54,7 +54,7 @@ def ratio_val {n : ℕ} (c : RationalCrossing n) : ℕ :=
 /-- Configuración racional -/
 structure RationalConfiguration (n : ℕ) where
   crossings : Fin n → RationalCrossing n
-  coverage : ∀ x : ZMod (2 * n), ∃ (i : Fin n), 
+  coverage : ∀ x : ZMod (2 * n), ∃ (i : Fin n),
     (crossings i).over_pos = x ∨ (crossings i).under_pos = x
 
 /-- IME como lista de valores naturales -/
@@ -127,13 +127,13 @@ Si K tiene IME uniforme con razón divisoria, entonces tiene múltiples componen
 
 /-- El Criterio de Uniformidad (axiomatizado por ahora) -/
 axiom uniformity_criterion {n : ℕ} [NeZero n] (K : RationalConfiguration n) (r : ℕ) :
-    has_uniform_IME K → 
+    has_uniform_IME K →
     (∀ i : Fin n, ratio_val (K.crossings i) = r) →
     is_dividing_ratio n r →
     ∃ k > 1, predicted_components n r = k
 
 /-- Corolario: configuraciones con IME uniforme divisorio no son nudos simples -/
-theorem uniform_not_simple_knot {n : ℕ} [NeZero n] (K : RationalConfiguration n) (r : ℕ) 
+theorem uniform_not_simple_knot {n : ℕ} [NeZero n] (K : RationalConfiguration n) (r : ℕ)
     (h_uniform : has_uniform_IME K)
     (h_ratio : ∀ i : Fin n, ratio_val (K.crossings i) = r)
     (h_div : is_dividing_ratio n r) :
@@ -153,7 +153,7 @@ section K2_Tests
 
 /-- K₂,₁ = {(1,0), (2,3)} en ℤ/4ℤ -/
 def K2_1 : RationalConfiguration 2 := {
-  crossings := fun i => 
+  crossings := fun i =>
     match i with
     | ⟨0, _⟩ => ⟨1, 0, by decide⟩
     | ⟨1, _⟩ => ⟨2, 3, by decide⟩
@@ -168,7 +168,7 @@ def K2_1 : RationalConfiguration 2 := {
 
 /-- K₂,₂ = {(1,3), (2,0)} en ℤ/4ℤ -/
 def K2_2 : RationalConfiguration 2 := {
-  crossings := fun i => 
+  crossings := fun i =>
     match i with
     | ⟨0, _⟩ => ⟨1, 3, by decide⟩
     | ⟨1, _⟩ => ⟨2, 0, by decide⟩
@@ -186,32 +186,31 @@ def K2_2 : RationalConfiguration 2 := {
 /-- IME de K₂,₁ -/
 example : IME K2_1 = [3, 1] := by
   unfold IME K2_1 ratio_val modular_ratio
-  simp [List.range, List.map]
-  norm_num
   -- [1,0]: (0-1) mod 4 = -1 mod 4 = 3
   -- [2,3]: (3-2) mod 4 = 1
-  sorry
+  rfl
 
 /-- IME de K₂,₂ -/
 example : IME K2_2 = [2, 2] := by
   unfold IME K2_2 ratio_val modular_ratio
-  simp [List.range, List.map]
-  norm_num
   -- [1,3]: (3-1) mod 4 = 2
   -- [2,0]: (0-2) mod 4 = -2 mod 4 = 2
-  sorry
+  rfl
 
 /-! ### Verificación de Uniformidad -/
 
 /-- K₂,₁ NO tiene IME uniforme -/
 example : ¬has_uniform_IME K2_1 := by
-  unfold has_uniform_IME ratio_val modular_ratio
+  unfold has_uniform_IME ratio_val modular_ratio K2_1
   intro ⟨r, hr⟩
-  -- Cruce 0 tiene razón 3, cruce 1 tiene razón 1
-  -- No pueden ser iguales
   have h0 := hr ⟨0, by decide⟩
   have h1 := hr ⟨1, by decide⟩
-  sorry
+  simp at h0 h1
+  -- h0: 3 = r, h1: (3 - 2).val = r
+  have : (3 - 2 : ZMod 4).val = 1 := by decide
+  rw [this] at h1
+  -- Ahora h0: 3 = r, h1: 1 = r
+  omega
 
 /-- K₂,₂ tiene IME uniforme con r = 2 -/
 example : has_uniform_IME K2_2 := by
@@ -225,20 +224,19 @@ example : has_uniform_IME K2_2 := by
 /-- Para K₂,₂: r = 2, 2n = 4, 4/2 = 2 > 1 → es divisoria -/
 example : is_dividing_ratio 2 2 := by
   unfold is_dividing_ratio
-  norm_num
+  decide
 
 /-- Predicción: K₂,₂ tiene 2 componentes -/
 example : predicted_components 2 2 = 2 := by
   unfold predicted_components is_dividing_ratio_dec
-  norm_num
+  decide
 
 /-- Para K₂,₁: IME no uniforme → criterio no aplica → 1 componente -/
 example : predicted_components 2 3 = 1 ∨ predicted_components 2 1 = 1 := by
   -- Ninguna de las razones 3 o 1 es divisoria de 4
   left
   unfold predicted_components is_dividing_ratio_dec
-  norm_num
-  -- 4 % 3 = 1 ≠ 0, no es divisoria
+  decide
 
 end K2_Tests
 
@@ -252,24 +250,21 @@ section K3_Tests
 
 /-- specialClass: {(0,3), (1,4), (2,5)} -/
 def K3_special : RationalConfiguration 3 := {
-  crossings := fun i => 
+  crossings := fun i =>
     match i with
     | ⟨0, _⟩ => ⟨0, 3, by decide⟩
     | ⟨1, _⟩ => ⟨1, 4, by decide⟩
     | ⟨2, _⟩ => ⟨2, 5, by decide⟩
   coverage := by
     intro x
-    interval_cases x.val <;>
-    [exact ⟨0, Or.inl rfl⟩, exact ⟨1, Or.inl rfl⟩, exact ⟨2, Or.inl rfl⟩,
-     exact ⟨0, Or.inr rfl⟩, exact ⟨1, Or.inr rfl⟩, exact ⟨2, Or.inr rfl⟩]
+    interval_cases x.val
+    all_goals decide
 }
 
 /-- IME de specialClass = [3, 3, 3] -/
 example : IME K3_special = [3, 3, 3] := by
   unfold IME K3_special ratio_val modular_ratio
-  simp [List.range, List.map]
-  norm_num
-  sorry
+  rfl
 
 /-- specialClass tiene IME uniforme con r = 3 -/
 example : has_uniform_IME K3_special := by
@@ -291,7 +286,7 @@ example : predicted_components 3 3 = 2 := by
 /-!
 **CONTRADICCIÓN DETECTADA**
 
-El criterio de uniformidad predice que specialClass {(0,3), (1,4), (2,5)} 
+El criterio de uniformidad predice que specialClass {(0,3), (1,4), (2,5)}
 tiene 2 componentes, pero sabemos que es un nudo (1 componente).
 
 Esto indica que el **criterio de uniformidad NO es suficiente**.
@@ -326,7 +321,7 @@ Para matching uniforme con razón r:
 - Si 2n = k×r y los cruces se agrupan en k órbitas bajo rotación por r,
   entonces hay k componentes.
 
-Para K₂,₂: 
+Para K₂,₂:
 - Rotación por 2: (1,3) → (3,1) ≠ (1,3), (2,0) → (0,2) ≠ (2,0)
 - Los cruces forman 2 órbitas
 
@@ -343,12 +338,11 @@ def rotate_crossing {n : ℕ} (c : RationalCrossing n) (k : ℕ) : RationalCross
     distinct := by
       intro h
       have := c.distinct
-      simp at h
-      exact this (add_left_cancel h) }
+      exact this (add_right_cancel h) }
 
 /-- Una configuración es cerrada bajo rotación por k -/
 def closed_under_rotation {n : ℕ} (K : RationalConfiguration n) (k : ℕ) : Prop :=
-  ∀ i : Fin n, ∃ j : Fin n, 
+  ∀ i : Fin n, ∃ j : Fin n,
     K.crossings j = rotate_crossing (K.crossings i) k
 
 /-!
