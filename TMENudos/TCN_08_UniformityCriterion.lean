@@ -251,14 +251,12 @@ section K3_Tests
 /-- specialClass: {(0,3), (1,4), (2,5)} -/
 def K3_special : RationalConfiguration 3 := {
   crossings := fun i =>
-    match i with
-    | ⟨0, _⟩ => ⟨0, 3, by decide⟩
-    | ⟨1, _⟩ => ⟨1, 4, by decide⟩
-    | ⟨2, _⟩ => ⟨2, 5, by decide⟩
+    if h0 : i = 0 then ⟨0, 3, by decide⟩
+    else if h1 : i = 1 then ⟨1, 4, by decide⟩
+    else ⟨2, 5, by decide⟩
   coverage := by
     intro x
-    interval_cases x.val
-    all_goals decide
+    interval_cases x.val <;> decide
 }
 
 /-- IME de specialClass = [3, 3, 3] -/
