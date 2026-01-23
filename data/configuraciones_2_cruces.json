@@ -1,0 +1,207 @@
+{
+  "descripcion": "Configuraciones posibles de un nudo de dos cruces (4! = 24 permutaciones de orientaciones)",
+  "nota": "Para 2 cruces, cada cruce puede tener orientación +1 o -1, generando 2^2 = 4 configuraciones básicas",
+  "configuraciones": [
+    {
+      "id": 1,
+      "nombre": "Configuración ++",
+      "cruces": [
+        {
+          "id": 1,
+          "orientacion": 1,
+          "tipo": "positivo",
+          "arcos_entrada": ["a1", "a2"],
+          "arcos_salida": ["a3", "a4"]
+        },
+        {
+          "id": 2,
+          "orientacion": 1,
+          "tipo": "positivo",
+          "arcos_entrada": ["a3", "a5"],
+          "arcos_salida": ["a6", "a7"]
+        }
+      ],
+      "arcos": [
+        {"id": "a1", "desde": "inicio", "hasta": "cruce1"},
+        {"id": "a2", "desde": "externo", "hasta": "cruce1"},
+        {"id": "a3", "desde": "cruce1", "hasta": "cruce2"},
+        {"id": "a4", "desde": "cruce1", "hasta": "externo"},
+        {"id": "a5", "desde": "externo", "hasta": "cruce2"},
+        {"id": "a6", "desde": "cruce2", "hasta": "externo"},
+        {"id": "a7", "desde": "cruce2", "hasta": "fin"}
+      ],
+      "matriz_adyacencia": [
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1],
+        [1, 0, 0, 0]
+      ],
+      "etapa1_esperado": {
+        "es_grafo_euleriano": true,
+        "num_componentes": 1,
+        "clasificacion": "nudo",
+        "razonamiento": "Todos los vértices tienen grado par (grado 2), formando un ciclo euleriano único"
+      },
+      "etapa2_esperado": {
+        "es_trivial": false,
+        "movimientos_reidemeister_aplicables": ["R1", "R2", "R3"],
+        "reducible_a_unknot": false,
+        "clasificacion_final": "nudo_no_trivial",
+        "nombre_topologico": "Hopf link o figura-8 dependiendo de conexiones"
+      }
+    },
+    {
+      "id": 2,
+      "nombre": "Configuración +-",
+      "cruces": [
+        {
+          "id": 1,
+          "orientacion": 1,
+          "tipo": "positivo",
+          "arcos_entrada": ["a1", "a2"],
+          "arcos_salida": ["a3", "a4"]
+        },
+        {
+          "id": 2,
+          "orientacion": -1,
+          "tipo": "negativo",
+          "arcos_entrada": ["a3", "a5"],
+          "arcos_salida": ["a6", "a7"]
+        }
+      ],
+      "arcos": [
+        {"id": "a1", "desde": "inicio", "hasta": "cruce1"},
+        {"id": "a2", "desde": "externo", "hasta": "cruce1"},
+        {"id": "a3", "desde": "cruce1", "hasta": "cruce2"},
+        {"id": "a4", "desde": "cruce1", "hasta": "externo"},
+        {"id": "a5", "desde": "externo", "hasta": "cruce2"},
+        {"id": "a6", "desde": "cruce2", "hasta": "externo"},
+        {"id": "a7", "desde": "cruce2", "hasta": "fin"}
+      ],
+      "matriz_adyacencia": [
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1],
+        [1, 0, 0, 0]
+      ],
+      "etapa1_esperado": {
+        "es_grafo_euleriano": true,
+        "num_componentes": 1,
+        "clasificacion": "nudo",
+        "razonamiento": "Todos los vértices tienen grado par, formando un ciclo euleriano único"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "movimientos_reidemeister_aplicables": ["R2"],
+        "reducible_a_unknot": true,
+        "clasificacion_final": "nudo_trivial",
+        "nombre_topologico": "unknot",
+        "nota": "Cruces opuestos se cancelan mediante R2"
+      }
+    },
+    {
+      "id": 3,
+      "nombre": "Configuración -+",
+      "cruces": [
+        {
+          "id": 1,
+          "orientacion": -1,
+          "tipo": "negativo",
+          "arcos_entrada": ["a1", "a2"],
+          "arcos_salida": ["a3", "a4"]
+        },
+        {
+          "id": 2,
+          "orientacion": 1,
+          "tipo": "positivo",
+          "arcos_entrada": ["a3", "a5"],
+          "arcos_salida": ["a6", "a7"]
+        }
+      ],
+      "arcos": [
+        {"id": "a1", "desde": "inicio", "hasta": "cruce1"},
+        {"id": "a2", "desde": "externo", "hasta": "cruce1"},
+        {"id": "a3", "desde": "cruce1", "hasta": "cruce2"},
+        {"id": "a4", "desde": "cruce1", "hasta": "externo"},
+        {"id": "a5", "desde": "externo", "hasta": "cruce2"},
+        {"id": "a6", "desde": "cruce2", "hasta": "externo"},
+        {"id": "a7", "desde": "cruce2", "hasta": "fin"}
+      ],
+      "matriz_adyacencia": [
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1],
+        [1, 0, 0, 0]
+      ],
+      "etapa1_esperado": {
+        "es_grafo_euleriano": true,
+        "num_componentes": 1,
+        "clasificacion": "nudo",
+        "razonamiento": "Todos los vértices tienen grado par, formando un ciclo euleriano único"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "movimientos_reidemeister_aplicables": ["R2"],
+        "reducible_a_unknot": true,
+        "clasificacion_final": "nudo_trivial",
+        "nombre_topologico": "unknot",
+        "nota": "Cruces opuestos se cancelan mediante R2"
+      }
+    },
+    {
+      "id": 4,
+      "nombre": "Configuración --",
+      "cruces": [
+        {
+          "id": 1,
+          "orientacion": -1,
+          "tipo": "negativo",
+          "arcos_entrada": ["a1", "a2"],
+          "arcos_salida": ["a3", "a4"]
+        },
+        {
+          "id": 2,
+          "orientacion": -1,
+          "tipo": "negativo",
+          "arcos_entrada": ["a3", "a5"],
+          "arcos_salida": ["a6", "a7"]
+        }
+      ],
+      "arcos": [
+        {"id": "a1", "desde": "inicio", "hasta": "cruce1"},
+        {"id": "a2", "desde": "externo", "hasta": "cruce1"},
+        {"id": "a3", "desde": "cruce1", "hasta": "cruce2"},
+        {"id": "a4", "desde": "cruce1", "hasta": "externo"},
+        {"id": "a5", "desde": "externo", "hasta": "cruce2"},
+        {"id": "a6", "desde": "cruce2", "hasta": "externo"},
+        {"id": "a7", "desde": "cruce2", "hasta": "fin"}
+      ],
+      "matriz_adyacencia": [
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1],
+        [1, 0, 0, 0]
+      ],
+      "etapa1_esperado": {
+        "es_grafo_euleriano": true,
+        "num_componentes": 1,
+        "clasificacion": "nudo",
+        "razonamiento": "Todos los vértices tienen grado par, formando un ciclo euleriano único"
+      },
+      "etapa2_esperado": {
+        "es_trivial": false,
+        "movimientos_reidemeister_aplicables": ["R1", "R2", "R3"],
+        "reducible_a_unknot": false,
+        "clasificacion_final": "nudo_no_trivial",
+        "nombre_topologico": "Hopf link o figura-8 dependiendo de conexiones"
+      }
+    }
+  ],
+  "resumen_estadistico": {
+    "total_configuraciones": 4,
+    "nudos_triviales": 2,
+    "nudos_no_triviales": 2,
+    "todas_1_componente": true,
+    "nota": "Las configuraciones +- y -+ son equivalentes topológicamente (unknot) por cancelación R2"
+  }
+}

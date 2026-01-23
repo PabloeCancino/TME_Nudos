@@ -1,0 +1,94 @@
+[
+  {
+    "config_id": 1,
+    "config_nombre": "Configuración ++",
+    "etapa1": {
+      "num_componentes": 1,
+      "es_grafo_euleriano": true,
+      "clasificacion": "nudo",
+      "algoritmo_usado": "BFS para componentes conexas",
+      "decidible": true
+    },
+    "etapa2": {
+      "movimientos_detectados": [],
+      "es_trivial": false,
+      "razon_trivialidad": "Dos cruces con misma orientación: no trivial",
+      "clasificacion_final": "nudo_no_trivial",
+      "algoritmo_usado": "Búsqueda de patrones R1, R2, R3",
+      "decidible": true
+    },
+    "match_etapa1": true,
+    "match_etapa2": true,
+    "verificacion_completa": true
+  },
+  {
+    "config_id": 2,
+    "config_nombre": "Configuración +-",
+    "etapa1": {
+      "num_componentes": 1,
+      "es_grafo_euleriano": true,
+      "clasificacion": "nudo",
+      "algoritmo_usado": "BFS para componentes conexas",
+      "decidible": true
+    },
+    "etapa2": {
+      "movimientos_detectados": [
+        "R2"
+      ],
+      "es_trivial": true,
+      "razon_trivialidad": "Reducible mediante R2 (cruces opuestos se cancelan)",
+      "clasificacion_final": "nudo_trivial",
+      "algoritmo_usado": "Búsqueda de patrones R1, R2, R3",
+      "decidible": true
+    },
+    "match_etapa1": true,
+    "match_etapa2": true,
+    "verificacion_completa": true
+  },
+  {
+    "config_id": 3,
+    "config_nombre": "Configuración -+",
+    "etapa1": {
+      "num_componentes": 1,
+      "es_grafo_euleriano": true,
+      "clasificacion": "nudo",
+      "algoritmo_usado": "BFS para componentes conexas",
+      "decidible": true
+    },
+    "etapa2": {
+      "movimientos_detectados": [
+        "R2"
+      ],
+      "es_trivial": true,
+      "razon_trivialidad": "Reducible mediante R2 (cruces opuestos se cancelan)",
+      "clasificacion_final": "nudo_trivial",
+      "algoritmo_usado": "Búsqueda de patrones R1, R2, R3",
+      "decidible": true
+    },
+    "match_etapa1": true,
+    "match_etapa2": true,
+    "verificacion_completa": true
+  },
+  {
+    "config_id": 4,
+    "config_nombre": "Configuración --",
+    "etapa1": {
+      "num_componentes": 1,
+      "es_grafo_euleriano": true,
+      "clasificacion": "nudo",
+      "algoritmo_usado": "BFS para componentes conexas",
+      "decidible": true
+    },
+    "etapa2": {
+      "movimientos_detectados": [],
+      "es_trivial": false,
+      "razon_trivialidad": "Dos cruces con misma orientación: no trivial",
+      "clasificacion_final": "nudo_no_trivial",
+      "algoritmo_usado": "Búsqueda de patrones R1, R2, R3",
+      "decidible": true
+    },
+    "match_etapa1": true,
+    "match_etapa2": true,
+    "verificacion_completa": true
+  }
+]
