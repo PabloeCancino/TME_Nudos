@@ -1,0 +1,180 @@
+[
+  {
+    "nombre": "K_3_1",
+    "cruces": [
+      {
+        "id": 1,
+        "over": 0,
+        "under": 3,
+        "orientacion": 1,
+        "r1_aplicable": false
+      },
+      {
+        "id": 2,
+        "over": 4,
+        "under": 1,
+        "orientacion": 1,
+        "r1_aplicable": false
+      },
+      {
+        "id": 3,
+        "over": 2,
+        "under": 5,
+        "orientacion": 1,
+        "r1_aplicable": false
+      }
+    ],
+    "etapa1": {
+      "num_componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "movimientos_aplicables": [],
+      "r2_pares": [],
+      "es_trivial": false,
+      "razon": "No reducible mediante R1 o R2",
+      "writhe": 3
+    }
+  },
+  {
+    "nombre": "K_3_2",
+    "cruces": [
+      {
+        "id": 1,
+        "over": 0,
+        "under": 5,
+        "orientacion": 1,
+        "r1_aplicable": true
+      },
+      {
+        "id": 2,
+        "over": 2,
+        "under": 1,
+        "orientacion": 1,
+        "r1_aplicable": true
+      },
+      {
+        "id": 3,
+        "over": 4,
+        "under": 3,
+        "orientacion": 1,
+        "r1_aplicable": true
+      }
+    ],
+    "etapa1": {
+      "num_componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "movimientos_aplicables": [
+        "R1_cruce1",
+        "R1_cruce2",
+        "R1_cruce3"
+      ],
+      "r2_pares": [],
+      "es_trivial": true,
+      "razon": "Reducible mediante R1 (arcos consecutivos en un cruce)",
+      "writhe": 3
+    }
+  },
+  {
+    "nombre": "K_3_3",
+    "cruces": [
+      {
+        "id": 1,
+        "over": 0,
+        "under": 3,
+        "orientacion": 1,
+        "r1_aplicable": false
+      },
+      {
+        "id": 2,
+        "over": 1,
+        "under": 4,
+        "orientacion": 1,
+        "r1_aplicable": false
+      },
+      {
+        "id": 3,
+        "over": 2,
+        "under": 5,
+        "orientacion": 1,
+        "r1_aplicable": false
+      }
+    ],
+    "etapa1": {
+      "num_componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "movimientos_aplicables": [
+        "R2_cruces1_2",
+        "R2_cruces2_3"
+      ],
+      "r2_pares": [
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "es_trivial": true,
+      "razon": "Reducible mediante R2 (pares consecutivos entre cruces)",
+      "writhe": 3
+    }
+  },
+  {
+    "nombre": "K_3_4",
+    "cruces": [
+      {
+        "id": 1,
+        "over": 0,
+        "under": 5,
+        "orientacion": 1,
+        "r1_aplicable": true
+      },
+      {
+        "id": 2,
+        "over": 1,
+        "under": 4,
+        "orientacion": 1,
+        "r1_aplicable": false
+      },
+      {
+        "id": 3,
+        "over": 2,
+        "under": 3,
+        "orientacion": -1,
+        "r1_aplicable": true
+      }
+    ],
+    "etapa1": {
+      "num_componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "movimientos_aplicables": [
+        "R1_cruce1",
+        "R1_cruce3",
+        "R2_cruces1_2",
+        "R2_cruces2_3"
+      ],
+      "r2_pares": [
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ]
+      ],
+      "es_trivial": true,
+      "razon": "Reducible mediante R1 (arcos consecutivos en un cruce)",
+      "writhe": 1
+    }
+  }
+]

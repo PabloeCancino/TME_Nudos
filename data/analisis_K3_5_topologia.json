@@ -1,0 +1,58 @@
+{
+  "nombre": "K_3_5",
+  "cruces": [
+    {
+      "id": 1,
+      "over": 0,
+      "under": 3
+    },
+    {
+      "id": 2,
+      "over": 1,
+      "under": 4
+    },
+    {
+      "id": 3,
+      "over": 2,
+      "under": 5
+    }
+  ],
+  "matriz_incidencia": [
+    [
+      2,
+      1,
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      0,
+      1,
+      1,
+      1
+    ],
+    [
+      0,
+      0,
+      1,
+      1,
+      1,
+      1
+    ]
+  ],
+  "num_componentes": 1,
+  "componentes": [
+    [
+      "a_1",
+      "a_2",
+      "a_3",
+      "a_4",
+      "a_5",
+      "a_6"
+    ]
+  ],
+  "clasificacion": "nudo"
+}

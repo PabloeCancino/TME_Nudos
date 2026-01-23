@@ -1,0 +1,10 @@
+K_3_1 = {V_1(0,3),V_2(4,1),V_3(2,5)}
+K_3_2 = {V_1(0,5),V_2(2,1),V_3(4,3)}
+K_3_3 = {V_1(0,3),V_2(1,4),V_3(2,5)}
+K_3_4 = {V_1(0,5),V_2(1,4),V_3(2,3)}
+
+caso de conflicto
+K_3_5 = {V_1(0,3),V_2(1,4),V_3(2,5)}
+
+Donde V_1(0,3) es una lazada de un trivial sobre si mismo, que aporta además dos overs (1 & 2) en un enlace de dos componentes...
+y un trivial debajo que aporta los unders 4 & 5
