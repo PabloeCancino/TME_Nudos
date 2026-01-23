@@ -1,0 +1,1670 @@
+{
+  "descripcion": "24 configuraciones de nudos de 2 cruces basadas en permutaciones de 4 arcos en módulo 4",
+  "notacion": "Permutaciones de (0,1,2,3) generan 4! = 24 configuraciones",
+  "configuraciones": [
+    {
+      "id": 1,
+      "nombre": "K_(2,1)",
+      "permutacion": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "notacion_pares_ordenados": "{(0,1), (2,3)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            0,
+            1
+          ],
+          "orientacion": -1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            2,
+            3
+          ],
+          "orientacion": -1
+        }
+      ],
+      "clase_orientacion": "--",
+      "writhe": -2,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": false,
+        "writhe": -2,
+        "clasificacion_final": "nudo_no_trivial",
+        "movimientos_aplicables": []
+      }
+    },
+    {
+      "id": 2,
+      "nombre": "K_(2,2)",
+      "permutacion": [
+        0,
+        1,
+        3,
+        2
+      ],
+      "notacion_pares_ordenados": "{(0,1), (3,2)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            0,
+            1
+          ],
+          "orientacion": -1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            3,
+            2
+          ],
+          "orientacion": 1
+        }
+      ],
+      "clase_orientacion": "-+",
+      "writhe": 0,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "writhe": 0,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R2"
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "nombre": "K_(2,3)",
+      "permutacion": [
+        0,
+        2,
+        1,
+        3
+      ],
+      "notacion_pares_ordenados": "{(0,2), (1,3)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            0,
+            2
+          ],
+          "orientacion": 1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            1,
+            3
+          ],
+          "orientacion": 1
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": false,
+        "writhe": 2,
+        "clasificacion_final": "nudo_no_trivial",
+        "movimientos_aplicables": []
+      }
+    },
+    {
+      "id": 4,
+      "nombre": "K_(2,4)",
+      "permutacion": [
+        0,
+        2,
+        3,
+        1
+      ],
+      "notacion_pares_ordenados": "{(0,2), (3,1)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            0,
+            2
+          ],
+          "orientacion": 1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            3,
+            1
+          ],
+          "orientacion": 1
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": false,
+        "writhe": 2,
+        "clasificacion_final": "nudo_no_trivial",
+        "movimientos_aplicables": []
+      }
+    },
+    {
+      "id": 5,
+      "nombre": "K_(2,5)",
+      "permutacion": [
+        0,
+        3,
+        1,
+        2
+      ],
+      "notacion_pares_ordenados": "{(0,3), (1,2)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            0,
+            3
+          ],
+          "orientacion": 1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            1,
+            2
+          ],
+          "orientacion": -1
+        }
+      ],
+      "clase_orientacion": "+-",
+      "writhe": 0,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "writhe": 0,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R2"
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "nombre": "K_(2,6)",
+      "permutacion": [
+        0,
+        3,
+        2,
+        1
+      ],
+      "notacion_pares_ordenados": "{(0,3), (2,1)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            0,
+            3
+          ],
+          "orientacion": 1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            2,
+            1
+          ],
+          "orientacion": 1
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": false,
+        "writhe": 2,
+        "clasificacion_final": "nudo_no_trivial",
+        "movimientos_aplicables": []
+      }
+    },
+    {
+      "id": 7,
+      "nombre": "K_(2,7)",
+      "permutacion": [
+        1,
+        0,
+        2,
+        3
+      ],
+      "notacion_pares_ordenados": "{(1,0), (2,3)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            1,
+            0
+          ],
+          "orientacion": 1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            2,
+            3
+          ],
+          "orientacion": -1
+        }
+      ],
+      "clase_orientacion": "+-",
+      "writhe": 0,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "writhe": 0,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R2"
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "nombre": "K_(2,8)",
+      "permutacion": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "notacion_pares_ordenados": "{(1,0), (3,2)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            1,
+            0
+          ],
+          "orientacion": 1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            3,
+            2
+          ],
+          "orientacion": 1
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": false,
+        "writhe": 2,
+        "clasificacion_final": "nudo_no_trivial",
+        "movimientos_aplicables": []
+      }
+    },
+    {
+      "id": 9,
+      "nombre": "K_(2,9)",
+      "permutacion": [
+        1,
+        2,
+        0,
+        3
+      ],
+      "notacion_pares_ordenados": "{(1,2), (0,3)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            1,
+            2
+          ],
+          "orientacion": -1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            0,
+            3
+          ],
+          "orientacion": 1
+        }
+      ],
+      "clase_orientacion": "-+",
+      "writhe": 0,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "writhe": 0,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R2"
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "nombre": "K_(2,10)",
+      "permutacion": [
+        1,
+        2,
+        3,
+        0
+      ],
+      "notacion_pares_ordenados": "{(1,2), (3,0)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            1,
+            2
+          ],
+          "orientacion": -1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            3,
+            0
+          ],
+          "orientacion": -1
+        }
+      ],
+      "clase_orientacion": "--",
+      "writhe": -2,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": false,
+        "writhe": -2,
+        "clasificacion_final": "nudo_no_trivial",
+        "movimientos_aplicables": []
+      }
+    },
+    {
+      "id": 11,
+      "nombre": "K_(2,11)",
+      "permutacion": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "notacion_pares_ordenados": "{(1,3), (0,2)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            1,
+            3
+          ],
+          "orientacion": 1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            0,
+            2
+          ],
+          "orientacion": 1
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": false,
+        "writhe": 2,
+        "clasificacion_final": "nudo_no_trivial",
+        "movimientos_aplicables": []
+      }
+    },
+    {
+      "id": 12,
+      "nombre": "K_(2,12)",
+      "permutacion": [
+        1,
+        3,
+        2,
+        0
+      ],
+      "notacion_pares_ordenados": "{(1,3), (2,0)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            1,
+            3
+          ],
+          "orientacion": 1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            2,
+            0
+          ],
+          "orientacion": 1
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": false,
+        "writhe": 2,
+        "clasificacion_final": "nudo_no_trivial",
+        "movimientos_aplicables": []
+      }
+    },
+    {
+      "id": 13,
+      "nombre": "K_(2,13)",
+      "permutacion": [
+        2,
+        0,
+        1,
+        3
+      ],
+      "notacion_pares_ordenados": "{(2,0), (1,3)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            2,
+            0
+          ],
+          "orientacion": 1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            1,
+            3
+          ],
+          "orientacion": 1
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": false,
+        "writhe": 2,
+        "clasificacion_final": "nudo_no_trivial",
+        "movimientos_aplicables": []
+      }
+    },
+    {
+      "id": 14,
+      "nombre": "K_(2,14)",
+      "permutacion": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "notacion_pares_ordenados": "{(2,0), (3,1)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            2,
+            0
+          ],
+          "orientacion": 1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            3,
+            1
+          ],
+          "orientacion": 1
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": false,
+        "writhe": 2,
+        "clasificacion_final": "nudo_no_trivial",
+        "movimientos_aplicables": []
+      }
+    },
+    {
+      "id": 15,
+      "nombre": "K_(2,15)",
+      "permutacion": [
+        2,
+        1,
+        0,
+        3
+      ],
+      "notacion_pares_ordenados": "{(2,1), (0,3)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            2,
+            1
+          ],
+          "orientacion": 1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            0,
+            3
+          ],
+          "orientacion": 1
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": false,
+        "writhe": 2,
+        "clasificacion_final": "nudo_no_trivial",
+        "movimientos_aplicables": []
+      }
+    },
+    {
+      "id": 16,
+      "nombre": "K_(2,16)",
+      "permutacion": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "notacion_pares_ordenados": "{(2,1), (3,0)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            2,
+            1
+          ],
+          "orientacion": 1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            3,
+            0
+          ],
+          "orientacion": -1
+        }
+      ],
+      "clase_orientacion": "+-",
+      "writhe": 0,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "writhe": 0,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R2"
+        ]
+      }
+    },
+    {
+      "id": 17,
+      "nombre": "K_(2,17)",
+      "permutacion": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "notacion_pares_ordenados": "{(2,3), (0,1)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            2,
+            3
+          ],
+          "orientacion": -1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            0,
+            1
+          ],
+          "orientacion": -1
+        }
+      ],
+      "clase_orientacion": "--",
+      "writhe": -2,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": false,
+        "writhe": -2,
+        "clasificacion_final": "nudo_no_trivial",
+        "movimientos_aplicables": []
+      }
+    },
+    {
+      "id": 18,
+      "nombre": "K_(2,18)",
+      "permutacion": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "notacion_pares_ordenados": "{(2,3), (1,0)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            2,
+            3
+          ],
+          "orientacion": -1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            1,
+            0
+          ],
+          "orientacion": 1
+        }
+      ],
+      "clase_orientacion": "-+",
+      "writhe": 0,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "writhe": 0,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R2"
+        ]
+      }
+    },
+    {
+      "id": 19,
+      "nombre": "K_(2,19)",
+      "permutacion": [
+        3,
+        0,
+        1,
+        2
+      ],
+      "notacion_pares_ordenados": "{(3,0), (1,2)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            3,
+            0
+          ],
+          "orientacion": -1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            1,
+            2
+          ],
+          "orientacion": -1
+        }
+      ],
+      "clase_orientacion": "--",
+      "writhe": -2,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": false,
+        "writhe": -2,
+        "clasificacion_final": "nudo_no_trivial",
+        "movimientos_aplicables": []
+      }
+    },
+    {
+      "id": 20,
+      "nombre": "K_(2,20)",
+      "permutacion": [
+        3,
+        0,
+        2,
+        1
+      ],
+      "notacion_pares_ordenados": "{(3,0), (2,1)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            3,
+            0
+          ],
+          "orientacion": -1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            2,
+            1
+          ],
+          "orientacion": 1
+        }
+      ],
+      "clase_orientacion": "-+",
+      "writhe": 0,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "writhe": 0,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R2"
+        ]
+      }
+    },
+    {
+      "id": 21,
+      "nombre": "K_(2,21)",
+      "permutacion": [
+        3,
+        1,
+        0,
+        2
+      ],
+      "notacion_pares_ordenados": "{(3,1), (0,2)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            3,
+            1
+          ],
+          "orientacion": 1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            0,
+            2
+          ],
+          "orientacion": 1
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": false,
+        "writhe": 2,
+        "clasificacion_final": "nudo_no_trivial",
+        "movimientos_aplicables": []
+      }
+    },
+    {
+      "id": 22,
+      "nombre": "K_(2,22)",
+      "permutacion": [
+        3,
+        1,
+        2,
+        0
+      ],
+      "notacion_pares_ordenados": "{(3,1), (2,0)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            3,
+            1
+          ],
+          "orientacion": 1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            2,
+            0
+          ],
+          "orientacion": 1
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": false,
+        "writhe": 2,
+        "clasificacion_final": "nudo_no_trivial",
+        "movimientos_aplicables": []
+      }
+    },
+    {
+      "id": 23,
+      "nombre": "K_(2,23)",
+      "permutacion": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "notacion_pares_ordenados": "{(3,2), (0,1)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            3,
+            2
+          ],
+          "orientacion": 1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            0,
+            1
+          ],
+          "orientacion": -1
+        }
+      ],
+      "clase_orientacion": "+-",
+      "writhe": 0,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "writhe": 0,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R2"
+        ]
+      }
+    },
+    {
+      "id": 24,
+      "nombre": "K_(2,24)",
+      "permutacion": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "notacion_pares_ordenados": "{(3,2), (1,0)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "par": [
+            3,
+            2
+          ],
+          "orientacion": 1
+        },
+        {
+          "cruce": 2,
+          "par": [
+            1,
+            0
+          ],
+          "orientacion": 1
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": false,
+        "writhe": 2,
+        "clasificacion_final": "nudo_no_trivial",
+        "movimientos_aplicables": []
+      }
+    }
+  ],
+  "resumen_estadistico": {
+    "total_configuraciones": 24,
+    "nudos_triviales": 8,
+    "nudos_no_triviales": 16,
+    "distribucion_writhe": {
+      "-2": 4,
+      "0": 8,
+      "2": 12
+    },
+    "distribucion_clases": {
+      "--": 4,
+      "-+": 4,
+      "++": 12,
+      "+-": 4
+    }
+  }
+}

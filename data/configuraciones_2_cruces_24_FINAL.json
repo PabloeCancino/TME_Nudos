@@ -1,0 +1,2013 @@
+{
+  "descripcion": "24 configuraciones de nudos de 2 cruces basadas en permutaciones de 4 arcos en módulo 4",
+  "notacion": "Permutaciones de (0,1,2,3) generan 4! = 24 configuraciones",
+  "criterios_reidemeister": {
+    "R1": "Se aplica cuando over y under son CONSECUTIVOS en mod 4 en UN MISMO cruce: |over - under| mod 4 ∈ {1, 3}",
+    "R2": "Se aplica cuando DOS CRUCES tienen pares (over, under) AMBOS consecutivos: |o1-o2| mod 4 ∈ {1,3} Y |u1-u2| mod 4 ∈ {1,3}"
+  },
+  "configuraciones": [
+    {
+      "id": 1,
+      "nombre": "K_(2,1)",
+      "permutacion": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "notacion_pares_ordenados": "{(0,1), (2,3)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 0,
+          "under": 1,
+          "par": [
+            0,
+            1
+          ],
+          "orientacion": -1,
+          "r1_aplicable": true
+        },
+        {
+          "cruce": 2,
+          "over": 2,
+          "under": 3,
+          "par": [
+            2,
+            3
+          ],
+          "orientacion": -1,
+          "r1_aplicable": true
+        }
+      ],
+      "clase_orientacion": "--",
+      "writhe": -2,
+      "r2_info": {
+        "overs_consecutivos": false,
+        "unders_consecutivos": false,
+        "r2_aplicable": false
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R1 (arcos consecutivos en un cruce)",
+        "writhe": -2,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R1_cruce1",
+          "R1_cruce2"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "nombre": "K_(2,2)",
+      "permutacion": [
+        0,
+        1,
+        3,
+        2
+      ],
+      "notacion_pares_ordenados": "{(0,1), (3,2)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 0,
+          "under": 1,
+          "par": [
+            0,
+            1
+          ],
+          "orientacion": -1,
+          "r1_aplicable": true
+        },
+        {
+          "cruce": 2,
+          "over": 3,
+          "under": 2,
+          "par": [
+            3,
+            2
+          ],
+          "orientacion": 1,
+          "r1_aplicable": true
+        }
+      ],
+      "clase_orientacion": "-+",
+      "writhe": 0,
+      "r2_info": {
+        "overs_consecutivos": true,
+        "unders_consecutivos": true,
+        "r2_aplicable": true
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R1 (arcos consecutivos en un cruce)",
+        "writhe": 0,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R1_cruce1",
+          "R1_cruce2"
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "nombre": "K_(2,3)",
+      "permutacion": [
+        0,
+        2,
+        1,
+        3
+      ],
+      "notacion_pares_ordenados": "{(0,2), (1,3)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 0,
+          "under": 2,
+          "par": [
+            0,
+            2
+          ],
+          "orientacion": 1,
+          "r1_aplicable": false
+        },
+        {
+          "cruce": 2,
+          "over": 1,
+          "under": 3,
+          "par": [
+            1,
+            3
+          ],
+          "orientacion": 1,
+          "r1_aplicable": false
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "r2_info": {
+        "overs_consecutivos": true,
+        "unders_consecutivos": true,
+        "r2_aplicable": true
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R2 (pares consecutivos entre cruces)",
+        "writhe": 2,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R2"
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "nombre": "K_(2,4)",
+      "permutacion": [
+        0,
+        2,
+        3,
+        1
+      ],
+      "notacion_pares_ordenados": "{(0,2), (3,1)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 0,
+          "under": 2,
+          "par": [
+            0,
+            2
+          ],
+          "orientacion": 1,
+          "r1_aplicable": false
+        },
+        {
+          "cruce": 2,
+          "over": 3,
+          "under": 1,
+          "par": [
+            3,
+            1
+          ],
+          "orientacion": 1,
+          "r1_aplicable": false
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "r2_info": {
+        "overs_consecutivos": true,
+        "unders_consecutivos": true,
+        "r2_aplicable": true
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R2 (pares consecutivos entre cruces)",
+        "writhe": 2,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R2"
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "nombre": "K_(2,5)",
+      "permutacion": [
+        0,
+        3,
+        1,
+        2
+      ],
+      "notacion_pares_ordenados": "{(0,3), (1,2)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 0,
+          "under": 3,
+          "par": [
+            0,
+            3
+          ],
+          "orientacion": 1,
+          "r1_aplicable": true
+        },
+        {
+          "cruce": 2,
+          "over": 1,
+          "under": 2,
+          "par": [
+            1,
+            2
+          ],
+          "orientacion": -1,
+          "r1_aplicable": true
+        }
+      ],
+      "clase_orientacion": "+-",
+      "writhe": 0,
+      "r2_info": {
+        "overs_consecutivos": true,
+        "unders_consecutivos": true,
+        "r2_aplicable": true
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R1 (arcos consecutivos en un cruce)",
+        "writhe": 0,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R1_cruce1",
+          "R1_cruce2"
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "nombre": "K_(2,6)",
+      "permutacion": [
+        0,
+        3,
+        2,
+        1
+      ],
+      "notacion_pares_ordenados": "{(0,3), (2,1)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 0,
+          "under": 3,
+          "par": [
+            0,
+            3
+          ],
+          "orientacion": 1,
+          "r1_aplicable": true
+        },
+        {
+          "cruce": 2,
+          "over": 2,
+          "under": 1,
+          "par": [
+            2,
+            1
+          ],
+          "orientacion": 1,
+          "r1_aplicable": true
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "r2_info": {
+        "overs_consecutivos": false,
+        "unders_consecutivos": false,
+        "r2_aplicable": false
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R1 (arcos consecutivos en un cruce)",
+        "writhe": 2,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R1_cruce1",
+          "R1_cruce2"
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "nombre": "K_(2,7)",
+      "permutacion": [
+        1,
+        0,
+        2,
+        3
+      ],
+      "notacion_pares_ordenados": "{(1,0), (2,3)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 1,
+          "under": 0,
+          "par": [
+            1,
+            0
+          ],
+          "orientacion": 1,
+          "r1_aplicable": true
+        },
+        {
+          "cruce": 2,
+          "over": 2,
+          "under": 3,
+          "par": [
+            2,
+            3
+          ],
+          "orientacion": -1,
+          "r1_aplicable": true
+        }
+      ],
+      "clase_orientacion": "+-",
+      "writhe": 0,
+      "r2_info": {
+        "overs_consecutivos": true,
+        "unders_consecutivos": true,
+        "r2_aplicable": true
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R1 (arcos consecutivos en un cruce)",
+        "writhe": 0,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R1_cruce1",
+          "R1_cruce2"
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "nombre": "K_(2,8)",
+      "permutacion": [
+        1,
+        0,
+        3,
+        2
+      ],
+      "notacion_pares_ordenados": "{(1,0), (3,2)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 1,
+          "under": 0,
+          "par": [
+            1,
+            0
+          ],
+          "orientacion": 1,
+          "r1_aplicable": true
+        },
+        {
+          "cruce": 2,
+          "over": 3,
+          "under": 2,
+          "par": [
+            3,
+            2
+          ],
+          "orientacion": 1,
+          "r1_aplicable": true
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "r2_info": {
+        "overs_consecutivos": false,
+        "unders_consecutivos": false,
+        "r2_aplicable": false
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R1 (arcos consecutivos en un cruce)",
+        "writhe": 2,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R1_cruce1",
+          "R1_cruce2"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "nombre": "K_(2,9)",
+      "permutacion": [
+        1,
+        2,
+        0,
+        3
+      ],
+      "notacion_pares_ordenados": "{(1,2), (0,3)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 1,
+          "under": 2,
+          "par": [
+            1,
+            2
+          ],
+          "orientacion": -1,
+          "r1_aplicable": true
+        },
+        {
+          "cruce": 2,
+          "over": 0,
+          "under": 3,
+          "par": [
+            0,
+            3
+          ],
+          "orientacion": 1,
+          "r1_aplicable": true
+        }
+      ],
+      "clase_orientacion": "-+",
+      "writhe": 0,
+      "r2_info": {
+        "overs_consecutivos": true,
+        "unders_consecutivos": true,
+        "r2_aplicable": true
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R1 (arcos consecutivos en un cruce)",
+        "writhe": 0,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R1_cruce1",
+          "R1_cruce2"
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "nombre": "K_(2,10)",
+      "permutacion": [
+        1,
+        2,
+        3,
+        0
+      ],
+      "notacion_pares_ordenados": "{(1,2), (3,0)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 1,
+          "under": 2,
+          "par": [
+            1,
+            2
+          ],
+          "orientacion": -1,
+          "r1_aplicable": true
+        },
+        {
+          "cruce": 2,
+          "over": 3,
+          "under": 0,
+          "par": [
+            3,
+            0
+          ],
+          "orientacion": -1,
+          "r1_aplicable": true
+        }
+      ],
+      "clase_orientacion": "--",
+      "writhe": -2,
+      "r2_info": {
+        "overs_consecutivos": false,
+        "unders_consecutivos": false,
+        "r2_aplicable": false
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R1 (arcos consecutivos en un cruce)",
+        "writhe": -2,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R1_cruce1",
+          "R1_cruce2"
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "nombre": "K_(2,11)",
+      "permutacion": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "notacion_pares_ordenados": "{(1,3), (0,2)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 1,
+          "under": 3,
+          "par": [
+            1,
+            3
+          ],
+          "orientacion": 1,
+          "r1_aplicable": false
+        },
+        {
+          "cruce": 2,
+          "over": 0,
+          "under": 2,
+          "par": [
+            0,
+            2
+          ],
+          "orientacion": 1,
+          "r1_aplicable": false
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "r2_info": {
+        "overs_consecutivos": true,
+        "unders_consecutivos": true,
+        "r2_aplicable": true
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R2 (pares consecutivos entre cruces)",
+        "writhe": 2,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R2"
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "nombre": "K_(2,12)",
+      "permutacion": [
+        1,
+        3,
+        2,
+        0
+      ],
+      "notacion_pares_ordenados": "{(1,3), (2,0)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 1,
+          "under": 3,
+          "par": [
+            1,
+            3
+          ],
+          "orientacion": 1,
+          "r1_aplicable": false
+        },
+        {
+          "cruce": 2,
+          "over": 2,
+          "under": 0,
+          "par": [
+            2,
+            0
+          ],
+          "orientacion": 1,
+          "r1_aplicable": false
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "r2_info": {
+        "overs_consecutivos": true,
+        "unders_consecutivos": true,
+        "r2_aplicable": true
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R2 (pares consecutivos entre cruces)",
+        "writhe": 2,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R2"
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "nombre": "K_(2,13)",
+      "permutacion": [
+        2,
+        0,
+        1,
+        3
+      ],
+      "notacion_pares_ordenados": "{(2,0), (1,3)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 2,
+          "under": 0,
+          "par": [
+            2,
+            0
+          ],
+          "orientacion": 1,
+          "r1_aplicable": false
+        },
+        {
+          "cruce": 2,
+          "over": 1,
+          "under": 3,
+          "par": [
+            1,
+            3
+          ],
+          "orientacion": 1,
+          "r1_aplicable": false
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "r2_info": {
+        "overs_consecutivos": true,
+        "unders_consecutivos": true,
+        "r2_aplicable": true
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R2 (pares consecutivos entre cruces)",
+        "writhe": 2,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R2"
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "nombre": "K_(2,14)",
+      "permutacion": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "notacion_pares_ordenados": "{(2,0), (3,1)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 2,
+          "under": 0,
+          "par": [
+            2,
+            0
+          ],
+          "orientacion": 1,
+          "r1_aplicable": false
+        },
+        {
+          "cruce": 2,
+          "over": 3,
+          "under": 1,
+          "par": [
+            3,
+            1
+          ],
+          "orientacion": 1,
+          "r1_aplicable": false
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "r2_info": {
+        "overs_consecutivos": true,
+        "unders_consecutivos": true,
+        "r2_aplicable": true
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R2 (pares consecutivos entre cruces)",
+        "writhe": 2,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R2"
+        ]
+      }
+    },
+    {
+      "id": 15,
+      "nombre": "K_(2,15)",
+      "permutacion": [
+        2,
+        1,
+        0,
+        3
+      ],
+      "notacion_pares_ordenados": "{(2,1), (0,3)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 2,
+          "under": 1,
+          "par": [
+            2,
+            1
+          ],
+          "orientacion": 1,
+          "r1_aplicable": true
+        },
+        {
+          "cruce": 2,
+          "over": 0,
+          "under": 3,
+          "par": [
+            0,
+            3
+          ],
+          "orientacion": 1,
+          "r1_aplicable": true
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "r2_info": {
+        "overs_consecutivos": false,
+        "unders_consecutivos": false,
+        "r2_aplicable": false
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R1 (arcos consecutivos en un cruce)",
+        "writhe": 2,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R1_cruce1",
+          "R1_cruce2"
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "nombre": "K_(2,16)",
+      "permutacion": [
+        2,
+        1,
+        3,
+        0
+      ],
+      "notacion_pares_ordenados": "{(2,1), (3,0)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 2,
+          "under": 1,
+          "par": [
+            2,
+            1
+          ],
+          "orientacion": 1,
+          "r1_aplicable": true
+        },
+        {
+          "cruce": 2,
+          "over": 3,
+          "under": 0,
+          "par": [
+            3,
+            0
+          ],
+          "orientacion": -1,
+          "r1_aplicable": true
+        }
+      ],
+      "clase_orientacion": "+-",
+      "writhe": 0,
+      "r2_info": {
+        "overs_consecutivos": true,
+        "unders_consecutivos": true,
+        "r2_aplicable": true
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R1 (arcos consecutivos en un cruce)",
+        "writhe": 0,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R1_cruce1",
+          "R1_cruce2"
+        ]
+      }
+    },
+    {
+      "id": 17,
+      "nombre": "K_(2,17)",
+      "permutacion": [
+        2,
+        3,
+        0,
+        1
+      ],
+      "notacion_pares_ordenados": "{(2,3), (0,1)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 2,
+          "under": 3,
+          "par": [
+            2,
+            3
+          ],
+          "orientacion": -1,
+          "r1_aplicable": true
+        },
+        {
+          "cruce": 2,
+          "over": 0,
+          "under": 1,
+          "par": [
+            0,
+            1
+          ],
+          "orientacion": -1,
+          "r1_aplicable": true
+        }
+      ],
+      "clase_orientacion": "--",
+      "writhe": -2,
+      "r2_info": {
+        "overs_consecutivos": false,
+        "unders_consecutivos": false,
+        "r2_aplicable": false
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R1 (arcos consecutivos en un cruce)",
+        "writhe": -2,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R1_cruce1",
+          "R1_cruce2"
+        ]
+      }
+    },
+    {
+      "id": 18,
+      "nombre": "K_(2,18)",
+      "permutacion": [
+        2,
+        3,
+        1,
+        0
+      ],
+      "notacion_pares_ordenados": "{(2,3), (1,0)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 2,
+          "under": 3,
+          "par": [
+            2,
+            3
+          ],
+          "orientacion": -1,
+          "r1_aplicable": true
+        },
+        {
+          "cruce": 2,
+          "over": 1,
+          "under": 0,
+          "par": [
+            1,
+            0
+          ],
+          "orientacion": 1,
+          "r1_aplicable": true
+        }
+      ],
+      "clase_orientacion": "-+",
+      "writhe": 0,
+      "r2_info": {
+        "overs_consecutivos": true,
+        "unders_consecutivos": true,
+        "r2_aplicable": true
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R1 (arcos consecutivos en un cruce)",
+        "writhe": 0,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R1_cruce1",
+          "R1_cruce2"
+        ]
+      }
+    },
+    {
+      "id": 19,
+      "nombre": "K_(2,19)",
+      "permutacion": [
+        3,
+        0,
+        1,
+        2
+      ],
+      "notacion_pares_ordenados": "{(3,0), (1,2)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 3,
+          "under": 0,
+          "par": [
+            3,
+            0
+          ],
+          "orientacion": -1,
+          "r1_aplicable": true
+        },
+        {
+          "cruce": 2,
+          "over": 1,
+          "under": 2,
+          "par": [
+            1,
+            2
+          ],
+          "orientacion": -1,
+          "r1_aplicable": true
+        }
+      ],
+      "clase_orientacion": "--",
+      "writhe": -2,
+      "r2_info": {
+        "overs_consecutivos": false,
+        "unders_consecutivos": false,
+        "r2_aplicable": false
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R1 (arcos consecutivos en un cruce)",
+        "writhe": -2,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R1_cruce1",
+          "R1_cruce2"
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "nombre": "K_(2,20)",
+      "permutacion": [
+        3,
+        0,
+        2,
+        1
+      ],
+      "notacion_pares_ordenados": "{(3,0), (2,1)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 3,
+          "under": 0,
+          "par": [
+            3,
+            0
+          ],
+          "orientacion": -1,
+          "r1_aplicable": true
+        },
+        {
+          "cruce": 2,
+          "over": 2,
+          "under": 1,
+          "par": [
+            2,
+            1
+          ],
+          "orientacion": 1,
+          "r1_aplicable": true
+        }
+      ],
+      "clase_orientacion": "-+",
+      "writhe": 0,
+      "r2_info": {
+        "overs_consecutivos": true,
+        "unders_consecutivos": true,
+        "r2_aplicable": true
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R1 (arcos consecutivos en un cruce)",
+        "writhe": 0,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R1_cruce1",
+          "R1_cruce2"
+        ]
+      }
+    },
+    {
+      "id": 21,
+      "nombre": "K_(2,21)",
+      "permutacion": [
+        3,
+        1,
+        0,
+        2
+      ],
+      "notacion_pares_ordenados": "{(3,1), (0,2)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 3,
+          "under": 1,
+          "par": [
+            3,
+            1
+          ],
+          "orientacion": 1,
+          "r1_aplicable": false
+        },
+        {
+          "cruce": 2,
+          "over": 0,
+          "under": 2,
+          "par": [
+            0,
+            2
+          ],
+          "orientacion": 1,
+          "r1_aplicable": false
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "r2_info": {
+        "overs_consecutivos": true,
+        "unders_consecutivos": true,
+        "r2_aplicable": true
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R2 (pares consecutivos entre cruces)",
+        "writhe": 2,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R2"
+        ]
+      }
+    },
+    {
+      "id": 22,
+      "nombre": "K_(2,22)",
+      "permutacion": [
+        3,
+        1,
+        2,
+        0
+      ],
+      "notacion_pares_ordenados": "{(3,1), (2,0)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 3,
+          "under": 1,
+          "par": [
+            3,
+            1
+          ],
+          "orientacion": 1,
+          "r1_aplicable": false
+        },
+        {
+          "cruce": 2,
+          "over": 2,
+          "under": 0,
+          "par": [
+            2,
+            0
+          ],
+          "orientacion": 1,
+          "r1_aplicable": false
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "r2_info": {
+        "overs_consecutivos": true,
+        "unders_consecutivos": true,
+        "r2_aplicable": true
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R2 (pares consecutivos entre cruces)",
+        "writhe": 2,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R2"
+        ]
+      }
+    },
+    {
+      "id": 23,
+      "nombre": "K_(2,23)",
+      "permutacion": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "notacion_pares_ordenados": "{(3,2), (0,1)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 3,
+          "under": 2,
+          "par": [
+            3,
+            2
+          ],
+          "orientacion": 1,
+          "r1_aplicable": true
+        },
+        {
+          "cruce": 2,
+          "over": 0,
+          "under": 1,
+          "par": [
+            0,
+            1
+          ],
+          "orientacion": -1,
+          "r1_aplicable": true
+        }
+      ],
+      "clase_orientacion": "+-",
+      "writhe": 0,
+      "r2_info": {
+        "overs_consecutivos": true,
+        "unders_consecutivos": true,
+        "r2_aplicable": true
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R1 (arcos consecutivos en un cruce)",
+        "writhe": 0,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R1_cruce1",
+          "R1_cruce2"
+        ]
+      }
+    },
+    {
+      "id": 24,
+      "nombre": "K_(2,24)",
+      "permutacion": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "notacion_pares_ordenados": "{(3,2), (1,0)}",
+      "pares_ordenados": [
+        {
+          "cruce": 1,
+          "over": 3,
+          "under": 2,
+          "par": [
+            3,
+            2
+          ],
+          "orientacion": 1,
+          "r1_aplicable": true
+        },
+        {
+          "cruce": 2,
+          "over": 1,
+          "under": 0,
+          "par": [
+            1,
+            0
+          ],
+          "orientacion": 1,
+          "r1_aplicable": true
+        }
+      ],
+      "clase_orientacion": "++",
+      "writhe": 2,
+      "r2_info": {
+        "overs_consecutivos": false,
+        "unders_consecutivos": false,
+        "r2_aplicable": false
+      },
+      "matriz_adyacencia": [
+        [
+          0,
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          1
+        ],
+        [
+          1,
+          0,
+          0,
+          0
+        ]
+      ],
+      "etapa1_esperado": {
+        "num_componentes": 1,
+        "es_grafo_euleriano": true,
+        "clasificacion": "nudo"
+      },
+      "etapa2_esperado": {
+        "es_trivial": true,
+        "razon": "Reducible mediante R1 (arcos consecutivos en un cruce)",
+        "writhe": 2,
+        "clasificacion_final": "nudo_trivial",
+        "movimientos_aplicables": [
+          "R1_cruce1",
+          "R1_cruce2"
+        ]
+      }
+    }
+  ],
+  "resumen_estadistico": {
+    "total_configuraciones": 24,
+    "nudos_triviales": 24,
+    "nudos_no_triviales": 0,
+    "distribucion_writhe": {
+      "-2": 4,
+      "0": 8,
+      "2": 12
+    },
+    "distribucion_clases": {
+      "--": 4,
+      "-+": 4,
+      "++": 12,
+      "+-": 4
+    },
+    "con_r1_aplicable": 16,
+    "con_r2_aplicable": 8,
+    "con_r1_o_r2": 24
+  }
+}

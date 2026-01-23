@@ -1,0 +1,446 @@
+{
+    "descripcion": "Configuraciones posibles de un nudo de dos cruces usando notación de pares ordenados",
+    "nota": "Para 2 cruces, cada cruce puede tener orientación +1 o -1, generando 2^2 = 4 configuraciones básicas",
+    "notacion": "K_(n,i) = {(a1,a2), (a3,a4), ...} donde cada par (ai,aj) representa un cruce con ai pasando sobre aj",
+    "configuraciones": [
+        {
+            "id": 1,
+            "nombre": "K_(2,1): Configuración ++",
+            "notacion_pares_ordenados": "K_(2,1) = {(1,2), (3,4)}",
+            "pares_ordenados": [
+                {
+                    "cruce": 1,
+                    "par": [
+                        1,
+                        2
+                    ],
+                    "orientacion": 1,
+                    "significado": "arco 1 pasa SOBRE arco 2 (cruce positivo)"
+                },
+                {
+                    "cruce": 2,
+                    "par": [
+                        3,
+                        4
+                    ],
+                    "orientacion": 1,
+                    "significado": "arco 3 pasa SOBRE arco 4 (cruce positivo)"
+                }
+            ],
+            "arcos_numerados": {
+                "1": {
+                    "desde": "inicio",
+                    "hasta": "cruce1",
+                    "rol": "over en cruce1"
+                },
+                "2": {
+                    "desde": "externo",
+                    "hasta": "cruce1",
+                    "rol": "under en cruce1"
+                },
+                "3": {
+                    "desde": "cruce1",
+                    "hasta": "cruce2",
+                    "rol": "over en cruce2"
+                },
+                "4": {
+                    "desde": "cruce1",
+                    "hasta": "externo",
+                    "rol": "under en cruce2"
+                },
+                "5": {
+                    "desde": "externo",
+                    "hasta": "cruce2"
+                },
+                "6": {
+                    "desde": "cruce2",
+                    "hasta": "externo"
+                },
+                "7": {
+                    "desde": "cruce2",
+                    "hasta": "fin"
+                }
+            },
+            "grafo_gauss": {
+                "codigo": "O1 U2 O3 U4",
+                "descripcion": "Over1, Under2, Over3, Under4"
+            },
+            "matriz_adyacencia": [
+                [
+                    0,
+                    1,
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    1,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    0,
+                    1
+                ],
+                [
+                    1,
+                    0,
+                    0,
+                    0
+                ]
+            ],
+            "etapa1_esperado": {
+                "es_grafo_euleriano": true,
+                "num_componentes": 1,
+                "clasificacion": "nudo",
+                "razonamiento": "Todos los vértices tienen grado par (grado 2), formando un ciclo euleriano único"
+            },
+            "etapa2_esperado": {
+                "es_trivial": false,
+                "movimientos_reidemeister_aplicables": [],
+                "reducible_a_unknot": false,
+                "clasificacion_final": "nudo_no_trivial",
+                "nombre_topologico": "Nudo de dos cruces positivos",
+                "writhe": 2,
+                "nota": "Ambos cruces tienen la misma orientación, no se cancelan"
+            }
+        },
+        {
+            "id": 2,
+            "nombre": "K_(2,2): Configuración +-",
+            "notacion_pares_ordenados": "K_(2,2) = {(1,2), (4,3)}",
+            "pares_ordenados": [
+                {
+                    "cruce": 1,
+                    "par": [
+                        1,
+                        2
+                    ],
+                    "orientacion": 1,
+                    "significado": "arco 1 pasa SOBRE arco 2 (cruce positivo)"
+                },
+                {
+                    "cruce": 2,
+                    "par": [
+                        4,
+                        3
+                    ],
+                    "orientacion": -1,
+                    "significado": "arco 4 pasa BAJO arco 3 (cruce negativo)"
+                }
+            ],
+            "arcos_numerados": {
+                "1": {
+                    "desde": "inicio",
+                    "hasta": "cruce1",
+                    "rol": "over en cruce1"
+                },
+                "2": {
+                    "desde": "externo",
+                    "hasta": "cruce1",
+                    "rol": "under en cruce1"
+                },
+                "3": {
+                    "desde": "cruce1",
+                    "hasta": "cruce2",
+                    "rol": "over en cruce2"
+                },
+                "4": {
+                    "desde": "cruce1",
+                    "hasta": "externo",
+                    "rol": "under en cruce2"
+                },
+                "5": {
+                    "desde": "externo",
+                    "hasta": "cruce2"
+                },
+                "6": {
+                    "desde": "cruce2",
+                    "hasta": "externo"
+                },
+                "7": {
+                    "desde": "cruce2",
+                    "hasta": "fin"
+                }
+            },
+            "grafo_gauss": {
+                "codigo": "O1 U2 O3 O4",
+                "descripcion": "Over1, Under2, Over3, Over4 (cruce 2 invertido)"
+            },
+            "matriz_adyacencia": [
+                [
+                    0,
+                    1,
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    1,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    0,
+                    1
+                ],
+                [
+                    1,
+                    0,
+                    0,
+                    0
+                ]
+            ],
+            "etapa1_esperado": {
+                "es_grafo_euleriano": true,
+                "num_componentes": 1,
+                "clasificacion": "nudo",
+                "razonamiento": "Todos los vértices tienen grado par, formando un ciclo euleriano único"
+            },
+            "etapa2_esperado": {
+                "es_trivial": true,
+                "movimientos_reidemeister_aplicables": [
+                    "R2"
+                ],
+                "reducible_a_unknot": true,
+                "clasificacion_final": "nudo_trivial",
+                "nombre_topologico": "unknot",
+                "writhe": 0,
+                "nota": "Cruces opuestos (+1 y -1) se cancelan mediante movimiento R2"
+            }
+        },
+        {
+            "id": 3,
+            "nombre": "K_(2,3): Configuración -+",
+            "notacion_pares_ordenados": "K_(2,3) = {(2,1), (3,4)}",
+            "pares_ordenados": [
+                {
+                    "cruce": 1,
+                    "par": [
+                        2,
+                        1
+                    ],
+                    "orientacion": -1,
+                    "significado": "arco 2 pasa BAJO arco 1 (cruce negativo)"
+                },
+                {
+                    "cruce": 2,
+                    "par": [
+                        3,
+                        4
+                    ],
+                    "orientacion": 1,
+                    "significado": "arco 3 pasa SOBRE arco 4 (cruce positivo)"
+                }
+            ],
+            "arcos_numerados": {
+                "1": {
+                    "desde": "inicio",
+                    "hasta": "cruce1",
+                    "rol": "over en cruce1"
+                },
+                "2": {
+                    "desde": "externo",
+                    "hasta": "cruce1",
+                    "rol": "under en cruce1"
+                },
+                "3": {
+                    "desde": "cruce1",
+                    "hasta": "cruce2",
+                    "rol": "over en cruce2"
+                },
+                "4": {
+                    "desde": "cruce1",
+                    "hasta": "externo",
+                    "rol": "under en cruce2"
+                },
+                "5": {
+                    "desde": "externo",
+                    "hasta": "cruce2"
+                },
+                "6": {
+                    "desde": "cruce2",
+                    "hasta": "externo"
+                },
+                "7": {
+                    "desde": "cruce2",
+                    "hasta": "fin"
+                }
+            },
+            "grafo_gauss": {
+                "codigo": "U1 O2 O3 U4",
+                "descripcion": "Under1, Over2, Over3, Under4 (cruce 1 invertido)"
+            },
+            "matriz_adyacencia": [
+                [
+                    0,
+                    1,
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    1,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    0,
+                    1
+                ],
+                [
+                    1,
+                    0,
+                    0,
+                    0
+                ]
+            ],
+            "etapa1_esperado": {
+                "es_grafo_euleriano": true,
+                "num_componentes": 1,
+                "clasificacion": "nudo",
+                "razonamiento": "Todos los vértices tienen grado par, formando un ciclo euleriano único"
+            },
+            "etapa2_esperado": {
+                "es_trivial": true,
+                "movimientos_reidemeister_aplicables": [
+                    "R2"
+                ],
+                "reducible_a_unknot": true,
+                "clasificacion_final": "nudo_trivial",
+                "nombre_topologico": "unknot",
+                "writhe": 0,
+                "nota": "Cruces opuestos (-1 y +1) se cancelan mediante movimiento R2"
+            }
+        },
+        {
+            "id": 4,
+            "nombre": "K_(2,4): Configuración --",
+            "notacion_pares_ordenados": "K_(2,4) = {(2,1), (4,3)}",
+            "pares_ordenados": [
+                {
+                    "cruce": 1,
+                    "par": [
+                        2,
+                        1
+                    ],
+                    "orientacion": -1,
+                    "significado": "arco 2 pasa BAJO arco 1 (cruce negativo)"
+                },
+                {
+                    "cruce": 2,
+                    "par": [
+                        4,
+                        3
+                    ],
+                    "orientacion": -1,
+                    "significado": "arco 4 pasa BAJO arco 3 (cruce negativo)"
+                }
+            ],
+            "arcos_numerados": {
+                "1": {
+                    "desde": "inicio",
+                    "hasta": "cruce1",
+                    "rol": "over en cruce1"
+                },
+                "2": {
+                    "desde": "externo",
+                    "hasta": "cruce1",
+                    "rol": "under en cruce1"
+                },
+                "3": {
+                    "desde": "cruce1",
+                    "hasta": "cruce2",
+                    "rol": "over en cruce2"
+                },
+                "4": {
+                    "desde": "cruce1",
+                    "hasta": "externo",
+                    "rol": "under en cruce2"
+                },
+                "5": {
+                    "desde": "externo",
+                    "hasta": "cruce2"
+                },
+                "6": {
+                    "desde": "cruce2",
+                    "hasta": "externo"
+                },
+                "7": {
+                    "desde": "cruce2",
+                    "hasta": "fin"
+                }
+            },
+            "grafo_gauss": {
+                "codigo": "U1 O2 O3 O4",
+                "descripcion": "Under1, Over2, Over3, Over4 (ambos cruces invertidos)"
+            },
+            "matriz_adyacencia": [
+                [
+                    0,
+                    1,
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    1,
+                    0
+                ],
+                [
+                    0,
+                    0,
+                    0,
+                    1
+                ],
+                [
+                    1,
+                    0,
+                    0,
+                    0
+                ]
+            ],
+            "etapa1_esperado": {
+                "es_grafo_euleriano": true,
+                "num_componentes": 1,
+                "clasificacion": "nudo",
+                "razonamiento": "Todos los vértices tienen grado par, formando un ciclo euleriano único"
+            },
+            "etapa2_esperado": {
+                "es_trivial": false,
+                "movimientos_reidemeister_aplicables": [],
+                "reducible_a_unknot": false,
+                "clasificacion_final": "nudo_no_trivial",
+                "nombre_topologico": "Nudo de dos cruces negativos",
+                "writhe": -2,
+                "nota": "Ambos cruces tienen la misma orientación, no se cancelan"
+            }
+        }
+    ],
+    "resumen_estadistico": {
+        "total_configuraciones": 4,
+        "nudos_triviales": 2,
+        "nudos_no_triviales": 2,
+        "todas_1_componente": true,
+        "writhe_distribution": {
+            "+2": 1,
+            "0": 2,
+            "-2": 1
+        },
+        "nota": "Las configuraciones K_(2,2) y K_(2,3) son equivalentes topológicamente (unknot) por cancelación R2"
+    },
+    "validacion_consistencia": {
+        "criterio_1": "Todas las configuraciones tienen exactamente 2 cruces",
+        "criterio_2": "Cada cruce está representado por un par ordenado (a,b) donde a pasa sobre/bajo b",
+        "criterio_3": "La orientación se determina por el orden del par: (a,b) con a>b es positivo, a<b es negativo",
+        "criterio_4": "Todas las configuraciones forman 1 componente conexa (son nudos, no enlaces)",
+        "criterio_5": "El writhe total es la suma de las orientaciones de todos los cruces"
+    }
+}

@@ -1,0 +1,530 @@
+[
+  {
+    "id": 1,
+    "nombre": "K_(2,1)",
+    "permutacion": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "pares_ordenados": "{(0,1), (2,3)}",
+    "clase": "--",
+    "writhe": -2,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": false,
+      "clasificacion": "no_trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 2,
+    "nombre": "K_(2,2)",
+    "permutacion": [
+      0,
+      1,
+      3,
+      2
+    ],
+    "pares_ordenados": "{(0,1), (3,2)}",
+    "clase": "-+",
+    "writhe": 0,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": true,
+      "clasificacion": "trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 3,
+    "nombre": "K_(2,3)",
+    "permutacion": [
+      0,
+      2,
+      1,
+      3
+    ],
+    "pares_ordenados": "{(0,2), (1,3)}",
+    "clase": "++",
+    "writhe": 2,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": false,
+      "clasificacion": "no_trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 4,
+    "nombre": "K_(2,4)",
+    "permutacion": [
+      0,
+      2,
+      3,
+      1
+    ],
+    "pares_ordenados": "{(0,2), (3,1)}",
+    "clase": "++",
+    "writhe": 2,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": false,
+      "clasificacion": "no_trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 5,
+    "nombre": "K_(2,5)",
+    "permutacion": [
+      0,
+      3,
+      1,
+      2
+    ],
+    "pares_ordenados": "{(0,3), (1,2)}",
+    "clase": "+-",
+    "writhe": 0,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": true,
+      "clasificacion": "trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 6,
+    "nombre": "K_(2,6)",
+    "permutacion": [
+      0,
+      3,
+      2,
+      1
+    ],
+    "pares_ordenados": "{(0,3), (2,1)}",
+    "clase": "++",
+    "writhe": 2,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": false,
+      "clasificacion": "no_trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 7,
+    "nombre": "K_(2,7)",
+    "permutacion": [
+      1,
+      0,
+      2,
+      3
+    ],
+    "pares_ordenados": "{(1,0), (2,3)}",
+    "clase": "+-",
+    "writhe": 0,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": true,
+      "clasificacion": "trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 8,
+    "nombre": "K_(2,8)",
+    "permutacion": [
+      1,
+      0,
+      3,
+      2
+    ],
+    "pares_ordenados": "{(1,0), (3,2)}",
+    "clase": "++",
+    "writhe": 2,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": false,
+      "clasificacion": "no_trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 9,
+    "nombre": "K_(2,9)",
+    "permutacion": [
+      1,
+      2,
+      0,
+      3
+    ],
+    "pares_ordenados": "{(1,2), (0,3)}",
+    "clase": "-+",
+    "writhe": 0,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": true,
+      "clasificacion": "trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 10,
+    "nombre": "K_(2,10)",
+    "permutacion": [
+      1,
+      2,
+      3,
+      0
+    ],
+    "pares_ordenados": "{(1,2), (3,0)}",
+    "clase": "--",
+    "writhe": -2,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": false,
+      "clasificacion": "no_trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 11,
+    "nombre": "K_(2,11)",
+    "permutacion": [
+      1,
+      3,
+      0,
+      2
+    ],
+    "pares_ordenados": "{(1,3), (0,2)}",
+    "clase": "++",
+    "writhe": 2,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": false,
+      "clasificacion": "no_trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 12,
+    "nombre": "K_(2,12)",
+    "permutacion": [
+      1,
+      3,
+      2,
+      0
+    ],
+    "pares_ordenados": "{(1,3), (2,0)}",
+    "clase": "++",
+    "writhe": 2,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": false,
+      "clasificacion": "no_trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 13,
+    "nombre": "K_(2,13)",
+    "permutacion": [
+      2,
+      0,
+      1,
+      3
+    ],
+    "pares_ordenados": "{(2,0), (1,3)}",
+    "clase": "++",
+    "writhe": 2,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": false,
+      "clasificacion": "no_trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 14,
+    "nombre": "K_(2,14)",
+    "permutacion": [
+      2,
+      0,
+      3,
+      1
+    ],
+    "pares_ordenados": "{(2,0), (3,1)}",
+    "clase": "++",
+    "writhe": 2,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": false,
+      "clasificacion": "no_trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 15,
+    "nombre": "K_(2,15)",
+    "permutacion": [
+      2,
+      1,
+      0,
+      3
+    ],
+    "pares_ordenados": "{(2,1), (0,3)}",
+    "clase": "++",
+    "writhe": 2,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": false,
+      "clasificacion": "no_trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 16,
+    "nombre": "K_(2,16)",
+    "permutacion": [
+      2,
+      1,
+      3,
+      0
+    ],
+    "pares_ordenados": "{(2,1), (3,0)}",
+    "clase": "+-",
+    "writhe": 0,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": true,
+      "clasificacion": "trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 17,
+    "nombre": "K_(2,17)",
+    "permutacion": [
+      2,
+      3,
+      0,
+      1
+    ],
+    "pares_ordenados": "{(2,3), (0,1)}",
+    "clase": "--",
+    "writhe": -2,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": false,
+      "clasificacion": "no_trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 18,
+    "nombre": "K_(2,18)",
+    "permutacion": [
+      2,
+      3,
+      1,
+      0
+    ],
+    "pares_ordenados": "{(2,3), (1,0)}",
+    "clase": "-+",
+    "writhe": 0,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": true,
+      "clasificacion": "trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 19,
+    "nombre": "K_(2,19)",
+    "permutacion": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "pares_ordenados": "{(3,0), (1,2)}",
+    "clase": "--",
+    "writhe": -2,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": false,
+      "clasificacion": "no_trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 20,
+    "nombre": "K_(2,20)",
+    "permutacion": [
+      3,
+      0,
+      2,
+      1
+    ],
+    "pares_ordenados": "{(3,0), (2,1)}",
+    "clase": "-+",
+    "writhe": 0,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": true,
+      "clasificacion": "trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 21,
+    "nombre": "K_(2,21)",
+    "permutacion": [
+      3,
+      1,
+      0,
+      2
+    ],
+    "pares_ordenados": "{(3,1), (0,2)}",
+    "clase": "++",
+    "writhe": 2,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": false,
+      "clasificacion": "no_trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 22,
+    "nombre": "K_(2,22)",
+    "permutacion": [
+      3,
+      1,
+      2,
+      0
+    ],
+    "pares_ordenados": "{(3,1), (2,0)}",
+    "clase": "++",
+    "writhe": 2,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": false,
+      "clasificacion": "no_trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 23,
+    "nombre": "K_(2,23)",
+    "permutacion": [
+      3,
+      2,
+      0,
+      1
+    ],
+    "pares_ordenados": "{(3,2), (0,1)}",
+    "clase": "+-",
+    "writhe": 0,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": true,
+      "clasificacion": "trivial"
+    },
+    "verificacion_ok": true
+  },
+  {
+    "id": 24,
+    "nombre": "K_(2,24)",
+    "permutacion": [
+      3,
+      2,
+      1,
+      0
+    ],
+    "pares_ordenados": "{(3,2), (1,0)}",
+    "clase": "++",
+    "writhe": 2,
+    "etapa1": {
+      "componentes": 1,
+      "clasificacion": "nudo"
+    },
+    "etapa2": {
+      "es_trivial": false,
+      "clasificacion": "no_trivial"
+    },
+    "verificacion_ok": true
+  }
+]
