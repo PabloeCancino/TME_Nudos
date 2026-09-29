@@ -1,2 +1,3 @@
 import Mathlib.Algebra.Polynomial.Basic
-def p : Polynomial ℕ := 0
+
+noncomputable def p : Polynomial ℕ := 0

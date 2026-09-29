@@ -81,7 +81,7 @@ example : isConsecutive (OrderedPair.make 3 2 (by decide)) := by
 
 example : ¬isConsecutive (OrderedPair.make 0 2 (by decide)) := by
   unfold isConsecutive
-  push_neg
+  push Not
   constructor <;> decide
 
 /-- Número de configuraciones con movimiento R1 -/
@@ -177,14 +177,14 @@ theorem r2_pairwise (K : K3Config) (p q : OrderedPair)
 theorem not_hasR1_iff (K : K3Config) :
   ¬hasR1 K ↔ ∀ p ∈ K.pairs, ¬isConsecutive p := by
   unfold hasR1
-  push_neg
+  push Not
   rfl
 
 /-- Si una configuración no tiene R2, ningún par forma patrón R2 -/
 theorem not_hasR2_iff (K : K3Config) :
   ¬hasR2 K ↔ ∀ p ∈ K.pairs, ∀ q ∈ K.pairs, p ≠ q → ¬formsR2Pattern p q := by
   unfold hasR2
-  push_neg
+  push Not
   rfl
 
 /-! ## Simetría de Movimientos -/

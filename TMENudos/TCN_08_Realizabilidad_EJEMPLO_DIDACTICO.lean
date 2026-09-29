@@ -22,31 +22,13 @@ completamente probado sin `sorry` statements.
 
 namespace KnotTheory
 
-open OrderedPair K3Config D6Action
+open OrderedPair K3Config DihedralD6
 
-/-! ## Teoremas Auxiliares Necesarios -/
+/-! ## Teoremas Auxiliares
 
-/-- La órbita del trébol derecho tiene cardinalidad 4.
-
-    **Demostración:** Enumeración explícita de las 4 configuraciones.
-    ASUMIMOS que este teorema ya existe en TCN_06_Representantes.lean
--/
-axiom orbit_trefoilKnot_card : (orbit trefoilKnot).card = 4
-
-/-- La órbita del trébol izquierdo tiene cardinalidad 4.
-
-    **Demostración:** Análoga a trefoilKnot.
-    ASUMIMOS que este teorema ya existe en TCN_06_Representantes.lean
--/
-axiom orbit_mirrorTrefoil_card : (orbit mirrorTrefoil).card = 4
-
-/-- Las dos órbitas son disjuntas.
-
-    **Demostración:** Los IME son diferentes (no pueden intersectarse).
-    Este teorema debería agregarse a TCN_07_Clasificacion.lean
--/
-axiom orbits_disjoint_trefoil_mirror :
-    Disjoint (orbit trefoilKnot) (orbit mirrorTrefoil)
+Ya disponibles en los módulos importados:
+`orbit_trefoilKnot_card`, `orbit_mirrorTrefoil_card` (TCN_06) y
+`orbits_disjoint_trefoil_mirror` (TCN_06). -/
 
 /-! ## Definición de Realizabilidad -/
 
@@ -74,18 +56,12 @@ theorem total_realizable_configs :
     realizableConfigs.card = 8 := by
   -- Expandir definición de realizableConfigs
   unfold realizableConfigs
-
   -- Aplicar fórmula de cardinalidad de unión disjunta
   rw [Finset.card_union_of_disjoint]
-
-  -- Caso 1: Suma de cardinalidades
-  · -- Sustituir cardinalidades conocidas
-    rw [orbit_trefoilKnot_card, orbit_mirrorTrefoil_card]
-    -- Ahora tenemos: 4 + 4 = 8
-    norm_num
-
+  -- Caso 1: Suma de cardinalidades (4 + 4 = 8)
+  · rw [orbit_trefoilKnot_card, orbit_mirrorTrefoil_card]
   -- Caso 2: Probar que las órbitas son disjuntas
-  · exact orbits_disjoint_trefoil_mirror
+  · exact Finset.disjoint_iff_inter_eq_empty.mpr orbits_disjoint_trefoil_mirror
 
 /-! ## Teoremas Derivados -/
 
@@ -98,32 +74,6 @@ theorem realizable_fraction :
 
 /-- El conjunto de realizables tiene exactamente 8 elementos -/
 example : realizableConfigs.card = 8 := total_realizable_configs
-
-/-- Verificación computacional -/
-#check total_realizable_configs
--- total_realizable_configs : realizableConfigs.card = 8
-
-/-! ## Versión Alternativa: Enumeración Explícita -/
-
-/-- Si las órbitas fueran conjuntos explícitos, podríamos usar `decide` -/
-example (h1 : orbit trefoilKnot = {k1, k2, k3, k4})
-        (h2 : orbit mirrorTrefoil = {m1, m2, m3, m4})
-        (h_disj : ∀ k ∈ orbit trefoilKnot, k ∉ orbit mirrorTrefoil) :
-    realizableConfigs.card = 8 := by
-  unfold realizableConfigs
-  rw [h1, h2]
-  -- Ahora es cálculo directo con conjuntos finitos
-  decide
-
-/-! ## Verificación de Corrección -/
-
--- Verificar que el teorema type-checks
-#check total_realizable_configs
--- ✅ total_realizable_configs : realizableConfigs.card = 8
-
--- Verificar que no hay sorry
-#print total_realizable_configs
--- ✅ Definición completa sin axiomas adicionales (excepto los 3 declarados)
 
 end KnotTheory
 

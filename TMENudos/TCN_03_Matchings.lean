@@ -134,39 +134,25 @@ end PerfectMatching
 
 /-! ## Los 4 Matchings Triviales -/
 
+/-- Criterio decidible: unicidad existencial en un `Finset` vía cardinalidad de filtro. -/
+theorem existsUnique_of_filter_card {α : Type*} (s : Finset α) (P : α → Prop)
+    [DecidablePred P] (h : (s.filter P).card = 1) : ∃! p, p ∈ s ∧ P p := by
+  obtain ⟨a, ha⟩ := Finset.card_eq_one.mp h
+  have ha' : a ∈ s.filter P := by rw [ha]; exact Finset.mem_singleton_self a
+  rw [Finset.mem_filter] at ha'
+  refine ⟨a, ha', ?_⟩
+  rintro y ⟨hy, hP⟩
+  have : y ∈ s.filter P := Finset.mem_filter.mpr ⟨hy, hP⟩
+  rw [ha] at this
+  exact Finset.mem_singleton.mp this
+
 /-- Matching 1: {{0,2}, {1,4}, {3,5}}
     Este matching no tiene aristas consecutivas, pero SÍ tiene pares R2. -/
 def matching1 : PerfectMatching := {
   edges := {{0, 2}, {1, 4}, {3, 5}}
   card_edges := by decide
   edge_size := by intro e he; fin_cases he <;> decide
-  is_partition := by
-    intro i
-    fin_cases i
-    · use {0, 2}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {1, 4}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {0, 2}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {3, 5}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {1, 4}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {3, 5}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
+  is_partition := fun i => existsUnique_of_filter_card _ _ (by revert i; decide)
 }
 
 /-- Matching 2: {{0,3}, {1,4}, {2,5}} (antipodal)
@@ -175,33 +161,7 @@ def matching2 : PerfectMatching := {
   edges := {{0, 3}, {1, 4}, {2, 5}}
   card_edges := by decide
   edge_size := by intro e he; fin_cases he <;> decide
-  is_partition := by
-    intro i
-    fin_cases i
-    · use {0, 3}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {1, 4}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {2, 5}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {0, 3}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {1, 4}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {2, 5}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
+  is_partition := fun i => existsUnique_of_filter_card _ _ (by revert i; decide)
 }
 
 /-- Matching 3: {{0,3}, {1,5}, {2,4}} -/
@@ -209,33 +169,7 @@ def matching3 : PerfectMatching := {
   edges := {{0, 3}, {1, 5}, {2, 4}}
   card_edges := by decide
   edge_size := by intro e he; fin_cases he <;> decide
-  is_partition := by
-    intro i
-    fin_cases i
-    · use {0, 3}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {1, 5}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {2, 4}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {0, 3}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {2, 4}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {1, 5}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
+  is_partition := fun i => existsUnique_of_filter_card _ _ (by revert i; decide)
 }
 
 /-- Matching 4: {{0,4}, {1,3}, {2,5}} -/
@@ -243,33 +177,7 @@ def matching4 : PerfectMatching := {
   edges := {{0, 4}, {1, 3}, {2, 5}}
   card_edges := by decide
   edge_size := by intro e he; fin_cases he <;> decide
-  is_partition := by
-    intro i
-    fin_cases i
-    · use {0, 4}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {1, 3}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {2, 5}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {1, 3}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {0, 4}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
-    · use {2, 5}; constructor
-      · simp
-      · intro y ⟨hy, hi⟩
-        fin_cases hy <;> first | rfl | (simp at hi; cases hi <;> rename_i h <;> cases h)
+  is_partition := fun i => existsUnique_of_filter_card _ _ (by revert i; decide)
 }
 
 /-! ## Verificación de Propiedades -/
@@ -334,11 +242,11 @@ theorem num_orientations : ∀ (M : PerfectMatching),
 
 /-- El número de orientaciones es exactamente 8 -/
 theorem orientation_card (M : PerfectMatching) : Fintype.card (Orientation M) = 8 := by
-  unfold Orientation
-  haveI : Fintype ↑M.edges := Finset.fintypeCoeSort M.edges
-  simp only [Fintype.card_fun, Fintype.card_bool]
-  rw [Fintype.card_coe, M.card_edges]
-  norm_num
+  classical
+  have h : Fintype.card (M.edges → Bool) = 8 := by
+    rw [Fintype.card_fun, Fintype.card_bool, Fintype.card_coe, M.card_edges]
+    norm_num
+  convert h
 
 /-! ## Extracción de elementos de aristas -/
 
@@ -391,7 +299,7 @@ theorem edge_eq_minmax (e : Finset (ZMod 6)) (h : e.card = 2) :
   · intro hx
     simp only [Finset.mem_insert, Finset.mem_singleton]
     by_contra hne
-    push_neg at hne
+    push Not at hne
     -- x está en e pero no es min ni max
     have hle : edgeMin e h ≤ x := Finset.min'_le e x hx
     have hge : x ≤ edgeMax e h := Finset.le_max' e x hx
@@ -404,7 +312,7 @@ theorem edge_eq_minmax (e : Finset (ZMod 6)) (h : e.card = 2) :
       · simp only [Finset.mem_singleton]
         exact ne_of_lt hlt_max
       · simp only [Finset.mem_insert, Finset.mem_singleton]
-        push_neg
+        push Not
         exact ⟨ne_of_lt hlt_min, ne_of_lt (lt_trans hlt_min hlt_max)⟩
     have hsub : {edgeMin e h, x, edgeMax e h} ⊆ e := by
       intro y hy
@@ -477,27 +385,27 @@ noncomputable def matchingToConfig (M : PerfectMatching) (orient : Orientation M
       -- Si los OrderedPairs son iguales, los fst y snd son iguales
       split_ifs at heq with ho1 ho2 ho2
       · -- Ambos true: fst = min, snd = max
-        simp at heq
+        simp only [OrderedPair.mk.injEq] at heq
         obtain ⟨h1, h2⟩ := heq
         rw [edge_eq_minmax e1 (M.edge_size e1 he1),
             edge_eq_minmax e2 (M.edge_size e2 he2)]
         rw [h1, h2]
       · -- true/false: min1 = max2, max1 = min2
-        simp at heq
+        simp only [OrderedPair.mk.injEq] at heq
         obtain ⟨h1, h2⟩ := heq
         rw [edge_eq_minmax e1 (M.edge_size e1 he1),
             edge_eq_minmax e2 (M.edge_size e2 he2)]
         rw [h1, h2]
         rw [Finset.pair_comm]
       · -- false/true: max1 = min2, min1 = max2
-        simp at heq
+        simp only [OrderedPair.mk.injEq] at heq
         obtain ⟨h1, h2⟩ := heq
         rw [edge_eq_minmax e1 (M.edge_size e1 he1),
             edge_eq_minmax e2 (M.edge_size e2 he2)]
         rw [h1, h2]
         rw [Finset.pair_comm]
       · -- Ambos false: fst = max, snd = min
-        simp at heq
+        simp only [OrderedPair.mk.injEq] at heq
         obtain ⟨h1, h2⟩ := heq
         rw [edge_eq_minmax e1 (M.edge_size e1 he1),
             edge_eq_minmax e2 (M.edge_size e2 he2)]
@@ -636,14 +544,14 @@ lemma min_max_of_lt {a b : ZMod 6} (h : a < b) :
     rw [edgeMin]
     rw [Finset.min'_insert]
     · rw [Finset.min'_singleton]
-      simp
+      simp only [inf_eq_left]
       exact le_of_lt h
     · exact Finset.singleton_nonempty b
   · -- Probar edgeMax = b
     rw [edgeMax]
     rw [Finset.max'_insert]
     · rw [Finset.max'_singleton]
-      simp
+      simp only [sup_eq_right]
       exact le_of_lt h
     · exact Finset.singleton_nonempty b
 
@@ -670,18 +578,15 @@ theorem matching_r2_implies_config_r2 (M : PerfectMatching) :
   use my_orient
   unfold hasR2 formsR2Pattern matchingToConfig
   simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists]
-
   -- Usamos los pares correspondientes a {a,b} y {c,d}
   let p1 := edgeToPair {a, b} (M.edge_size {a, b} he1) (my_orient ⟨{a, b}, he1⟩)
   let p2 := edgeToPair {c, d} (M.edge_size {c, d} he2) (my_orient ⟨{c, d}, he2⟩)
-
   use p1
   constructor
   · use {a, b}, he1
   use p2
   constructor
   · use {c, d}, he2
-
   constructor
   · -- p1 ≠ p2
     intro heq
@@ -698,18 +603,15 @@ theorem matching_r2_implies_config_r2 (M : PerfectMatching) :
       -- Por la propiedad de partición, {a,b} debe ser igual a {c,d}
       exact edges_disjoint_of_common_mem M {a, b} {c, d} he1 he2 p1.fst h_mem1 h_mem2
     exact hne h_edges
-
   · -- formsR2Pattern p1 p2
     -- Probamos que p1 = [a,b] y p2 = [c,d]
     have h_orient_p1 : my_orient ⟨{a, b}, he1⟩ = decide (a < b) := by
       simp [my_orient]
-
     have h_orient_p2 : my_orient ⟨{c, d}, he2⟩ = decide (c < d) := by
       have h_ne : ({c, d} : Finset (ZMod 6)) ≠ {a, b} := Ne.symm hne
       simp [my_orient, h_ne]
-
     have hp1_eq : p1 = OrderedPair.mk a b (by
-      simp
+      simp only [ne_eq]
       intro h; rw [h] at he1; have := M.edge_size {b, b} he1; simp at this
     ) := by
       dsimp [p1]
@@ -717,26 +619,25 @@ theorem matching_r2_implies_config_r2 (M : PerfectMatching) :
       unfold edgeToPair
       split_ifs with h_lt
       · -- a < b
-        simp at h_lt
+        simp only [decide_eq_true_eq] at h_lt
         have h_min_max := min_max_of_lt h_lt
-        simp
+        simp only [OrderedPair.mk.injEq]
         constructor
         · exact h_min_max.1
         · exact h_min_max.2
       · -- b < a
-        simp at h_lt
+        simp only [decide_eq_true_eq, not_lt] at h_lt
         have h_le : b ≤ a := by simpa using h_lt
         have h_ne : a ≠ b := by
           intro h; rw [h] at he1; have := M.edge_size {b, b} he1; simp at this
         have h_lt_ba : b < a := lt_of_le_of_ne h_le h_ne.symm
         have h_min_max := min_max_of_lt h_lt_ba
-        simp
+        simp only [OrderedPair.mk.injEq]
         constructor
         · refine Eq.trans ?_ h_min_max.2; congr 1; simp [Finset.pair_comm]
         · refine Eq.trans ?_ h_min_max.1; congr 1; simp [Finset.pair_comm]
-
     have hp2_eq : p2 = OrderedPair.mk c d (by
-       simp
+       simp only [ne_eq]
        intro h; rw [h] at he2; have := M.edge_size {d, d} he2; simp at this
     ) := by
       dsimp [p2]
@@ -744,24 +645,23 @@ theorem matching_r2_implies_config_r2 (M : PerfectMatching) :
       unfold edgeToPair
       split_ifs with h_lt
       · -- c < d
-        simp at h_lt
+        simp only [decide_eq_true_eq] at h_lt
         have h_min_max := min_max_of_lt h_lt
-        simp
+        simp only [OrderedPair.mk.injEq]
         constructor
         · exact h_min_max.1
         · exact h_min_max.2
       · -- d < c
-        simp at h_lt
+        simp only [decide_eq_true_eq, not_lt] at h_lt
         have h_le : d ≤ c := by simpa using h_lt
         have h_ne_cd : c ≠ d := by
           intro h; rw [h] at he2; have := M.edge_size {d, d} he2; simp at this
         have h_lt_dc : d < c := lt_of_le_of_ne h_le h_ne_cd.symm
         have h_min_max := min_max_of_lt h_lt_dc
-        simp
+        simp only [OrderedPair.mk.injEq]
         constructor
         · refine Eq.trans ?_ h_min_max.2; congr 1; simp [Finset.pair_comm]
         · refine Eq.trans ?_ h_min_max.1; congr 1; simp [Finset.pair_comm]
-
     -- Con p1=[a,b] y p2=[c,d], hpat implica formsR2Pattern
     rw [hp1_eq, hp2_eq]
     exact hpat
@@ -791,14 +691,14 @@ theorem trivial_matching_implies_trivial_configs (M : PerfectMatching) (orient :
       | inl h =>
         -- edgeMax = edgeMin + 1
         unfold edgeToPair at h
-        simp [ho] at h
+        simp only [ho, ↓reduceIte] at h
         use edgeMin e (M.edge_size e he)
         conv_lhs => rw [edge_eq_minmax e (M.edge_size e he)]
         rw [h]
       | inr h =>
         -- edgeMax = edgeMin - 1
         unfold edgeToPair at h
-        simp [ho] at h
+        simp only [ho, ↓reduceIte] at h
         use edgeMax e (M.edge_size e he)
         conv_lhs => rw [edge_eq_minmax e (M.edge_size e he)]
         rw [h]
@@ -818,7 +718,7 @@ theorem trivial_matching_implies_trivial_configs (M : PerfectMatching) (orient :
       | inl h =>
         -- edgeMin = edgeMax + 1
         unfold edgeToPair at h
-        simp [ho] at h
+        simp only [ho, Bool.false_eq_true, ↓reduceIte] at h
         use edgeMax e (M.edge_size e he)
         conv_lhs => rw [edge_eq_minmax e (M.edge_size e he)]
         rw [h]
@@ -836,7 +736,7 @@ theorem trivial_matching_implies_trivial_configs (M : PerfectMatching) (orient :
       | inr h =>
         -- edgeMin = edgeMax - 1
         unfold edgeToPair at h
-        simp [ho] at h
+        simp only [ho, Bool.false_eq_true, ↓reduceIte] at h
         use edgeMin e (M.edge_size e he)
         conv_lhs => rw [edge_eq_minmax e (M.edge_size e he)]
         have h_rew : edgeMax e (M.edge_size e he) = edgeMin e (M.edge_size e he) + 1 := by
@@ -864,11 +764,9 @@ theorem trivial_matching_implies_trivial_configs (M : PerfectMatching) (orient :
     · -- Existe patrón R2
       have he1_card := M.edge_size e1 he1
       have he2_card := M.edge_size e2 he2
-
       -- Dividir por casos de orientación
       unfold edgeToPair at hp1_eq hp2_eq
       split_ifs at hp1_eq hp2_eq with ho1 ho2 ho2
-
       · -- Caso 1: ambas orientaciones true (p1 = [min1, max1], p2 = [min2, max2])
         rcases hpat with (⟨hfst, hsnd⟩|⟨hfst, hsnd⟩|⟨hfst, hsnd⟩|⟨hfst, hsnd⟩)
         · refine ⟨edgeMin e1 he1_card, edgeMax e1 he1_card,
@@ -891,7 +789,6 @@ theorem trivial_matching_implies_trivial_configs (M : PerfectMatching) (orient :
           · exact edge_eq_minmax e1 he1_card
           · exact edge_eq_minmax e2 he2_card
           · right; right; right; rw [← hp1_eq, ← hp2_eq] at hfst hsnd; exact ⟨hfst, hsnd⟩
-
       · -- Caso 2: e1 true, e2 false (p1 = [min1, max1], p2 = [max2, min2])
         rcases hpat with (⟨hfst, hsnd⟩|⟨hfst, hsnd⟩|⟨hfst, hsnd⟩|⟨hfst, hsnd⟩)
         · refine ⟨edgeMin e1 he1_card, edgeMax e1 he1_card,
@@ -914,7 +811,6 @@ theorem trivial_matching_implies_trivial_configs (M : PerfectMatching) (orient :
           · exact edge_eq_minmax e1 he1_card
           · exact edge_eq_maxmin e2 he2_card
           · right; right; right; rw [← hp1_eq, ← hp2_eq] at hfst hsnd; exact ⟨hfst, hsnd⟩
-
       · -- Caso 3: e1 false, e2 true (p1 = [max1, min1], p2 = [min2, max2])
         rcases hpat with (⟨hfst, hsnd⟩|⟨hfst, hsnd⟩|⟨hfst, hsnd⟩|⟨hfst, hsnd⟩)
         · refine ⟨edgeMax e1 he1_card, edgeMin e1 he1_card,
@@ -937,7 +833,6 @@ theorem trivial_matching_implies_trivial_configs (M : PerfectMatching) (orient :
           · exact edge_eq_maxmin e1 he1_card
           · exact edge_eq_minmax e2 he2_card
           · right; right; right; rw [← hp1_eq, ← hp2_eq] at hfst hsnd; exact ⟨hfst, hsnd⟩
-
       · -- Caso 4: ambas orientaciones false (p1 = [max1, min1], p2 = [max2, min2])
         rcases hpat with (⟨hfst, hsnd⟩|⟨hfst, hsnd⟩|⟨hfst, hsnd⟩|⟨hfst, hsnd⟩)
         · refine ⟨edgeMax e1 he1_card, edgeMin e1 he1_card,

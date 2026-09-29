@@ -60,31 +60,29 @@ theorem config_in_one_of_two_orbits (K : K3Config)
   K ∈ Orb(trefoilKnot) ∨ K ∈ Orb(mirrorTrefoil) := by
   -- Argumento de cobertura
   -- Sabemos por k3_classification anterior que estaban en special, trefoil o mirror.
-  -- Pero si K está en specialClass, entonces TIENE R2 (porque specialClass tiene R2 y R2 es invariante).
+  -- Pero si K está en specialClass, entonces TIENE R2 (specialClass tiene R2 y R2 es invariante).
   -- Como hR2 dice que no tiene R2, no puede estar en specialClass.
 
-  -- Para formalizar esto limpiamente, asumimos la cobertura de las 3 órbitas original (aunque special sea inválida)
-  -- o probamos exhaustivamente que configsNoR1NoR2 = Orb(trefoil) U Orb(mirror).
+  -- Para formalizar esto limpiamente, asumimos la cobertura de las 3 órbitas original
+  -- (aunque special sea inválida) o probamos exhaustivamente que
+  -- configsNoR1NoR2 = Orb(trefoil) U Orb(mirror).
 
   -- Estrategia: Verificar exhaustivamente que cualquier config con no R1/R2 es trefoil o mirror.
-  sorry
+  sorry -- TODO: depende de configsNoR1NoR2 y del error de representantes (ver TCN_06)
 
 /-- Partición en 2 órbitas: versión con hipótesis separadas -/
 theorem two_orbits_partition (K : K3Config) (hR1 : ¬hasR1 K) (hR2 : ¬hasR2 K) :
   (K ∈ Orb(trefoilKnot) ∧ K ∉ Orb(mirrorTrefoil)) ∨
   (K ∉ Orb(trefoilKnot) ∧ K ∈ Orb(mirrorTrefoil)) := by
-
   have h_in_one := config_in_one_of_two_orbits K hR1 hR2
   have h_disjoint := orbits_disjoint_trefoil_mirror
-
   cases h_in_one with
   | inl h_trefoil =>
     left
     constructor; · exact h_trefoil
     intro h_mirror
     have : Orb(trefoilKnot) ∩ Orb(mirrorTrefoil) ≠ ∅ := by
-      simp [Finset.ne_empty_iff_exists_mem]
-      exact ⟨K, Finset.mem_inter.mpr ⟨h_trefoil, h_mirror⟩⟩
+      exact Finset.nonempty_iff_ne_empty.mp ⟨K, Finset.mem_inter.mpr ⟨h_trefoil, h_mirror⟩⟩
     rw [h_disjoint] at this
     contradiction
   | inr h_mirror =>
@@ -92,8 +90,8 @@ theorem two_orbits_partition (K : K3Config) (hR1 : ¬hasR1 K) (hR2 : ¬hasR2 K) 
     constructor
     · intro h_trefoil
       have : Orb(trefoilKnot) ∩ Orb(mirrorTrefoil) ≠ ∅ := by
-        simp [Finset.ne_empty_iff_exists_mem]
-        exact ⟨K, Finset.mem_inter.mpr ⟨h_trefoil, h_mirror⟩⟩
+        exact Finset.nonempty_iff_ne_empty.mp
+          ⟨K, Finset.mem_inter.mpr ⟨h_trefoil, h_mirror⟩⟩
       rw [h_disjoint] at this
       contradiction
     · exact h_mirror
@@ -113,7 +111,6 @@ theorem k3_classification :
   intro K hR1 hR2
   have h_partition := two_orbits_partition K hR1 hR2
   rcases h_partition with ⟨h_in_trefoil, _⟩ | ⟨_, h_in_mirror⟩
-
   · -- K ∈ Orb(trefoilKnot)
     left
     rw [in_same_orbit_iff] at h_in_trefoil
@@ -121,9 +118,8 @@ theorem k3_classification :
     use g⁻¹
     calc g⁻¹ • K = g⁻¹ • (g • trefoilKnot) := by rw [h_eq]
          _ = (g⁻¹ * g) • trefoilKnot := by rw [actOnConfig_comp]
-         _ = id • trefoilKnot := by rw [mul_left_inv]
+         _ = (1 : DihedralD6) • trefoilKnot := by rw [inv_mul_cancel]
          _ = trefoilKnot := by rw [actOnConfig_id]
-
   · -- K ∈ Orb(mirrorTrefoil)
     right
     rw [in_same_orbit_iff] at h_in_mirror
@@ -131,7 +127,7 @@ theorem k3_classification :
     use g⁻¹
     calc g⁻¹ • K = g⁻¹ • (g • mirrorTrefoil) := by rw [h_eq]
          _ = (g⁻¹ * g) • mirrorTrefoil := by rw [actOnConfig_comp]
-         _ = id • mirrorTrefoil := by rw [mul_left_inv]
+         _ = (1 : DihedralD6) • mirrorTrefoil := by rw [inv_mul_cancel]
          _ = mirrorTrefoil := by rw [actOnConfig_id]
 
 /-! ## Teorema Principal de Clasificación (Versión Fuerte) -/
@@ -145,60 +141,57 @@ theorem k3_classification_strong :
     let reps : Finset K3Config := {trefoilKnot, mirrorTrefoil}
     ∃! R, R ∈ reps ∧ ∃ g : DihedralD6, g • K = R := by
   intro K hR1 hR2
-  let reps := {trefoilKnot, mirrorTrefoil}
+  let reps : Finset K3Config := {trefoilKnot, mirrorTrefoil}
   have h_partition := two_orbits_partition K hR1 hR2
-
   rcases h_partition with ⟨h_in_trefoil, h_not_mirror⟩ | ⟨h_not_trefoil, h_in_mirror⟩
-
   · -- Caso: K ∈ Orb(trefoilKnot)
     use trefoilKnot
     constructor
     · constructor
-      · simp [reps]
+      · simp
       · rw [in_same_orbit_iff] at h_in_trefoil
         obtain ⟨g, h_eq⟩ := h_in_trefoil
         use g⁻¹
         calc g⁻¹ • K = g⁻¹ • (g • trefoilKnot) := by rw [h_eq]
              _ = (g⁻¹ * g) • trefoilKnot := by rw [actOnConfig_comp]
-             _ = id • trefoilKnot := by rw [mul_left_inv]
+             _ = (1 : DihedralD6) • trefoilKnot := by rw [inv_mul_cancel]
              _ = trefoilKnot := by rw [actOnConfig_id]
     · intro R' ⟨hR'_in, g', hg'⟩
-      simp [reps] at hR'_in
+      simp only [Finset.mem_insert, Finset.mem_singleton] at hR'_in
       rcases hR'_in with rfl | rfl
       · rfl
       · exfalso
         have : K ∈ Orb(mirrorTrefoil) := by
           rw [in_same_orbit_iff]
           use g'⁻¹
-          calc g'⁻¹ • K = g'⁻¹ • (g' • mirrorTrefoil) := by rw [← hg']
-               _ = (g'⁻¹ * g') • mirrorTrefoil := by rw [actOnConfig_comp]
-               _ = id • mirrorTrefoil := by rw [mul_left_inv]
-               _ = mirrorTrefoil := by rw [actOnConfig_id]
+          calc g'⁻¹ • mirrorTrefoil = g'⁻¹ • (g' • K) := by rw [hg']
+               _ = (g'⁻¹ * g') • K := by rw [actOnConfig_comp]
+               _ = (1 : DihedralD6) • K := by rw [inv_mul_cancel]
+               _ = K := by rw [actOnConfig_id]
         exact h_not_mirror this
-
   · -- Caso: K ∈ Orb(mirrorTrefoil)
     use mirrorTrefoil
     constructor
     · constructor
-      · simp [reps]
+      · simp
       · rw [in_same_orbit_iff] at h_in_mirror
         obtain ⟨g, h_eq⟩ := h_in_mirror
         use g⁻¹
         calc g⁻¹ • K = g⁻¹ • (g • mirrorTrefoil) := by rw [h_eq]
              _ = (g⁻¹ * g) • mirrorTrefoil := by rw [actOnConfig_comp]
-             _ = id • mirrorTrefoil := by rw [mul_left_inv]
+             _ = (1 : DihedralD6) • mirrorTrefoil := by rw [inv_mul_cancel]
              _ = mirrorTrefoil := by rw [actOnConfig_id]
     · intro R' ⟨hR'_in, g', hg'⟩
-      simp [reps] at hR'_in
+      simp only [Finset.mem_insert, Finset.mem_singleton] at hR'_in
       rcases hR'_in with rfl | rfl
       · exfalso
         have : K ∈ Orb(trefoilKnot) := by
           rw [in_same_orbit_iff]
           use g'⁻¹
-          calc g'⁻¹ • K = g'⁻¹ • (g' • trefoilKnot) := by rw [← hg']
-               _ = (g'⁻¹ * g') • trefoilKnot := by rw [actOnConfig_comp]
-               _ = id • trefoilKnot := by rw [mul_left_inv]
-               _ = trefoilKnot := by rw [actOnConfig_id]
+          calc g'⁻¹ • trefoilKnot = g'⁻¹ • (g' • K) := by rw [hg']
+               _ = (g'⁻¹ * g') • K := by rw [actOnConfig_comp]
+               _ = (1 : DihedralD6) • K := by rw [inv_mul_cancel]
+               _ = K := by rw [actOnConfig_id]
         exact h_not_trefoil this
       · rfl
 
@@ -212,18 +205,17 @@ theorem exactly_two_classes :
     (∀ K ∈ configsNoR1NoR2, ∃! C ∈ classes, K ∈ C) := by
   use {Orb(trefoilKnot), Orb(mirrorTrefoil)}
   -- (Prueba omitida por brevedad, análoga a la anterior pero con 2 clases)
-  sorry
+  sorry -- TODO
 
 /-- Corolario: Los 2 representantes no son equivalentes entre sí -/
 theorem representatives_not_equivalent :
   ∀ g : DihedralD6, g • trefoilKnot ≠ mirrorTrefoil := by
   intro g h_eq
-  have : mirrorTrefoil ∈ Orb(trefoilKnot) := mem_orbit_of_action trefoilKnot g
-  rw [h_eq] at this
+  have : mirrorTrefoil ∈ Orb(trefoilKnot) :=
+    (in_same_orbit_iff _ _).mpr ⟨g, h_eq⟩
   have : Orb(trefoilKnot) ∩ Orb(mirrorTrefoil) ≠ ∅ := by
-    simp [Finset.ne_empty_iff_exists_mem]
-    use mirrorTrefoil
-    exact Finset.mem_inter.mpr ⟨this, mem_orbit_self mirrorTrefoil⟩
+    exact Finset.nonempty_iff_ne_empty.mp
+      ⟨mirrorTrefoil, Finset.mem_inter.mpr ⟨this, mem_orbit_self mirrorTrefoil⟩⟩
   rw [orbits_disjoint_trefoil_mirror] at this
   contradiction
 

@@ -79,10 +79,10 @@ theorem actionZMod_one (x : ZMod 6) : actionZMod (1 : DihedralD6) x = x := by
 theorem actionZMod_mul (g₁ g₂ : DihedralD6) (x : ZMod 6) :
     actionZMod (g₁ * g₂) x = actionZMod g₁ (actionZMod g₂ x) := by
   cases g₁ <;> cases g₂
-  · simp [actionZMod, add_assoc, add_comm, add_left_comm]
+  · simp [actionZMod, add_comm, add_left_comm]
   · simp [actionZMod, sub_eq_add_neg]
     ring
-  · simp [actionZMod, sub_eq_add_neg]
+  · simp [actionZMod]
     ring
   · simp [actionZMod, sub_eq_add_neg]
     ring
@@ -124,10 +124,10 @@ theorem actOnPair_snd (g : DihedralD6) (p : OrderedPair) :
 theorem actOnPair_injective (g : DihedralD6) : Function.Injective (actOnPair g) := by
   intro p₁ p₂ h
   -- Usar cases para analizar la estructura OrderedPair (sin @[ext])
-  cases' p₁ with fst₁ snd₁ distinct₁
-  cases' p₂ with fst₂ snd₂ distinct₂
+  obtain ⟨fst₁, snd₁, distinct₁⟩ := p₁
+  obtain ⟨fst₂, snd₂, distinct₂⟩ := p₂
   -- Simplificar usando las definiciones
-  simp [actOnPair] at h ⊢
+  simp only [actOnPair, OrderedPair.mk.injEq] at h ⊢
   -- Obtener las dos igualdades de h
   obtain ⟨h_fst, h_snd⟩ := h
   -- Usar inyectividad de actionZMod
@@ -181,7 +181,7 @@ def actOnConfig (g : DihedralD6) (K : K3Config) : K3Config :=
   }
 
 /-- Notación para acción -/
-notation:70 g " • " K => actOnConfig g K
+notation:73 (priority := high) g:74 " • " K:73 => actOnConfig g K
 
 /-! ## Propiedades de las Acciones -/
 

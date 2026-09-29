@@ -57,7 +57,7 @@ notation "Stab(" K ")" => stabilizer K
 /-- Toda configuración está en su propia órbita -/
 theorem mem_orbit_self (K : K3Config) : K ∈ Orb(K) := by
   unfold orbit
-  simp [Finset.mem_image]
+  simp only [Finset.mem_image, Finset.mem_univ, true_and]
   use 1
   exact DihedralD6.actOnConfig_id K
 
@@ -77,7 +77,16 @@ theorem in_same_orbit_iff (K₁ K₂ : K3Config) :
 /-- Si K₂ no está en Orb(K₁), entonces las órbitas son disjuntas -/
 theorem orbits_disjoint (K₁ K₂ : K3Config) :
   K₂ ∉ Orb(K₁) → Orb(K₁) ∩ Orb(K₂) = ∅ := by
-  sorry  -- Requiere teoría avanzada de órbitas
+  intro hK
+  ext C
+  simp only [Finset.mem_inter, Finset.notMem_empty, iff_false, not_and]
+  intro h1 h2
+  apply hK
+  obtain ⟨g1, hg1⟩ := (in_same_orbit_iff K₁ C).mp h1
+  obtain ⟨g2, hg2⟩ := (in_same_orbit_iff K₂ C).mp h2
+  refine (in_same_orbit_iff K₁ K₂).mpr ⟨g2⁻¹ * g1, ?_⟩
+  rw [DihedralD6.actOnConfig_comp, hg1, ← hg2, ← DihedralD6.actOnConfig_comp,
+    inv_mul_cancel, DihedralD6.actOnConfig_id]
 
 /-! ## Lemas auxiliares -/
 
@@ -98,11 +107,11 @@ theorem stabilizer_is_subgroup (K : K3Config) :
   constructor
   · intro g h hg hh
     unfold stabilizer at *
-    simp [Finset.mem_filter, Finset.mem_univ] at hg hh ⊢
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hg hh ⊢
     rw [DihedralD6.actOnConfig_comp, hh, hg]
   · intro g hg
     unfold stabilizer at *
-    simp [Finset.mem_filter, Finset.mem_univ] at hg ⊢
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hg ⊢
     rw [← hg, ← DihedralD6.actOnConfig_comp, inv_mul_cancel, DihedralD6.actOnConfig_id, hg]
 
 /-! ## Teorema Órbita-Estabilizador -/
@@ -111,7 +120,6 @@ theorem stabilizer_is_subgroup (K : K3Config) :
 theorem orbit_stabilizer (K : K3Config) :
     (Orb(K)).card * (Stab(K)).card = 12 := by
   let f : DihedralD6 → K3Config := fun g => DihedralD6.actOnConfig g K
-
   have h_fiber_bij (C : K3Config) (hC : C ∈ Orb(K)) :
       ∃ g, C = f g ∧ (Finset.filter (fun x => f x = C) Finset.univ).card = (Stab(K)).card := by
     rcases (in_same_orbit_iff K C).mp hC with ⟨g, hg⟩
@@ -119,7 +127,6 @@ theorem orbit_stabilizer (K : K3Config) :
     constructor
     · exact hg.symm
     · let map : DihedralD6 → DihedralD6 := fun s => g * s
-
       have h_im : (Stab(K)).image map = Finset.filter (fun x => f x = C) Finset.univ := by
         ext x
         simp only [map, stabilizer, Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_image]
@@ -131,26 +138,27 @@ theorem orbit_stabilizer (K : K3Config) :
         · intro hx
           refine ⟨g⁻¹ * x, ?_, ?_⟩
           · dsimp [f] at hx ⊢
-            rw [DihedralD6.actOnConfig_comp, hx, ← hg, ← DihedralD6.actOnConfig_comp, inv_mul_cancel, DihedralD6.actOnConfig_id]
+            rw [DihedralD6.actOnConfig_comp, hx, ← hg, ← DihedralD6.actOnConfig_comp,
+              inv_mul_cancel, DihedralD6.actOnConfig_id]
           · simp
-
       rw [← h_im, Finset.card_image_of_injective]
       intro a b h
       exact mul_left_cancel h
-
   calc
-    (Orb(K)).card * (Stab(K)).card = Finset.sum (Orb(K) : Finset K3Config) (fun C => (Stab(K)).card) := by
-      rw [Finset.sum_const]
-      change (Orb(K)).card * (Stab(K)).card = (Orb(K)).card • (Stab(K)).card
-      rfl
-    _ = Finset.sum (Orb(K) : Finset K3Config) (fun C => (Finset.filter (fun g => f g = C) (Finset.univ : Finset DihedralD6)).card) := by
+    (Orb(K)).card * (Stab(K)).card
+        = Finset.sum (Orb(K) : Finset K3Config) (fun C => (Stab(K)).card) := by
+      rw [Finset.sum_const, smul_eq_mul]
+    _ = Finset.sum (Orb(K) : Finset K3Config)
+          (fun C => (Finset.filter (fun g => f g = C)
+            (Finset.univ : Finset DihedralD6)).card) := by
       refine Finset.sum_congr rfl fun C hC => ?_
       rcases h_fiber_bij C hC with ⟨_, _, h_card⟩
       rw [h_card]
     _ = (Finset.univ : Finset DihedralD6).card := by
       -- Orb(K) == univ.image f
-      have : Orb(K) = Finset.univ.image f := rfl
-      rw [this, Finset.card_eq_sum_card_image]
+      symm
+      exact Finset.card_eq_sum_card_fiberwise (f := f) (t := Orb(K))
+        (fun x _ => Finset.mem_image_of_mem _ (Finset.mem_univ x))
     _ = 12 := card_D6
 
 /-! ## Cálculo de tamaño de órbita -/
@@ -175,8 +183,7 @@ theorem orbit_stabilizer' (K : K3Config) :
   constructor
   · rw [mul_comm] at h_card
     exact Nat.eq_div_of_mul_eq_right (Nat.ne_of_gt h_pos) h_card
-  · rw [← h_card]
-    exact ⟨(Orb(K)).card, rfl⟩
+  · exact Dvd.intro_left _ h_card
 
 /-- El tamaño de la órbita divide al tamaño del grupo -/
 theorem orbit_card_dvd (K : K3Config) : (Orb(K)).card ∣ 12 := by
@@ -209,7 +216,7 @@ theorem orbit_card_3_of_stab_4 (K : K3Config) :
 
 /-- Conjunto de todas las configuraciones K₃ sin movimientos R1 ni R2 -/
 def configsNoR1NoR2 : Finset K3Config :=
-  sorry  -- Requiere Fintype K3Config
+  sorry  -- TODO: Requiere Fintype K3Config
 
 /-- El número de configuraciones sin R1 ni R2 es 14 -/
 axiom configs_no_r1_no_r2_card : configsNoR1NoR2.card = 14

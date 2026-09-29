@@ -3,6 +3,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Data.Finset.Card
 import Mathlib.Topology.Basic
+import Mathlib.Data.Rat.Defs
 -- import Mathlib.RingTheory.Polynomial.Basic
 
 /-!

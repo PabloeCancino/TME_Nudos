@@ -26,7 +26,8 @@ El **problema de realizabilidad** (Gauss, siglo XIX):
 ## Solución Completa para K₃
 
 Este módulo proporciona:
-1. **Caracterización exacta**: Una configuración K₃ es realizable ⟺ pertenece a Orb(trefoil) ∪ Orb(mirror)
+1. **Caracterización exacta**: Una configuración K₃ es realizable ⟺ pertenece a
+   Orb(trefoil) ∪ Orb(mirror)
 2. **Criterio decidible**: Verificación en tiempo O(12n) = O(1) para K₃
 3. **Certificados constructivos**: Pruebas algebraicas de realizabilidad/no-realizabilidad
 
@@ -61,7 +62,13 @@ Este módulo proporciona:
 
 namespace KnotTheory
 
-open OrderedPair K3Config D6Action
+open OrderedPair K3Config DihedralD6
+
+/-! ## 0. Instancias de finitud para K₃Config -/
+
+/-- Hay exactamente 120 configuraciones K₃ (5!! · 2³ = 15 · 8). -/
+theorem card_k3_config : Fintype.card K3Config = 120 := by
+  sorry -- TODO: conteo de configuraciones K₃ (ver `totalConfigs` en TCN_01)
 
 /-! ## 1. Definiciones Básicas -/
 
@@ -118,10 +125,10 @@ theorem isRealizable_iff_mem_set (K : K3Config) :
   simp [Finset.mem_union]
 
 /-- Las dos órbitas son disjuntas -/
-theorem orbits_disjoint :
+theorem realizable_orbits_disjoint :
     Disjoint (orbit trefoilKnot) (orbit mirrorTrefoil) := by
   -- Usar teorema de TCN_06_Representantes
-  exact orbits_disjoint_trefoil_mirror
+  exact Finset.disjoint_iff_inter_eq_empty.mpr orbits_disjoint_trefoil_mirror
 
 /-! ## 3. Teoremas de Caracterización -/
 
@@ -160,7 +167,7 @@ theorem realizable_orbit_card_eq_four (K : K3Config) :
     para K₃ irreducibles.
 -/
 theorem irreducible_realizable_iff (K : K3Config)
-    (hR1 : ¬hasR1 K) (hR2 : ¬hasR2 K) :
+    (_hR1 : ¬hasR1 K) (_hR2 : ¬hasR2 K) :
     isRealizable K ↔ K ∈ orbit trefoilKnot ∨ K ∈ orbit mirrorTrefoil := by
   -- Trivial por definición de isRealizable
   rfl
@@ -191,19 +198,19 @@ theorem k3_realizability_characterization (K : K3Config) :
         cases h with
         | inl h_trefoil =>
           -- K ∈ Orb(trefoil), y trefoil no tiene R1
-          rw [← hasR1_eq_of_mem_orbit h_trefoil]
+          rw [hasR1_eq_of_mem_orbit h_trefoil]
           exact trefoilKnot_no_r1
         | inr h_mirror =>
           -- Análogo para mirror
-          rw [← hasR1_eq_of_mem_orbit h_mirror]
+          rw [hasR1_eq_of_mem_orbit h_mirror]
           exact mirrorTrefoil_no_r1
       · -- ¬hasR2 K
         cases h with
         | inl h_trefoil =>
-          rw [← hasR2_eq_of_mem_orbit h_trefoil]
+          rw [hasR2_eq_of_mem_orbit h_trefoil]
           exact trefoilKnot_no_r2
         | inr h_mirror =>
-          rw [← hasR2_eq_of_mem_orbit h_mirror]
+          rw [hasR2_eq_of_mem_orbit h_mirror]
           exact mirrorTrefoil_no_r2
     · -- K está en una de las dos órbitas (trivial por definición)
       exact h
@@ -235,7 +242,7 @@ theorem realizable_iff_representative (K : K3Config) :
       · simp
       · exact h_mirror
   · intro ⟨R, hR_mem, hK_orbit⟩
-    simp at hR_mem
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hR_mem
     cases hR_mem with
     | inl hR_trefoil =>
       left
@@ -264,9 +271,8 @@ theorem total_realizable_configs :
   rw [Finset.card_union_of_disjoint]
   · -- Suma de cardinalidades
     rw [orbit_trefoilKnot_card, orbit_mirrorTrefoil_card]
-    norm_num
   · -- Disjunción de órbitas
-    exact orbits_disjoint
+    exact realizable_orbits_disjoint
 
 /-- **TEOREMA 6: Fracción de Configuraciones Realizables**
 
@@ -293,25 +299,18 @@ theorem realizable_fraction :
     - Total: 112 + 0 + 8 = 120 ✓
 -/
 theorem non_realizable_count :
-    (Finset.univ.filter (¬isRealizable ·)).card = 112 := by
+    (Finset.univ.filter (fun K : K3Config => ¬isRealizable K)).card = 112 := by
   -- Total - Realizables = 120 - 8 = 112
-  have h_total : Finset.univ.card = (120 : ℕ) := by
+  have h_total : (Finset.univ : Finset K3Config).card = (120 : ℕ) := by
+    rw [Finset.card_univ]
     exact card_k3_config
-  have h_real : (Finset.univ.filter isRealizable).card = 8 := by
-    -- filter isRealizable = realizableConfigs
-    have : Finset.univ.filter isRealizable = realizableConfigs := by
+  have h_real : ((Finset.univ : Finset K3Config).filter isRealizable).card = 8 := by
+    have : (Finset.univ : Finset K3Config).filter isRealizable = realizableConfigs := by
       ext K
-      simp [isRealizable_iff_mem_set]
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and, isRealizable_iff_mem_set]
     rw [this]
     exact total_realizable_configs
-  have h_partition : Finset.univ =
-    (Finset.univ.filter isRealizable) ∪
-    (Finset.univ.filter (¬isRealizable ·)) := by
-    exact finset_partition_by_decidable Finset.univ isRealizable
-  -- Calcular: 120 - 8 = 112
-  have h_disj := finset_filter_disjoint Finset.univ isRealizable
-  rw [h_partition] at h_total
-  rw [Finset.card_union_of_disjoint h_disj] at h_total
+  have h_card := finset_card_partition (Finset.univ : Finset K3Config) isRealizable
   omega
 
 /-! ## 5. Criterios Constructivos -/
@@ -333,15 +332,14 @@ theorem not_realizable_criterion (K : K3Config) :
   · -- (⇒) Si no realizable, entonces tiene R1/R2 o no está en órbitas
     intro h_not_real
     unfold isRealizable at h_not_real
-    push_neg at h_not_real
+    push Not at h_not_real
     by_cases h_R1 : hasR1 K
     · left; exact h_R1
     · by_cases h_R2 : hasR2 K
       · right; left; exact h_R2
       · right; right; exact h_not_real
   · -- (⇐) Si tiene R1/R2 o no en órbitas, entonces no realizable
-    intro h
-    intro h_real
+    intro h h_real
     cases h with
     | inl h_R1 =>
       -- K tiene R1, pero realizable implica sin R1
@@ -429,7 +427,8 @@ theorem realizable_preserved_by_D6 (K : K3Config) (g : D6) :
       exact mem_orbit_of_smul_mem h_mirror g
   · intro h
     -- Aplicar g⁻¹ al argumento anterior
-    have : K = g⁻¹ • (g • K) := by simp [smul_inv_smul]
+    have : K = g⁻¹ • (g • K) := by
+      rw [← actOnConfig_comp, inv_mul_cancel, actOnConfig_id]
     rw [this]
     unfold isRealizable at h ⊢
     cases h with
@@ -449,8 +448,8 @@ theorem realizable_preserved_by_D6 (K : K3Config) (g : D6) :
     Para K₃: Todas las irreducibles SON realizables (las 8).
 -/
 theorem irreducible_dichotomy (K : K3Config) (hR1 : ¬hasR1 K) (hR2 : ¬hasR2 K) :
-    isRealizable K ∨ "K es nudo virtual" := by
-  -- Para K₃, la segunda opción nunca ocurre
+    isRealizable K ∨ ¬isRealizable K := by
+  -- (Segunda opción: `K` sería un nudo virtual; para K₃ nunca ocurre.)
   left
   -- Usar clasificación: toda irreducible está en una de 2 órbitas
   unfold isRealizable
@@ -490,7 +489,7 @@ def realizabilityAlgorithm (K : K3Config) : Bool :=
 theorem realizability_algorithm_correct (K : K3Config) :
     realizabilityAlgorithm K = true ↔ isRealizable K := by
   unfold realizabilityAlgorithm
-  exact isRealizable_iff_mem_set K
+  exact decide_eq_true_iff.trans (isRealizable_iff_mem_set K).symm
 
 /-! ## 7. Ejemplos y Verificaciones -/
 
@@ -499,12 +498,12 @@ section Examples
 /-- El trébol derecho es realizable -/
 example : isRealizable trefoilKnot := by
   left
-  exact orbit_self trefoilKnot
+  exact mem_orbit_self trefoilKnot
 
 /-- El trébol izquierdo (espejo) es realizable -/
 example : isRealizable mirrorTrefoil := by
   right
-  exact orbit_self mirrorTrefoil
+  exact mem_orbit_self mirrorTrefoil
 
 /-- Verificación computacional: total de configuraciones realizables -/
 example : realizableConfigs.card = 8 := total_realizable_configs

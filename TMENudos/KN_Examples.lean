@@ -13,7 +13,7 @@ ejemplos concretos de nudos de 3, 4 y 5 cruces.
 
 1. **Nudos K₃** (3 cruces): Trébol y su espejo
 2. **Nudos K₄** (4 cruces): k_4_1 y k_4_2 desde BD_Nudos
-3. **Helpers**: Funciones para constructorstruir configuraciones desde listas
+3. **Helpers**: Funciones para construir configuraciones desde listas
 
 -/
 
@@ -21,23 +21,25 @@ open KnotTheory.General
 
 /-! ## Funciones Helper -/
 
-/-- Crea un OrderedPairN desde dos valores explícitos -/
-def mkPairN (n : ℕ) (a b : Fin (2 * n)) (ha b : a.val ≠ b.val) : OrderedPairN n :=
-  let za : ZMod (2 * n) := ⟨a.val, by
-    have : a.val < 2 * n := a.isLt
-    exact this⟩
-  let zb : ZMod (2 * n) := ⟨b.val, by
-    have : b.val < 2 * n := b.isLt
-    exact this⟩
-  ⟨za, zb, by
-    intro heq
-    have : a.val = b.val := by
-      have ha_eq : za.val = a.val := rfl
-      have hb_eq : zb.val = b.val := rfl
-      calc a.val = za.val := ha_eq.symm
-           _ = zb.val := by rw [heq]
-           _ = b.val := hb_eq
-    exact hab this⟩
+/-- Crea un OrderedPairN desde dos valores naturales (módulo 2n) -/
+def mkPairN (n : ℕ) (a b : ℕ) (hab : ((a : ZMod (2 * n)) ≠ (b : ZMod (2 * n)))) :
+    OrderedPairN n :=
+  ⟨(a : ZMod (2 * n)), (b : ZMod (2 * n)), hab⟩
+
+/-- Criterio decidible de partición: cada elemento aparece en exactamente un par. -/
+theorem partition_of_card {n : ℕ} (S : Finset (OrderedPairN n))
+    (h : ∀ i : ZMod (2 * n), (S.filter (fun p => i = p.fst ∨ i = p.snd)).card = 1) :
+    ∀ i : ZMod (2 * n), ∃! p ∈ S, i = p.fst ∨ i = p.snd := by
+  intro i
+  obtain ⟨a, ha⟩ := Finset.card_eq_one.mp (h i)
+  have hmem : ∀ p, p ∈ S ∧ (i = p.fst ∨ i = p.snd) ↔ p = a := by
+    intro p
+    have := Finset.ext_iff.mp ha p
+    simpa using this
+  refine ⟨a, ?_, ?_⟩
+  · exact (hmem a).mpr rfl
+  · intro q hq
+    exact (hmem q).mp hq
 
 /-! ## Ejemplos K₃: Nudos de 3 Cruces -/
 
@@ -48,15 +50,16 @@ section K3_Examples
     DME = [3,-3,-3]
     Quiralidad: RightHanded
 -/
-example_k3_trefoil_right : K3Config := sorry
-  -- TODO: Implementar constructor desde pares ordenados
+def example_k3_trefoil_right : K3Config :=
+  ⟨{mkPairN 3 1 4 (by decide), mkPairN 3 5 2 (by decide), mkPairN 3 3 0 (by decide)},
+   by decide, partition_of_card _ (by decide)⟩
 
 /-- Trébol izquierdo: espejo del trébol derecho
 
     DME = [-3,3,3]
     Quiralidad: LeftHanded
 -/
-example : K3Config := KnConfig.mirror example_k3_trefoil_right
+def example_k3_trefoil_left : K3Config := KnConfig.mirror example_k3_trefoil_right
 
 end K3_Examples
 
@@ -71,8 +74,10 @@ section K4_Examples
     - configuracion_Racional: [[1,4],[7,2],[3,6],[5,0]]
     - DME_reportado: [3,3,3,3]
 -/
-def k_4_1 : K4Config := sorry
-  -- TODO: Construir desde la configuración JSON
+def k_4_1 : K4Config :=
+  ⟨{mkPairN 4 1 4 (by decide), mkPairN 4 7 2 (by decide),
+    mkPairN 4 3 6 (by decide), mkPairN 4 5 0 (by decide)},
+   by decide, partition_of_card _ (by decide)⟩
 
 /-- k_4_2: configuración [[4,1],[2,7],[6,3],[0,5]] en Z/8Z
 
@@ -83,11 +88,13 @@ def k_4_1 : K4Config := sorry
 
     **Nota:** Esta es la configuración espejo de k_4_1
 -/
-def k_4_2 : K4Config := sorry
-  -- TODO: Construir desde la configuración JSON
+def k_4_2 : K4Config :=
+  ⟨{mkPairN 4 4 1 (by decide), mkPairN 4 2 7 (by decide),
+    mkPairN 4 6 3 (by decide), mkPairN 4 0 5 (by decide)},
+   by decide, partition_of_card _ (by decide)⟩
 
 /-- Verificación: k_4_2 es el espejo de k_4_1 -/
-example : k_4_2 = KnConfig.mirror k_4_1 := by sorry
+example : k_4_2 = KnConfig.mirror k_4_1 := by decide
 
 end K4_Examples
 
@@ -97,13 +104,22 @@ section Invariant_Tests
 
 -- Verificar DME de k_4_1
 #check k_4_1.dme
-example_ k_4_1_dme : k_4_1.dme.length = 4 := by sorry
+example : k_4_1.dme.length = 4 := by
+  simp only [KnConfig.dme, KnConfig.pairsList, List.length_map, Finset.length_toList]
+  exact k_4_1.card_eq
 
 -- Verificar Writhe
 #check k_4_1.writhe
-example : k_4_1.writhe ≠ 0 := by sorry  -- Confirma quiralidad
+example : k_4_1.writhe ≠ 0 := by
+  have h : k_4_1.writhe = (k_4_1.pairs.toList.map
+      (fun p => KnConfig.adjustDeltaN 4 (KnConfig.pairDelta p))).sum := by
+    unfold KnConfig.writhe KnConfig.dme KnConfig.pairsList
+    rw [List.sum_eq_foldl]
+  rw [h, Finset.sum_map_toList]
+  decide  -- Confirma quiralidad
 
 -- Verificar IME es invariante bajo mirror
+-- TODO: depende del orden de Finset.toList; formular ime como multiconjunto.
 example (K : K4Config) : (KnConfig.mirror K).ime = K.ime := by sorry
 
 end Invariant_Tests

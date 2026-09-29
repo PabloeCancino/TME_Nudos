@@ -59,7 +59,7 @@ namespace OrderedPair
 variable {n : ℕ}
 
 /-- Constructor inteligente con prueba automática de distinctness -/
-def make (n : ℕ) (o u : ZMod (2*n)) (h : o ≠ u := by decide) : OrderedPair n :=
+def make (n : ℕ) (o u : ZMod (2 * n)) (h : o ≠ u := by decide) : OrderedPair n :=
   ⟨o, u, h⟩
 
 /-- Inversión de un par ordenado (intercambia over y under) -/
@@ -89,7 +89,7 @@ theorem ratio_ne_zero (p : OrderedPair n) : p.ratio ≠ 0 := by
   exact p.distinct this.symm
 
 /-- Rotación de un par ordenado (desplazamiento circular) -/
-def rotate (p : OrderedPair n) (k : ZMod (2*n)) : OrderedPair n :=
+def rotate (p : OrderedPair n) (k : ZMod (2 * n)) : OrderedPair n :=
   ⟨p.fst + k, p.snd + k, by
     intro h
     have : p.fst = p.snd := add_right_cancel h
@@ -97,7 +97,7 @@ def rotate (p : OrderedPair n) (k : ZMod (2*n)) : OrderedPair n :=
 
 /-- La rotación preserva la razón modular -/
 @[simp]
-theorem ratio_rotate (p : OrderedPair n) (k : ZMod (2*n)) :
+theorem ratio_rotate (p : OrderedPair n) (k : ZMod (2 * n)) :
     (p.rotate k).ratio = p.ratio := by
   unfold rotate ratio
   ring
@@ -149,7 +149,7 @@ instance : DecidableEq (KnConfig n) := by
 theorem axiom_a1_count (K : KnConfig n) : K.pairs.card = n := K.card_eq
 
 /-- Axioma A2-A3 (Cobertura completa): Todo elemento de Z/(2n)Z aparece -/
-theorem axiom_a23_coverage (K : KnConfig n) (i : ZMod (2*n)) :
+theorem axiom_a23_coverage (K : KnConfig n) (i : ZMod (2 * n)) :
     ∃ p ∈ K.pairs, p.fst = i ∨ p.snd = i := K.coverage i
 
 /-- Axioma A4 (Distinctness): Incluido en la estructura de OrderedPair -/
@@ -159,7 +159,7 @@ theorem axiom_a4_distinct (K : KnConfig n) (p : OrderedPair n) (_ : p ∈ K.pair
 /-! ### Operaciones sobre Configuraciones -/
 
 /-- Rotación de una configuración (acción de D₂ₙ) -/
-def rotate (K : KnConfig n) (k : ZMod (2*n)) : KnConfig n where
+def rotate (K : KnConfig n) (k : ZMod (2 * n)) : KnConfig n where
   pairs := K.pairs.image (fun p => p.rotate k)
   card_eq := by
     rw [Finset.card_image_of_injective]
@@ -204,7 +204,7 @@ def reflect (K : KnConfig n) : KnConfig n where
 
 /-- La rotación doble es idempotente módulo 2n -/
 @[simp]
-theorem rotate_add (K : KnConfig n) (k₁ k₂ : ZMod (2*n)) :
+theorem rotate_add (K : KnConfig n) (k₁ k₂ : ZMod (2 * n)) :
     (K.rotate k₁).rotate k₂ = K.rotate (k₁ + k₂) := by
   rw [ext_iff]
   simp only [rotate]
@@ -306,7 +306,7 @@ end Examples
 /-! ## 6. Teoremas de Preservación -/
 
 /-- La rotación preserva el número de pares -/
-theorem rotate_preserves_card (K : KnConfig n) (k : ZMod (2*n)) :
+theorem rotate_preserves_card (K : KnConfig n) (k : ZMod (2 * n)) :
     (K.rotate k).pairs.card = K.pairs.card := by
   rw [KnConfig.rotate]
   rw [Finset.card_image_of_injective]

@@ -527,7 +527,7 @@ def rotate_knot {n : ℕ} (k : ℝ[n]) (K : RationalConfiguration n) : RationalC
       let y := x - k
       rcases K.coverage y with ⟨i, h⟩
       use i
-      simp [rotate_crossing]
+      simp only [rotate_crossing]
       cases h with
       | inl h_over => left; rw [h_over]; ring
       | inr h_under => right; rw [h_under]; ring }
@@ -548,9 +548,9 @@ theorem IME_rotation_invariant {n : ℕ} [NeZero n] (K : RationalConfiguration n
   apply List.ext_get
   · simp
   · intro i h_lt _
-    simp
-    have hi : i < n := by simp at h_lt; exact h_lt
-    simp [hi]
+    simp only [List.get_eq_getElem, List.getElem_map, List.getElem_range]
+    have hi : i < n := by simp only [List.length_map, List.length_range] at h_lt; exact h_lt
+    simp only [hi, ↓reduceDIte]
     unfold ratio_val
     rw [rotation_preserves_ratios]
 
@@ -590,7 +590,7 @@ theorem rotation_composition {n : ℕ} (K : RationalConfiguration n) (k₁ k₂ 
 theorem rotation_inverse {n : ℕ} (K : RationalConfiguration n) (k : ℝ[n]) :
   rotate_knot (-k) (rotate_knot k K) = K := by
   have h := rotation_composition K k (-k)
-  simp at h
+  simp only [add_neg_cancel] at h
   rw [h, rotate_zero]
 
 /-- Axioma de Reconstrucción Uniforme: El IME determina posiciones salvo desplazamiento.
@@ -665,7 +665,7 @@ Triple (cᵢ, cⱼ, cₖ) es tipo R3 si tiene grafo de interlazado adecuado y pa
 
 /-- Verifica si una lista de posiciones sigue un orden cíclico -/
 def is_cyclic_order {n : ℕ} (l : List (ℝ[n])) : Prop :=
-  ∃ k, List.Chain' (fun a b => a.val < b.val) (l.rotate k)
+  ∃ k, List.IsChain (fun a b => a.val < b.val) (l.rotate k)
 
 def is_R3_candidate {n : ℕ} (K : RationalConfiguration n) (i j k : Fin n) : Prop :=
   let ci := K.crossings i
@@ -747,15 +747,12 @@ inductive Isotopic : GeneralConfiguration → GeneralConfiguration → Prop wher
   | refl (K) : Isotopic K K
   | symm {K K'} : Isotopic K K' → Isotopic K' K
   | trans {K K' K''} : Isotopic K K' → Isotopic K' K'' → Isotopic K K''
-
   -- Rotaciones
   | rotation {n} (K : RationalConfiguration n) (k : ℝ[n]) :
       Isotopic ⟨n, K⟩ ⟨n, rotate_knot k K⟩
-
   -- Movida R1 (Reducción)
   | R1_reduction {n} (K : RationalConfiguration n) (K' : RationalConfiguration (n-1)) (i : Fin n) :
       is_R1_candidate K i → is_R1_transition K K' i → Isotopic ⟨n, K⟩ ⟨n-1, K'⟩
-
   -- Movida R1 (Creación - Inversa de Reducción)
   -- Cubierta por symm + R1_reduction
 
@@ -763,7 +760,6 @@ inductive Isotopic : GeneralConfiguration → GeneralConfiguration → Prop wher
   | R2_reduction {n} (K : RationalConfiguration n) (K' : RationalConfiguration (n - 2))
       (a b : Fin n) :
       is_R2_candidate K a b → is_R2_transition K K' a b → Isotopic ⟨n, K⟩ ⟨n-2, K'⟩
-
   -- Movida R3 (Deslizamiento)
   | R3_move {n} (K K' : RationalConfiguration n) (i j k : Fin n) :
       is_R3_candidate K i j k → is_R3_transition K K' i j k → Isotopic ⟨n, K⟩ ⟨n, K'⟩
@@ -834,70 +830,56 @@ theorem signed_matrix_antisymmetric {n : ℕ} (K : RationalConfiguration n) (i j
   by_cases h_eq : i = j
   · rw [h_eq]; simp [signed_matrix]
   · have h_neq_ji : j ≠ i := Ne.symm h_eq
-
     -- Expandir definiciones y simplificar lets
     unfold signed_matrix
     dsimp only
-    simp [h_eq, h_neq_ji]
-
+    simp only [h_neq_ji, ↓reduceIte, h_eq]
     let ci := K.crossings i
     let cj := K.crossings j
     let si := crossing_sign ci
     let sj := crossing_sign cj
-
     -- Definir intervalos usando proyecciones para coincidir con dsimp
     let ai := (crossing_interval ci).1
     let bi := (crossing_interval ci).2
     let aj := (crossing_interval cj).1
     let bj := (crossing_interval cj).2
-
     -- Condiciones
     let cond1_ij := ai < aj ∧ aj < bi ∧ bi < bj
     let cond2_ij := aj < ai ∧ ai < bj ∧ bj < bi
     let cond1_ji := aj < ai ∧ ai < bj ∧ bj < bi
     let cond2_ji := ai < aj ∧ aj < bi ∧ bi < bj
-
     -- Equivalencias
     have h_equiv_1 : cond1_ij ↔ cond2_ji := by rfl
     have h_equiv_2 : cond2_ij ↔ cond1_ji := by rfl
-
     -- Exclusión mutua
     have h_mutex_ij : ¬(cond1_ij ∧ cond2_ij) := by
       intro h
       rcases h with ⟨⟨h1, h2, h3⟩, ⟨h4, h5, h6⟩⟩
       linarith
-
     -- El objetivo ahora debería estar en términos de proyecciones.
     -- Usamos 'change' para introducir nuestros nombres locales.
     change (if cond1_ji then sj * si else if cond2_ji then -(sj * si) else 0) =
            -(if cond1_ij then si * sj else if cond2_ij then -(si * sj) else 0)
-
     by_cases h1 : cond1_ij
     · -- Caso cond1_ij verdadero
       have h2 : ¬cond2_ij := fun h => h_mutex_ij ⟨h1, h⟩
-
       -- Implicaciones para (j, i)
       have h1_ji : ¬cond1_ji := by rw [h_equiv_2] at h2; exact h2
       have h2_ji : cond2_ji := by rw [h_equiv_1] at h1; exact h1
-
       simp [*]
       ring
-
     · -- Caso cond1_ij falso
       by_cases h2 : cond2_ij
       · -- Caso cond2_ij verdadero
         -- Implicaciones para (j, i)
         have h1_ji : cond1_ji := by rw [h_equiv_2] at h2; exact h2
         have h2_ji : ¬cond2_ji := by rw [h_equiv_1] at h1; exact h1
-
         simp [*]
         ring
-
       · -- Caso ambos falsos
         -- Implicaciones para (j, i)
         have h1_ji : ¬cond1_ji := by rw [h_equiv_2] at h2; exact h2
         have h2_ji : ¬cond2_ji := by rw [h_equiv_1] at h1; exact h1
-
         simp [*]
 
 /-!
@@ -926,7 +908,6 @@ theorem all_positions_distinct {n : ℕ} [NeZero n] (K : RationalConfiguration n
         have h_ge : k.val ≥ n := Nat.le_of_not_lt h
         have h_lt : k.val < 2 * n := k.isLt
         omega⟩).under_pos
-
   -- Axioma A2 implica que f es sobreyectiva
   have h_surj : Function.Surjective f := by
     intro y
@@ -934,24 +915,21 @@ theorem all_positions_distinct {n : ℕ} [NeZero n] (K : RationalConfiguration n
     · use ⟨i.val, by linarith [i.isLt]⟩
       dsimp [f]
       have h_lt : i.val < n := i.isLt
-      simp [h_lt]
+      simp only [h_lt, ↓reduceDIte]
       exact h_over
     · use ⟨i.val + n, by linarith [i.isLt]⟩
       simp only [f]
       split_ifs with h
       · linarith [i.isLt]
       · simp [←h_under]
-
   -- Cardinalidad igual
   have h_card : Fintype.card (Fin (2 * n)) = Fintype.card (TraversalSpace n) := by
     simp [TraversalSpace, ZMod.card]
-
   -- Sobreyectiva entre conjuntos finitos del mismo tamaño implica inyectiva
   have h_inj : Function.Injective f := by
     have h_bij : Function.Bijective f :=
       (Fintype.bijective_iff_surjective_and_card f).mpr ⟨h_surj, h_card⟩
     exact h_bij.injective
-
   intro i j
   constructor
   · intro h_neq
@@ -965,17 +943,13 @@ theorem all_positions_distinct {n : ℕ} [NeZero n] (K : RationalConfiguration n
       have h_val : k1.val = k2.val := by rw [h]
       dsimp [k1, k2] at h_val
       linarith
-
     have h_f_neq : f k1 ≠ f k2 := fun h => h_k_neq (h_inj h)
-
     dsimp [f] at h_f_neq
     have h_not_lt1 : ¬(i.val + n < n) := by linarith
     have h_not_lt2 : ¬(j.val + n < n) := by linarith
     rw [dif_neg h_not_lt1, dif_neg h_not_lt2] at h_f_neq
-
     -- Simplificar los argumentos de crossings
     convert h_f_neq <;> simp [k1, k2]
-
   constructor
   · intro h_neq
     -- over_pos(i) vs over_pos(j) corresponds to f(i) vs f(j)
@@ -988,15 +962,12 @@ theorem all_positions_distinct {n : ℕ} [NeZero n] (K : RationalConfiguration n
       have h_val : k1.val = k2.val := by rw [h]
       dsimp [k1, k2] at h_val
       exact h_val
-
     have h_f_neq : f k1 ≠ f k2 := fun h => h_k_neq (h_inj h)
-
     dsimp [f] at h_f_neq
     have h_lt1 : i.val < n := i.isLt
     have h_lt2 : j.val < n := j.isLt
     rw [dif_pos h_lt1, dif_pos h_lt2] at h_f_neq
     exact h_f_neq
-
   · -- under_pos(i) vs over_pos(j) corresponds to f(i+n) vs f(j)
     let k1 : Fin (2*n) := ⟨i.val + n, by linarith [i.isLt]⟩
     let k2 : Fin (2*n) := ⟨j.val, by linarith [j.isLt]⟩
@@ -1006,14 +977,11 @@ theorem all_positions_distinct {n : ℕ} [NeZero n] (K : RationalConfiguration n
       have h_val : k1.val = k2.val := by rw [h]
       dsimp [k1, k2] at h_val
       omega
-
     have h_f_neq : f k1 ≠ f k2 := fun h => h_k_neq (h_inj h)
-
     dsimp [f] at h_f_neq
     have h_not_lt1 : ¬(i.val + n < n) := by linarith
     have h_lt2 : j.val < n := j.isLt
     rw [dif_neg h_not_lt1, dif_pos h_lt2] at h_f_neq
-
     convert h_f_neq; simp [k1]
 
 theorem under_set_card {n : ℕ} [NeZero n] (K : RationalConfiguration n) :
@@ -1066,7 +1034,7 @@ def parity_bijection {n : ℕ} [NeZero n] (p : ℕ) (hp : p < 2) :
     omega
   ⟩
   left_inv i := by
-    simp
+    simp only [Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat]
     apply Fin.eq_of_val_eq
     dsimp
     have hi : i.val < n := i.isLt
@@ -1080,10 +1048,8 @@ def parity_bijection {n : ℕ} [NeZero n] (p : ℕ) (hp : p < 2) :
     dsimp
     have hx : x.val.val % 2 = p := x.property
     have h_lt : x.val.val < 2 * n := x.val.val_lt
-
     have h_arith : 2 * ((x.val.val - p) / 2) + p = x.val.val := by
       omega
-
     rw [h_arith]
     simp
 
@@ -1096,13 +1062,11 @@ theorem alternating_implies_level_closed {n : ℕ} [NeZero n] (K : RationalConfi
   intro h_alt
   unfold is_level_closed trajectory_to_level
   intro i
-
   -- 1. Todos los over_pos tienen la misma paridad
   let p := (K.crossings 0).over_pos.val % 2
   have h_same_parity : ∀ j : Fin n, (K.crossings j).over_pos.val % 2 = p := by
     intro j
     exact h_alt j 0
-
   -- 2. over_set K está contenido en el conjunto de paridad p
   let parity_set (m : ℕ) := {x : TraversalSpace n | x.val % 2 = m}
   have h_subset : ∀ x ∈ over_set K, x ∈ parity_set p := by
@@ -1110,7 +1074,6 @@ theorem alternating_implies_level_closed {n : ℕ} [NeZero n] (K : RationalConfi
     rcases Finset.mem_image.mp hx with ⟨j, _, rfl⟩
     dsimp [parity_set]
     exact h_same_parity j
-
   -- 3. under_set K debe estar en el complemento (paridad 1-p)
   -- Argumento: over_set y under_set son disjuntos y cubren todo (por cardinalidad o suryectividad)
   -- O más simple: si x está en under_set, no está en over_set.
@@ -1125,7 +1088,6 @@ theorem alternating_implies_level_closed {n : ℕ} [NeZero n] (K : RationalConfi
     have h_p : p < 2 := Nat.mod_lt _ (by norm_num)
     rw [Fintype.card_congr (parity_bijection (n := n) p h_p).symm]
     simp
-
   -- Como over_set tiene cardinalidad n y es subconjunto, deben ser iguales (como Finsets)
   have h_eq_set : over_set K = (parity_set p).toFinset := by
     apply Finset.eq_of_subset_of_card_le
@@ -1134,7 +1096,6 @@ theorem alternating_implies_level_closed {n : ℕ} [NeZero n] (K : RationalConfi
       exact h_subset x hx
     · rw [Set.toFinset_card]
       convert le_of_eq (h_card_parity.trans (over_set_card K).symm)
-
   -- Por tanto, under_set (que es disjunto) debe estar en el complemento.
   have h_under_parity : (K.crossings i).under_pos.val % 2 ≠ p := by
     by_contra h_eq_p
@@ -1142,23 +1103,18 @@ theorem alternating_implies_level_closed {n : ℕ} [NeZero n] (K : RationalConfi
       unfold parity_set
       rw [Set.mem_setOf_eq]
       exact h_eq_p
-
     have h_in_over : (K.crossings i).under_pos ∈ over_set K := by
       rw [←Set.mem_toFinset, ←h_eq_set] at h_in_parity
       exact h_in_parity
-
     have h_disjoint := disjoint_over_under K
     rw [Finset.disjoint_left] at h_disjoint
     have h_in_under : (K.crossings i).under_pos ∈ under_set K := by
       unfold under_set
       apply Finset.mem_image_of_mem
       simp
-
     exact h_disjoint h_in_over h_in_under
-
   -- Conclusión
   have h_over : (K.crossings i).over_pos.val % 2 = p := h_same_parity i
-
   --  over = p, under != p implies under = p + 1 (mod 2)
   have h_mod2 : (K.crossings i).under_pos.val % 2 = (p + 1) % 2 := by
     have h_neq := h_under_parity
@@ -1178,12 +1134,10 @@ theorem alternating_implies_level_closed {n : ℕ} [NeZero n] (K : RationalConfi
         rfl
       · -- u = 1, p = 1, pero u ≠ p, contradicción
         contradiction
-
   -- Final step mapping back to ZMod 2
   apply ZMod.val_injective
   dsimp
   rw [ZMod.val_add, ZMod.val_one, Nat.add_mod]
-
   have h_val_mod : ∀ (n : ℕ), (n : ZMod 2).val = n % 2 := by
     intro n
     conv_lhs => rw [← Nat.mod_add_div n 2]
@@ -1192,7 +1146,6 @@ theorem alternating_implies_level_closed {n : ℕ} [NeZero n] (K : RationalConfi
     rw [this, zero_mul, add_zero]
     rw [ZMod.val_cast_of_lt]
     exact Nat.mod_lt n (by norm_num)
-
   rw [h_val_mod, h_val_mod]
   rw [h_over, h_mod2]
   have h_p_lt : p < 2 := Nat.mod_lt _ (by norm_num)
@@ -1232,7 +1185,7 @@ def is_irreducible {n : ℕ} (K : RationalConfiguration n) : Prop :=
     Esto facilita la prueba de inyectividad gracias a ratio_injective. -/
 def to_list {n : ℕ} (K : RationalConfiguration n) : List (ℕ × ℕ) :=
   (List.range n).attach.map (fun ⟨i, hi⟩ =>
-    let idx : Fin n := ⟨i, by simp at hi; exact hi⟩
+    let idx : Fin n := ⟨i, by simp only [List.mem_range] at hi; exact hi⟩
     ((K.crossings idx).over_pos.val, ratio_val (K.crossings idx)))
 
 lemma to_list_injective {n : ℕ} : Function.Injective (@to_list n) := by
@@ -1250,14 +1203,12 @@ lemma to_list_injective {n : ℕ} : Function.Injective (@to_list n) := by
     have h_get := List.get_of_eq h ⟨i.val, by
       rw [to_list, List.length_map, List.length_attach, List.length_range]
       exact i.isLt⟩
-
     -- Simplificamos la definición de to_list para ver qué es el elemento i-ésimo
     unfold to_list at h_get
-    simp at h_get
-
+    simp only [Lean.Elab.WF.paramLet, List.get_eq_getElem, List.getElem_map, List.getElem_attach,
+      List.getElem_range, Fin.eta, Prod.mk.injEq] at h_get
     -- h_get es una igualdad de pares: (over1, ratio1) = (over2, ratio2)
     rcases h_get with ⟨h_over, h_ratio⟩
-
     -- Usamos ratio_injective para concluir que los cruces son iguales
     apply ratio_injective
     · apply ZMod.val_injective
@@ -1273,17 +1224,15 @@ def to_flat_list {n : ℕ} (K : RationalConfiguration n) : List ℕ :=
 lemma to_flat_list_injective {n : ℕ} : Function.Injective (@to_flat_list n) := by
   intro K1 K2 h
   apply to_list_injective
-
   -- Lema auxiliar: bind con [a,b] es inyectiva
   let f : ℕ × ℕ → List ℕ := fun (a, b) => [a, b]
   have h_inj_f : Function.Injective f := by
     intro p1 p2 hp
-    simp [f] at hp
+    simp only [List.cons.injEq, and_true, f] at hp
     rcases hp with ⟨h1, h2⟩
     ext
     · exact h1
     · exact h2
-
   have h_bind_inj : ∀ (l1 l2 : List (ℕ × ℕ)), (l1 >>= f) = (l2 >>= f) → l1 = l2 := by
     intro l1
     induction l1 with
@@ -1299,7 +1248,8 @@ lemma to_flat_list_injective {n : ℕ} : Function.Injective (@to_flat_list n) :=
       | nil =>
         simp [f] at h
       | cons y ys =>
-        simp [f] at h
+        simp only [List.bind_eq_flatMap, List.flatMap_cons, List.cons_append, List.nil_append,
+          List.cons.injEq, f] at h
         rcases h with ⟨hx1, hx2, h_tail⟩
         have hxy : x = y := by
           ext
@@ -1308,7 +1258,6 @@ lemma to_flat_list_injective {n : ℕ} : Function.Injective (@to_flat_list n) :=
         rw [hxy]
         congr
         exact ih ys h_tail
-
   exact h_bind_inj (to_list K1) (to_list K2) h
 
 instance {n : ℕ} : LinearOrder (RationalConfiguration n) :=
@@ -1424,7 +1373,6 @@ theorem T5_normal_form_existence_uniqueness {n : ℕ} (K : RationalConfiguration
   -- Consideramos el conjunto de configuraciones con grado mínimo alcanzable desde K.
   let S := minimal_configs K
   have h_nonempty : S.Nonempty := minimal_configs_nonempty K
-
   -- Como el conjunto de configuraciones de un grado fijo es finito, S es finito.
   let S_fin : Finset (RationalConfiguration (min_degree K)) := Set.toFinite S |>.toFinset
   have h_fin_nonempty : S_fin.Nonempty := by
@@ -1434,13 +1382,11 @@ theorem T5_normal_form_existence_uniqueness {n : ℕ} (K : RationalConfiguration
       rw [← Set.Finite.toFinset_eq_empty]
       exact h_empty
     exact Set.Nonempty.ne_empty h_nonempty h_S_empty
-
   -- Existe un elemento mínimo respecto al orden lexicográfico
   let K_min := S_fin.min' h_fin_nonempty
   have h_min_mem_S : K_min ∈ S := by
     rw [← Set.Finite.mem_toFinset (Set.toFinite S)]
     exact S_fin.min'_mem h_fin_nonempty
-
   use ⟨min_degree K, K_min⟩
   refine ⟨?_, ?_⟩
   · -- Existencia
@@ -1476,17 +1422,14 @@ theorem T5_normal_form_existence_uniqueness {n : ℕ} (K : RationalConfiguration
           rw [Set.Finite.mem_toFinset (Set.toFinite S)]
           exact h_in_S
         exact S_fin.min'_le K' h_in_fin
-
   · -- Unicidad
     intro NF2 ⟨h_iso2, h_nf2⟩
     obtain ⟨n2, K2⟩ := NF2
     rcases h_nf2 with ⟨h_irr2, h_min2⟩
-
     -- Por L5, n2 debe ser el grado mínimo
     have h_deg_eq : n2 = min_degree K := by
       rw [L5_irreducible_implies_minimal K2 h_irr2]
       exact (min_degree_eq_of_isotopic K K2 h_iso2).symm
-
     subst h_deg_eq
     congr
     -- K2 = K_min
@@ -1541,10 +1484,8 @@ theorem isotopic_irreducible_same_IME {n : ℕ} (K₁ K₂ : RationalConfigurati
   · haveI : NeZero n := ⟨hn⟩
     -- 1. Por L5, ambos tienen grado mínimo
     have h_min1 : n = min_degree K₁ := L5_irreducible_implies_minimal K₁ h_irr1
-
     -- 2. Por Axioma A7, son rotaciones
     obtain ⟨k, rfl⟩ := minimal_isotopic_implies_rotation K₁ K₂ h_min1 h_iso
-
     -- 3. IME es invariante bajo rotación
     exact (IME_rotation_invariant K₁ k).symm
 
@@ -1559,22 +1500,18 @@ theorem same_IME_implies_rotation {n : ℕ} (K₁ K₂ : RationalConfiguration n
     apply RationalConfiguration.ext
     funext i
     exact Fin.elim0 i
-
   -- Caso n>0
   · haveI : NeZero n := ⟨h_n⟩
     -- 1. IME igual implica ratio_val igual
     have h_ratio : ∀ i, ratio_val (K₁.crossings i) = ratio_val (K₂.crossings i) :=
       IME_eq_implies_ratio_val_eq K₁ K₂ h_ime
-
     -- 2. Axioma de reconstrucción da el desplazamiento k
     obtain ⟨k, h_over⟩ := reconstruct_from_first K₁ K₂ h_ratio
     use k
-
     -- 3. Verificar que K₂ = rotate_knot k K₁
     apply RationalConfiguration.ext
     funext i
     show K₂.crossings i = (rotate_knot k K₁).crossings i
-
     apply RationalCrossing.ext
     · -- over_pos
       rw [h_over i]
@@ -1584,19 +1521,16 @@ theorem same_IME_implies_rotation {n : ℕ} (K₁ K₂ : RationalConfiguration n
       have h_u1 : (K₂.crossings i).under_pos - (K₂.crossings i).over_pos =
         modular_ratio (K₂.crossings i) := rfl
       rw [sub_eq_iff_eq_add] at h_u1
-
       have h_u2 : ((rotate_knot k K₁).crossings i).under_pos -
         ((rotate_knot k K₁).crossings i).over_pos =
         modular_ratio ((rotate_knot k K₁).crossings i) := rfl
       rw [sub_eq_iff_eq_add] at h_u2
-
       have h_mod_ratio : modular_ratio (K₂.crossings i) =
         modular_ratio ((rotate_knot k K₁).crossings i) := by
         unfold ratio_val at h_ratio
         apply ZMod.val_injective
         rw [←h_ratio i]
         rw [rotation_preserves_ratios]
-
       rw [h_u1, h_u2, h_over i, h_mod_ratio]
       rfl
 

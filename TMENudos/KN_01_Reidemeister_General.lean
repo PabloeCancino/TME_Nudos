@@ -126,7 +126,7 @@ example (i : ZMod (2 * 3)) : isConsecutive 3 ⟨i, i-1, by revert i; decide⟩ :
 /-- Un par NO consecutivo -/
 example : ¬isConsecutive 3 ⟨0, 2, by decide⟩ := by
   unfold isConsecutive
-  push_neg
+  push Not
   constructor <;> decide
 
 /-- La inversión de un par consecutivo es consecutiva -/
@@ -187,7 +187,7 @@ theorem intro_r1 (K : KnConfig n) (p : OrderedPair n)
 theorem elim_r1 (K : KnConfig n) :
     ¬hasR1 K ↔ ∀ p ∈ K.pairs, ¬isConsecutive n p := by
   unfold hasR1
-  push_neg
+  push Not
   rfl
 
 /-- La rotación preserva hasR1 -/
@@ -336,7 +336,7 @@ private lemma one_ne_zero_of_two_n : (1 : ZMod (2 * n)) ≠ 0 := by
 /-- Un par no forma R2 consigo mismo -/
 theorem not_self (p : OrderedPair n) : ¬formsR2Pattern n p p := by
   unfold formsR2Pattern
-  push_neg
+  push Not
   constructor
   · intro h _
     nth_rewrite 1 [← add_zero p.fst] at h
@@ -399,7 +399,7 @@ theorem elim_r2 (K : KnConfig n) :
     ¬hasR2 K ↔ ∀ p ∈ K.pairs, ∀ q ∈ K.pairs,
       p ≠ q → ¬formsR2Pattern n p q := by
   unfold hasR2
-  push_neg
+  push Not
   rfl
 
 /-- La rotación preserva hasR2 -/

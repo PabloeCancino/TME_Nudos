@@ -119,6 +119,18 @@ theorem toEdge_eq_iff (p q : OrderedPair) :
         · right; exact h2.symm   -- x = q.fst → x = p.snd
         · left; exact h1.symm    -- x = q.snd → x = p.fst
 
+/-- `OrderedPair` es finito (se inyecta en `ZMod 6 × ZMod 6`). -/
+noncomputable instance : Fintype OrderedPair :=
+  Fintype.ofInjective (fun p : OrderedPair => (p.fst, p.snd)) (by
+    intro p q h
+    cases p
+    cases q
+    simp only [Prod.mk.injEq] at h
+    obtain ⟨h1, h2⟩ := h
+    subst h1
+    subst h2
+    rfl)
+
 end OrderedPair
 
 /-! ## Configuraciones K₃ -/
@@ -142,6 +154,16 @@ instance : DecidableEq K3Config :=
   fun K1 K2 => decidable_of_iff (K1.pairs = K2.pairs)
     ⟨fun h => by cases K1; cases K2; simp_all,
      fun h => by rw [h]⟩
+
+/-- `K3Config` es finito (se inyecta en `Finset OrderedPair`). -/
+noncomputable instance : Fintype K3Config :=
+  Fintype.ofInjective K3Config.pairs (by
+    intro K L h
+    cases K
+    cases L
+    simp only at h
+    subst h
+    rfl)
 
 /-- El matching subyacente de una configuración: el conjunto de aristas no ordenadas -/
 def toMatching (K : K3Config) : Finset (Finset (ZMod 6)) :=
@@ -755,22 +777,17 @@ theorem dme_decomposition (K : K3Config) :
       K.chiralSigns[i]? = some sgn ∧
       K.dme[i]? = some (mag * sgn) := by
   intro i hi
-
   -- Probar que dme tiene longitud 3
   have hdme_len : K.dme.length = 3 := dme_length K
   have hi_valid : i < K.dme.length := hdme_len ▸ hi
-
   -- Usar directamente K.dme[i] con la prueba hi_valid
   use (K.dme[i]'hi_valid).natAbs, (K.dme[i]'hi_valid).sign
-
   constructor
   · unfold ime
     simp [List.getElem?_map, List.getElem?_eq_getElem hi_valid]
-
   constructor
   · unfold chiralSigns
     simp [List.getElem?_map, List.getElem?_eq_getElem hi_valid]
-
   · simp only [List.getElem?_eq_getElem hi_valid, Option.some.injEq]
     rw [mul_comm]
     exact (Int.sign_mul_natAbs _).symm

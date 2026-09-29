@@ -148,8 +148,7 @@ theorem crossing_eq_iff_pair_eq {n : ℕ} (c₁ c₂ : RationalCrossing n) :
   · intro h; rw [h]
   · intro h
     have h₁ := congr_arg toTopological h
-    simp [roundtrip_crossing] at h₁
-    exact h₁
+    rwa [roundtrip_crossing, roundtrip_crossing] at h₁
 
 /-- Igualdad en pares si y solo si igualdad en cruces -/
 theorem pair_eq_iff_crossing_eq {n : ℕ} (p₁ p₂ : OrderedPairN n) :
@@ -158,8 +157,7 @@ theorem pair_eq_iff_crossing_eq {n : ℕ} (p₁ p₂ : OrderedPairN n) :
   · intro h; rw [h]
   · intro h
     have h₁ := congr_arg toAlgebraic h
-    simp [roundtrip_pair] at h₁
-    exact h₁
+    rwa [roundtrip_pair, roundtrip_pair] at h₁
 
 /-! ## Especialización para K₃ y K₄ -/
 

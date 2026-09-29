@@ -26,7 +26,10 @@ sin `sorry` statements.
 
 namespace KnotTheory
 
-open OrderedPair K3Config D6Action
+/-- Abreviatura del grupo diédrico D₆. -/
+abbrev D6 : Type := DihedralD6
+
+open OrderedPair K3Config DihedralD6
 
 /-! ## 1. TEOREMAS PARA TCN_05_Orbitas.lean -/
 
@@ -36,92 +39,55 @@ variable {K R S : K3Config}
 
 /-- **TEOREMA CLAVE 1: Transitividad de Órbitas**
 
-    Si K está en la órbita de R, entonces la órbita de K es igual
-    a la órbita de R.
-    
-    **Intuición:** Las órbitas particionan el espacio - dos elementos
-    en la misma órbita tienen la misma órbita.
-    
-    **Demostración:** Usar que órbita es clase de equivalencia bajo
-    la relación "existe g tal que g • R = K".
--/
+    Si K está en la órbita de R, entonces la órbita de K es igual a la órbita de R. -/
 theorem orbit_eq_of_mem (h : K ∈ orbit R) : orbit K = orbit R := by
+  obtain ⟨h, hK⟩ := (in_same_orbit_iff R K).mp h
   ext S
+  rw [in_same_orbit_iff, in_same_orbit_iff]
   constructor
-  · -- S ∈ Orb(K) ⟹ S ∈ Orb(R)
-    intro ⟨g, hg⟩
-    -- S = g • K y K ∈ Orb(R), entonces ∃h: K = h • R
-    obtain ⟨h, hK⟩ := h
-    -- S = g • (h • R) = (g * h) • R
-    use g * h
-    rw [← hg, ← hK]
-    exact (mul_smul g h R).symm
-  · -- S ∈ Orb(R) ⟹ S ∈ Orb(K)
-    intro ⟨g, hg⟩
-    -- S = g • R y K = h • R para algún h
-    obtain ⟨h, hK⟩ := h
-    -- S = g • R = g • (h⁻¹ • (h • R)) = g • (h⁻¹ • K) = (g * h⁻¹) • K
-    use g * h⁻¹
-    calc S = g • R := hg
-         _ = g • (h⁻¹ • (h • R)) := by rw [inv_smul_smul]
-         _ = g • (h⁻¹ • K) := by rw [hK]
-         _ = (g * h⁻¹) • K := (mul_smul g h⁻¹ K).symm
+  · rintro ⟨g, hg⟩
+    refine ⟨g * h, ?_⟩
+    rw [actOnConfig_comp, hK, hg]
+  · rintro ⟨g, hg⟩
+    refine ⟨g * h⁻¹, ?_⟩
+    have hR : h⁻¹ • K = R := by
+      rw [← hK, ← actOnConfig_comp, inv_mul_cancel, actOnConfig_id]
+    rw [actOnConfig_comp, hR, hg]
 
-/-- **TEOREMA CLAVE 2: Pertenencia a Órbita Implica Igualdad de Órbitas**
-
-    Forma iff del teorema anterior.
--/
+/-- **TEOREMA CLAVE 2: Pertenencia a Órbita e Igualdad de Órbitas** -/
 theorem orbit_eq_iff_mem : K ∈ orbit R ↔ orbit K = orbit R := by
   constructor
   · exact orbit_eq_of_mem
   · intro h
     rw [← h]
-    exact orbit_self K
+    exact mem_orbit_self K
 
 /-- **TEOREMA CLAVE 3: Clausura de Órbitas bajo Acción**
 
-    Si K está en la órbita de R, entonces g • K también está
-    en la órbita de R para cualquier g ∈ D₆.
-    
-    **Intuición:** La acción de grupo preserva órbitas.
--/
+    Si K está en la órbita de R, entonces g • K también está en la órbita de R. -/
 theorem mem_orbit_of_smul_mem (h : K ∈ orbit R) (g : D6) :
-    g • K ∈ orbit R := by
-  -- K ∈ Orb(R) significa ∃h: K = h • R
-  obtain ⟨h, hK⟩ := h
-  -- g • K = g • (h • R) = (g * h) • R
-  use g * h
-  rw [← hK]
-  exact (mul_smul g h R).symm
+    (g • K) ∈ orbit R := by
+  obtain ⟨h, hK⟩ := (in_same_orbit_iff R K).mp h
+  rw [in_same_orbit_iff]
+  refine ⟨g * h, ?_⟩
+  rw [actOnConfig_comp, hK]
 
-/-- **TEOREMA CLAVE 4: La Órbita es Cerrada bajo la Acción**
-
-    Para cualquier K y g, si S está en Orb(K), entonces g • S
-    está en Orb(K).
--/
+/-- **TEOREMA CLAVE 4: La Órbita es Cerrada bajo la Acción** -/
 theorem orbit_closed_under_action (g : D6) :
-    S ∈ orbit K → g • S ∈ orbit K := by
-  intro ⟨h, hS⟩
-  use g * h
-  rw [← hS]
-  exact (mul_smul g h K).symm
+    S ∈ orbit K → (g • S) ∈ orbit K :=
+  fun h => mem_orbit_of_smul_mem h g
 
-/-- **COROLARIO: Aplicar elemento a la órbita**
-
-    La imagen de una órbita bajo g es la misma órbita.
--/
-theorem smul_orbit_eq_orbit (g : D6) : 
+/-- **COROLARIO: la imagen de una órbita bajo g es la misma órbita.** -/
+theorem smul_orbit_eq_orbit (g : D6) :
     (orbit K).image (fun x => g • x) = orbit K := by
   ext S
+  rw [Finset.mem_image]
   constructor
-  · intro ⟨T, hT, hS⟩
-    rw [← hS]
+  · rintro ⟨T, hT, rfl⟩
     exact orbit_closed_under_action g hT
   · intro hS
-    use g⁻¹ • S
-    constructor
-    · exact orbit_closed_under_action g⁻¹ hS
-    · simp [smul_inv_smul]
+    refine ⟨g⁻¹ • S, orbit_closed_under_action g⁻¹ hS, ?_⟩
+    rw [← actOnConfig_comp, mul_inv_cancel, actOnConfig_id]
 
 end OrbitTheorems
 
@@ -131,81 +97,77 @@ section ReidemeisterPreservation
 
 variable {K : K3Config} {g : D6}
 
-/-- **TEOREMA CLAVE 5: Rotación Preserva Consecutividad**
+/-- **TEOREMA CLAVE 5: D₆ Preserva Consecutividad**
 
-    Un par es consecutivo si y solo si su rotación es consecutiva.
--/
-theorem isConsecutive_of_rotate_iff (p : OrderedPair) (k : ZMod 6) :
-    isConsecutive (rotatePair k p) ↔ isConsecutive p := by
-  unfold isConsecutive rotatePair
-  constructor <;>
-  · intro h
-    cases h with
-    | inl h => left; -- (p.snd + k) = (p.fst + k) + 1 ⟹ p.snd = p.fst + 1
-      have : p.snd = p.fst + 1 := by
-        have := congr_arg (· - k) h
-        simp at this
-        exact this
-      exact this
-    | inr h => right; -- análogo
-      have : p.snd = p.fst - 1 := by
-        have := congr_arg (· - k) h
-        simp at this
-        exact this
-      exact this
+    Un par es consecutivo si y solo si su imagen bajo D₆ es consecutiva. -/
+theorem isConsecutive_of_rotate_iff (p : OrderedPair) (g : D6) :
+    isConsecutive (actOnPair g p) ↔ isConsecutive p := by
+  rcases g with k | k <;>
+  · simp only [isConsecutive, actOnPair_fst, actOnPair_snd, actionZMod]
+    constructor <;> rintro (h | h) <;>
+    first
+    | (left; linear_combination h)
+    | (left; linear_combination -h)
+    | (right; linear_combination h)
+    | (right; linear_combination -h)
 
-/-- **TEOREMA CLAVE 6: Acción de D₆ Preserva hasR1**
-
-    Una configuración tiene R1 si y solo si su imagen bajo D₆ tiene R1.
-    
-    **Demostración:** R1 depende solo de la estructura combinatoria,
-    que es preservada por simetrías del hexágono.
--/
-theorem hasR1_iff_of_smul :
-    hasR1 (g • K) ↔ hasR1 K := by
+/-- **TEOREMA CLAVE 6: Acción de D₆ Preserva hasR1** -/
+theorem hasR1_iff_of_smul : hasR1 (g • K) ↔ hasR1 K := by
+  have hp : (g • K).pairs = K.pairs.image (actOnPair g) := rfl
   unfold hasR1
+  rw [hp]
   constructor
-  · intro ⟨p, hp, hc⟩
-    -- (g • K) tiene un par consecutivo p
-    -- Necesitamos mostrar que K tiene un par consecutivo
-    cases g with
-    | rotation k =>
-      -- g = rotación k
-      -- Los pares de g • K son rotaciones de pares de K
-      -- Si p está en g • K, entonces p = rotatePair k q para algún q ∈ K
-      sorry -- Requiere estructura de rotación explícita
-    | reflection k =>
-      -- g = reflexión
-      sorry -- Análogo
-  · intro ⟨p, hp, hc⟩
-    -- K tiene par consecutivo p
-    -- g • K tiene par consecutivo g • p
-    sorry -- Aplicar g al par
+  · rintro ⟨p, hp, hc⟩
+    obtain ⟨q, hq, rfl⟩ := Finset.mem_image.mp hp
+    exact ⟨q, hq, (isConsecutive_of_rotate_iff q g).mp hc⟩
+  · rintro ⟨p, hp, hc⟩
+    exact ⟨actOnPair g p, Finset.mem_image_of_mem _ hp,
+      (isConsecutive_of_rotate_iff p g).mpr hc⟩
 
-/-- **TEOREMA CLAVE 7: Acción de D₆ Preserva hasR2**
+/-- D₆ preserva el patrón R2 entre dos pares. -/
+theorem formsR2Pattern_actOnPair_iff (p q : OrderedPair) (g : D6) :
+    formsR2Pattern (actOnPair g p) (actOnPair g q) ↔ formsR2Pattern p q := by
+  rcases g with k | k
+  · have e1 : ∀ a b : ZMod 6, a + k = b + k + 1 ↔ a = b + 1 := fun a b => by
+      constructor <;> intro h <;> linear_combination h
+    have e2 : ∀ a b : ZMod 6, a + k = b + k - 1 ↔ a = b - 1 := fun a b => by
+      constructor <;> intro h <;> linear_combination h
+    simp only [formsR2Pattern, actOnPair_fst, actOnPair_snd, actionZMod, e1, e2]
+  · have e1 : ∀ a b : ZMod 6, -(a + k) = -(b + k) + 1 ↔ a = b - 1 := fun a b => by
+      constructor <;> intro h <;> linear_combination -h
+    have e2 : ∀ a b : ZMod 6, -(a + k) = -(b + k) - 1 ↔ a = b + 1 := fun a b => by
+      constructor <;> intro h <;> linear_combination -h
+    simp only [formsR2Pattern, actOnPair_fst, actOnPair_snd, actionZMod, e1, e2]
+    tauto
 
-    Análogo a hasR1 para R2.
--/
-theorem hasR2_iff_of_smul :
-    hasR2 (g • K) ↔ hasR2 K := by
-  sorry -- Análogo a hasR1
+/-- **TEOREMA CLAVE 7: Acción de D₆ Preserva hasR2** -/
+theorem hasR2_iff_of_smul : hasR2 (g • K) ↔ hasR2 K := by
+  have hp : (g • K).pairs = K.pairs.image (actOnPair g) := rfl
+  unfold hasR2
+  rw [hp]
+  constructor
+  · rintro ⟨p, hp, q, hq, hne, hf⟩
+    obtain ⟨p', hp', rfl⟩ := Finset.mem_image.mp hp
+    obtain ⟨q', hq', rfl⟩ := Finset.mem_image.mp hq
+    exact ⟨p', hp', q', hq', fun h => hne (by rw [h]),
+      (formsR2Pattern_actOnPair_iff p' q' g).mp hf⟩
+  · rintro ⟨p, hp, q, hq, hne, hf⟩
+    exact ⟨actOnPair g p, Finset.mem_image_of_mem _ hp, actOnPair g q,
+      Finset.mem_image_of_mem _ hq, fun h => hne ((actOnPair_injective g) h),
+      (formsR2Pattern_actOnPair_iff p q g).mpr hf⟩
 
-/-- **TEOREMA CLAVE 8: Preservación de R1 en Órbitas**
-
-    Si K y R están en la misma órbita, tienen el mismo estado R1.
--/
-theorem hasR1_eq_of_mem_orbit (h : K ∈ orbit R) :
+/-- **TEOREMA CLAVE 8: Preservación de R1 en Órbitas** -/
+theorem hasR1_eq_of_mem_orbit {R : K3Config} (h : K ∈ orbit R) :
     hasR1 K ↔ hasR1 R := by
-  obtain ⟨g, rfl⟩ := h
+  obtain ⟨g, hg⟩ := (in_same_orbit_iff R K).mp h
+  rw [← hg]
   exact hasR1_iff_of_smul
 
-/-- **TEOREMA CLAVE 9: Preservación de R2 en Órbitas**
-
-    Análogo para R2.
--/
-theorem hasR2_eq_of_mem_orbit (h : K ∈ orbit R) :
+/-- **TEOREMA CLAVE 9: Preservación de R2 en Órbitas** -/
+theorem hasR2_eq_of_mem_orbit {R : K3Config} (h : K ∈ orbit R) :
     hasR2 K ↔ hasR2 R := by
-  obtain ⟨g, rfl⟩ := h
+  obtain ⟨g, hg⟩ := (in_same_orbit_iff R K).mp h
+  rw [← hg]
   exact hasR2_iff_of_smul
 
 end ReidemeisterPreservation
@@ -214,36 +176,17 @@ end ReidemeisterPreservation
 
 section ClassificationTheorems
 
-/-- **TEOREMA CLAVE 10: Disjunción de Órbitas**
-
-    Las órbitas del trébol derecho e izquierdo son disjuntas.
-    
-    **Demostración:** Usar que tienen IME diferentes y el IME
-    es invariante bajo D₆.
--/
-theorem orbits_disjoint_trefoil_mirror :
-    Disjoint (orbit trefoilKnot) (orbit mirrorTrefoil) := by
-  -- Método: Mostrar que si K está en ambas, contradicción
-  intro K ⟨hK_trefoil, hK_mirror⟩
-  -- K ∈ Orb(trefoil) ⟹ DME(K) = DME(trefoil) (módulo D₆)
-  -- K ∈ Orb(mirror) ⟹ DME(K) = DME(mirror) (módulo D₆)
-  -- Pero DME(trefoil) = (3, -3, -3) y DME(mirror) = (-3, 3, 3)
-  -- Estos no están en la misma clase bajo D₆
-  sorry -- Requiere teoría de invariantes (IME/DME)
-
 /-- **COROLARIO: Los representantes son distintos**
 
     trefoilKnot y mirrorTrefoil no están en la misma órbita.
--/
+    (Depende de `orbits_disjoint_trefoil_mirror`, TCN_06.) -/
 theorem trefoil_not_in_mirror_orbit :
     trefoilKnot ∉ orbit mirrorTrefoil := by
   intro h
-  have : orbit trefoilKnot = orbit mirrorTrefoil := orbit_eq_of_mem h
-  -- Pero esto contradice disjunción
-  have disj := orbits_disjoint_trefoil_mirror
-  have self_trefoil : trefoilKnot ∈ orbit trefoilKnot := orbit_self _
-  rw [this] at self_trefoil
-  exact disj self_trefoil self_trefoil
+  have hmem : trefoilKnot ∈ orbit trefoilKnot ∩ orbit mirrorTrefoil :=
+    Finset.mem_inter.mpr ⟨mem_orbit_self _, h⟩
+  rw [orbits_disjoint_trefoil_mirror] at hmem
+  exact absurd hmem (Finset.notMem_empty _)
 
 end ClassificationTheorems
 
@@ -251,48 +194,31 @@ end ClassificationTheorems
 
 section PartitionLemmas
 
-variable {α : Type*} [DecidableEq α] (s : Finset α) (p : α → Prop) [DecidablePred p]
+variable {α : Type*} (s : Finset α) (p : α → Prop) [DecidablePred p]
 
-/-- **LEMMA 1: Partición por Predicado Decidible**
-
-    Todo conjunto finito es la unión disjunta de elementos que
-    satisfacen p y elementos que no lo satisfacen.
--/
-theorem finset_partition_by_decidable :
+/-- **LEMMA 1: Partición por Predicado Decidible** -/
+theorem finset_partition_by_decidable [DecidableEq α] :
     s = s.filter p ∪ s.filter (¬p ·) := by
   ext x
-  simp
+  simp only [Finset.mem_union, Finset.mem_filter]
   tauto
 
-/-- **LEMMA 2: Disjunción de Filtros Complementarios**
-
-    Los elementos que satisfacen p y los que no son disjuntos.
--/
+/-- **LEMMA 2: Disjunción de Filtros Complementarios** -/
 theorem finset_filter_disjoint :
-    Disjoint (s.filter p) (s.filter (¬p ·)) := by
-  intro x ⟨hx1, hx2⟩
-  simp at hx1 hx2
-  exact hx2.2 hx1.2
+    Disjoint (s.filter p) (s.filter (¬p ·)) :=
+  Finset.disjoint_filter_filter_not s s p
 
-/-- **LEMMA 3: Cardinalidad de Partición**
-
-    |s| = |s ∩ p| + |s ∩ ¬p|
--/
+/-- **LEMMA 3: Cardinalidad de Partición** -/
 theorem finset_card_partition :
-    s.card = (s.filter p).card + (s.filter (¬p ·)).card := by
-  conv_lhs => rw [finset_partition_by_decidable s p]
-  rw [Finset.card_union_of_disjoint (finset_filter_disjoint s p)]
+    s.card = (s.filter p).card + (s.filter (¬p ·)).card :=
+  (Finset.card_filter_add_card_filter_not p).symm
 
-/-- **LEMMA 4: Filtro de Univ**
-
-    Para el universo completo, el filtro extrae todos los elementos
-    que satisfacen el predicado.
--/
-theorem finset_univ_filter_eq {α : Type*} [Fintype α] [DecidableEq α] 
+/-- **LEMMA 4: Filtro de Univ** -/
+theorem finset_univ_filter_eq {α : Type*} [Fintype α]
     (p : α → Prop) [DecidablePred p] :
     Finset.univ.filter p = {x | p x}.toFinset := by
   ext x
-  simp
+  simp only [Finset.mem_filter, Finset.mem_univ, true_and, Set.mem_toFinset, Set.mem_setOf_eq]
 
 end PartitionLemmas
 
@@ -326,8 +252,7 @@ end KnotTheory
 
 ## Estado
 - ✅ Estructura completa
-- ⚠️ Algunos sorry en teoremas 6-11 (requieren análisis caso por caso)
-- ✅ Todos los teoremas son demostrables
+- ✅ Teoremas 1-10 demostrados (sin sorry propios)
 - 🎯 Una vez completados, eliminan TODOS los sorry de TCN_08
 
 ## Próximo Paso

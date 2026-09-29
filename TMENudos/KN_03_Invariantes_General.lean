@@ -21,8 +21,9 @@ def gap (p : OrderedPair n) : ℕ := (p.snd - p.fst).val - 1
 def encompasses (p : OrderedPair n) (x : ZMod (2 * n)) : Prop :=
   (x - p.fst).val > 0 ∧ (x - p.fst).val < (p.snd - p.fst).val
 
-instance (p : OrderedPair n) (x : ZMod (2 * n)) : Decidable (p.encompasses x) :=
-  inferInstance
+instance (p : OrderedPair n) (x : ZMod (2 * n)) : Decidable (p.encompasses x) := by
+  unfold encompasses
+  infer_instance
 
 /-- Signo del par: +1 si la "longitud" (ratio) es impar, -1 si es par. -/
 def sign (p : OrderedPair n) : Int :=
@@ -34,7 +35,9 @@ def isInterlaced (p q : OrderedPair n) : Prop :=
   (¬p.encompasses q.fst ∧ p.encompasses q.snd)
 
 instance : DecidableRel (@isInterlaced n) :=
-  fun p q => inferInstance
+  fun p q => by
+    unfold isInterlaced
+    infer_instance
 
 /-- El gap es invariante bajo rotación -/
 theorem gap_rotate (p : OrderedPair n) (k : ZMod (2 * n)) :
@@ -44,7 +47,8 @@ theorem gap_rotate (p : OrderedPair n) (k : ZMod (2 * n)) :
 /-- El signo es invariante bajo rotación -/
 theorem sign_rotate (p : OrderedPair n) (k : ZMod (2 * n)) :
     (p.rotate k).sign = p.sign := by
-  simp [sign, rotate, ratio_rotate]
+  unfold sign
+  rw [ratio_rotate]
 
 /-- Encompasses is preserved under simultaneous rotation -/
 theorem encompasses_rotate (p : OrderedPair n) (x : ZMod (2 * n)) (k : ZMod (2 * n)) :
@@ -81,9 +85,9 @@ theorem isInterlaced_rotate (p q : OrderedPair n) (k : ZMod (2 * n)) :
 /-- El gap es invariante bajo reflexión -/
 theorem gap_mirror (p : OrderedPair n) :
     p.mirror.gap = p.gap := by
-  simp only [gap, mirror]
-  congr 1
-  simp [sub_neg_eq_add, add_comm]
+  -- TODO: el enunciado es falso en general: gap(mirror p) usa (fst - snd).val,
+  -- mientras que gap p usa (snd - fst).val (ej. n=2, p=(0,1): gaps 0 y 2).
+  sorry
 
 end OrderedPair
 
@@ -103,7 +107,7 @@ def IME (K : KnConfig n) : Int :=
 
 /-- IDE es invariante bajo rotación de la configuración -/
 theorem IDE_rotate (K : KnConfig n) (p : OrderedPair n) (k : ZMod (2 * n)) :
-    K.rotate k |>.IDE (p.rotate k) = K.IDE p := by
+    (K.rotate k).IDE (p.rotate k) = K.IDE p := by
   simp only [IDE, OrderedPair.gap_rotate]
   congr 1
   simp only [rotate]
@@ -112,12 +116,12 @@ theorem IDE_rotate (K : KnConfig n) (p : OrderedPair n) (k : ZMod (2 * n)) :
     ext q
     simp only [Finset.mem_filter, Finset.mem_image]
     constructor
-    · intro ⟨⟨r, hr, hrq⟩, hint⟩
-      use r, ⟨hr, by rw [← hrq]; exact (isInterlaced_rotate p r k).mp hint⟩, hrq
-    · intro ⟨r, ⟨hr, hint⟩, hrq⟩
-      use r, hr, hrq
-      rw [← hrq]
-      exact (isInterlaced_rotate p r k).mpr hint
+    · rintro ⟨⟨r, hr, hrq⟩, hint⟩
+      subst hrq
+      exact ⟨r, ⟨hr, (OrderedPair.isInterlaced_rotate p r k).mp hint⟩, rfl⟩
+    · rintro ⟨r, ⟨hr, hint⟩, hrq⟩
+      subst hrq
+      exact ⟨⟨r, hr, rfl⟩, (OrderedPair.isInterlaced_rotate p r k).mpr hint⟩
   rw [h, Finset.card_image_of_injective]
   intro p₁ p₂ heq
   have h1 : p₁.fst = p₂.fst := by
@@ -136,6 +140,7 @@ theorem IDE_mirror (K : KnConfig n) (p : OrderedPair n) :
     K.mirror.IDE (p.mirror) = K.IDE p := by
   simp only [IDE, KnConfig.mirror, OrderedPair.gap_mirror]
   congr 1
+  -- TODO: falso en general porque gap_mirror lo es. Requires isInterlaced_mirror
   sorry  -- Requires isInterlaced_mirror and filter/image commutation
 
 end KnConfig
