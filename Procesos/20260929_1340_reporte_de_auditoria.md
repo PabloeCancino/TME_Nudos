@@ -10,7 +10,7 @@
 | Módulos con errores de compilación | 8 (más varios ocultos por dependencias) | **0** |
 | Errores de compilación | ~90 visibles | **0** |
 | Alertas de linter/estilo (excluyendo `sorry`) | 104 solo en `Basic.lean`, más las de otros módulos | **0** |
-| Módulos que compilan | 26 de 34 | **34 de 34** |
+| Módulos que compilan | 18 o menos de 34 (8 fallaban y otros 8, que dependen de ellos, no llegaron a compilarse) | **34 de 34** |
 
 Verificación final: `lake build TMENudos` más los 33 módulos restantes por nombre, 3326 trabajos, 0 errores, 0 alertas distintas de `declaration uses sorry`.
 
@@ -22,9 +22,10 @@ Cambios registrados en la rama `auditoria-2026-09-29`:
 | `df86e7b` | Corrección de los axiomas inconsistentes `R1_inverse` y `R2_inverse`. |
 | `ed140db` | `reidemeister_equivalent` pasa a ser una relación inductiva. |
 | `92dee92`, `bdb627b` | Reporte actualizado y mapa de ruta (`20260929_1408_mapa_de_ruta.md`). |
-| (etapa 0) | Saneamiento de los enunciados falsos de las secciones 3.2 y 3.3, y renombrado de τ a `swap`. |
+| `73f869e` | Etapa 0: saneamiento de los enunciados falsos de las secciones 3.2 y 3.3, y renombrado de τ a `swap`. |
+| `dbdf9dd` | Bitácora de la sesión (`20260929_1451_bitacora_de_sesion.md`) y pruebas archivadas. |
 
-En la auditoría inicial no se agregaron axiomas; uno pasó de axioma a teorema (`iso_preserves_r1`). Los commits posteriores reemplazaron 5 axiomas por versiones corregidas (secciones 3.1 y 4).
+En la auditoría inicial no se agregaron axiomas; uno pasó de axioma a teorema (`iso_preserves_r1`) y se quitaron 3 axiomas duplicados de `TCN_08_Realizabilidad_EJEMPLO_DIDACTICO`. Los commits posteriores reemplazaron 5 axiomas por versiones corregidas (secciones 3.1 y 4).
 
 ## 2. Correcciones aplicadas
 
@@ -94,14 +95,15 @@ Con las definiciones actuales, los tamaños reales son: `specialClass` estabiliz
 **Experimento** (n=3 y n=4): `IME2` es constante en cada órbita de D₂ₙ, pero `IME` no es un invariante completo. Es un solo entero y no separa las órbitas (13 órbitas con 10 valores en n=3; 121 con 28 en n=4).
 
 ### 3.4 Otros `sorry` de fondo
+Tras la etapa 0 quedan dos fuera de `Reidemeister` y `Schubert`:
 - `perfect_matchings_upper_bound` (`KN_00_Combinatoria.lean:300`): verdadero, falta la biyección de conteo.
-- `KN_Instance_K3.lean:41`: igualdad de tipos entre una estructura y un subtipo. Lo correcto sería una `Equiv`.
-- `TCN_05_Orbitas.lean:218`: `configsNoR1NoR2`, junto con `axiom configs_no_r1_no_r2_card`.
-- `TCN_08_Realizabilidad.lean:70`: `card_k3_config`.
+- `KN_Instance_K3.lean:40`: igualdad de tipos entre una estructura y un subtipo. Lo correcto sería una `Equiv`.
+
+Resueltos en la etapa 0 (la versión anterior de esta sección aún los listaba): `configsNoR1NoR2` y `configs_no_r1_no_r2_card` (`TCN_05`), y `card_k3_config` (`TCN_08_Realizabilidad`).
 
 ## 4. Clasificación de los `sorry` de Reidemeister y Schubert
 
-Situación inicial: 39 `sorry` reales (12 en `Reidemeister`, 27 en `Schubert`) y 33 axiomas entre ambos. Tras el commit `ed140db` quedaron 32, y tras la etapa 0 quedan **31** (5 en `Reidemeister`, 26 en `Schubert`, por la reformulación de `reidemeister_preserves_decomposition`). Los axiomas de `Schubert` bajan de 22 a 21. Los axiomas siguen siendo 33, aunque 5 de ellos (`R1_inverse`, `R2_inverse` y los tres `R*_preserves_isotopy`) cambiaron de enunciado.
+Situación inicial: 39 `sorry` reales (12 en `Reidemeister`, 27 en `Schubert`) y 33 axiomas entre ambos. Tras el commit `ed140db` quedaron 32, y tras la etapa 0 quedan **31** (5 en `Reidemeister`, 26 en `Schubert`, por la reformulación de `reidemeister_preserves_decomposition`). Los axiomas de `Schubert` bajan de 22 a 21, así que `Reidemeister` y `Schubert` suman ahora 32 (11 + 21). Además, 5 de los de `Reidemeister` (`R1_inverse`, `R2_inverse` y los tres `R*_preserves_isotopy`) cambiaron de enunciado.
 
 | Clase | Reidemeister | Schubert | Total |
 |---|---|---|---|

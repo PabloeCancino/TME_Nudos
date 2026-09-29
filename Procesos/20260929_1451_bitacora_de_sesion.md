@@ -1,6 +1,6 @@
 # Bitácora de la sesión del 2026-09-29
 
-**Proyecto:** TMENudos (Lean 4 v4.29.0, Mathlib v4.29.0) · **Rama:** `auditoria-2026-09-29` (6 commits sobre `master`, sin subir a ningún remoto)
+**Proyecto:** TMENudos (Lean 4 v4.29.0, Mathlib v4.29.0) · **Rama:** `auditoria-2026-09-29` (7 commits sobre `master` al escribir la bitácora, más el de su revisión; sin subir a ningún remoto)
 **Documentos hermanos:**
 - `20260929_1340_reporte_de_auditoria.md`: reporte de auditoría (estado y clasificación de los `sorry`).
 - `20260929_1408_mapa_de_ruta.md`: mapa de ruta hacia un `Reidemeister.lean` estable.
@@ -12,11 +12,11 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 | Métrica | Al empezar | Al terminar |
 |---|---|---|
-| Módulos que compilan (de 34) | 26 | **34** |
+| Módulos que compilan (de 34) | 18 o menos (8 fallaban y otros 8, que dependen de ellos, no llegaron a compilarse) | **34** |
 | Errores de compilación | ~90 visibles (8 módulos) más los ocultos por dependencias | **0** |
 | Alertas de linter (excluyendo `sorry`) | 104 solo en `Basic.lean`, más las de otros módulos | **0** |
 | `sorry` en el código | No medido en todo el proyecto al empezar; solo `Reidemeister` 12 y `Schubert` 27. Los agentes reportaron además `sorry` en `CrossingPairIsomorphism` (13), `KN_00_Combinatoria`, `KN_03`, `KN_Examples` (5), `TCN_05` y `TCN_06` a `TCN_08` | **33** (`Schubert` 26, `Reidemeister` 5, `KN_00_Combinatoria` 1, `KN_Instance_K3` 1) |
-| Axiomas | 49 | **47** |
+| Axiomas | No medido al empezar. 49 tras la auditoría inicial, que ya había convertido `iso_preserves_r1` en teorema y quitado 3 axiomas duplicados de `TCN_08_EJEMPLO` | **47** |
 | Contradicciones demostradas | 1 (`R1_inverse`, y `R2_inverse` igual) | **0 conocidas** (sin modelo formalizado) |
 
 Commits de la sesión:
@@ -29,8 +29,9 @@ Commits de la sesión:
 | `92dee92` | Reporte de auditoría actualizado. |
 | `bdb627b` | Mapa de ruta. |
 | `73f869e` | Etapa 0: saneamiento de enunciados falsos, convención de dos niveles, `IME2`, renombrado a `swap`. |
+| `dbdf9dd` | Esta bitácora y las pruebas archivadas en `Tests/auditoria_20260929/`. |
 
-(Este documento y las pruebas archivadas en `Tests/` se agregan en un commit posterior.)
+Un commit posterior corrige imprecisiones detectadas al revisar los tres documentos (ver 5.5).
 
 ## 2. Los hallazgos que más importan
 
@@ -43,7 +44,9 @@ Ordenados por gravedad. Cada uno tiene su detalle en la sección 4.
 5. **`reidemeister_equivalent` estaba definido con `sorry` en su cuerpo**, y `Knot` (el cociente de `Schubert`) se construía sobre él. Corregido con una relación inductiva. (4.7)
 6. **Tres operaciones distintas se llamaban `mirror`**: rotación (ρ), reflexión de posiciones (σ) e intercambio over/under (τ). Aclarado y renombrado τ a `swap`. (4.10)
 7. **`Basic.lean` (T4.1) decía "estructura diédrica" pero demostraba una estructura abeliana.** Comentario corregido. (4.10)
-8. **Enunciados dudosos o falsos de `Schubert`** (nudos tóricos, complementos, nombres intercambiados de los nudos cuadrado y de la abuela…): **clasificados, no corregidos**. (4.8)
+8. **Enunciados dudosos o falsos de `Schubert`** (nudos tóricos, complementos, nombres intercambiados de los nudos cuadrado y de la abuela…): **clasificados, no corregidos**. (4.4)
+
+**Qué está comprobado en Lean y qué no.** Comprobado en Lean: la inconsistencia de `R1_inverse` (4.5, 4.6), los tamaños de estabilizadores y órbitas de K3 (4.9), el contraejemplo de `IME` bajo la reflexión y el experimento de `IME2` (4.10, 4.11). **No comprobadas en Lean** (valoración matemática del auditor, conviene revisarla): que T(1,q) sea el nudo trivial, el pegado de complementos a lo largo de un anillo, los nombres del nudo cuadrado y de la abuela, y la normalización del polinomio de Alexander.
 
 ## 3. Cómo leer los `sorry` restantes
 
@@ -94,7 +97,7 @@ Estado actual: 4 de clase A, 10 de clase B y 17 de clase C, más 2 fuera de `Rei
 
 ### 4.5 Hallazgo crítico: `R1_inverse` es contradictorio (verificado)
 - **Sospecha:** al clasificar, noté que `R1_inverse` (`Reidemeister.lean:188`) pedía `HEq (apply_R1 (apply_R1 K move) move_inv) K` para todo `n`, incluido `n = 0`.
-- **Prueba** (`Tests/auditoria_20260929/01_inconsistencia_R1_inverse_original.lean`): con `n = 0` y un movimiento con `add_twist = false`, la resta natural da `0 - 1 = 0`, luego se vuelve a agregar y se obtiene `KnotConfig 1`. El axioma exige entonces `HEq` entre un elemento de `KnotConfig 1` y uno de `KnotConfig 0`, lo que fuerza que ambos tipos sean iguales; pero `KnotConfig 0` tiene un solo elemento y `KnotConfig 1` tiene infinitos (contiene un `ℚ`). Resultado: `#print axioms` mostró que `False` se deduce solo de `R1_inverse`.
+- **Prueba** (`Tests/auditoria_20260929/01_inconsistencia_R1_inverse_original.lean`): con `n = 0` y un movimiento con `add_twist = false`, la resta natural da `0 - 1 = 0`, luego se vuelve a agregar y se obtiene `KnotConfig 1`. El axioma exige entonces `HEq` entre un elemento de `KnotConfig 1` y uno de `KnotConfig 0`, lo que fuerza que ambos tipos sean iguales; pero `KnotConfig 0` tiene un solo elemento y `KnotConfig 1` tiene infinitos (contiene un `ℚ`). Resultado: `#print axioms` mostró que `False` se deduce con `R1_inverse` como único axioma de contenido (aparecen también `propext`, `Quot.sound` y el `sorryAx` heredado de `apply_R1`, que está definido con `sorry`, pero la demostración no usa su contenido).
 - **Consecuencia:** `Reidemeister`, `Schubert`, `Bridge` y todo lo que importe `Reidemeister` era inconsistente.
 
 ### 4.6 Corrección de `R1_inverse` y `R2_inverse`, con un primer intento fallido
@@ -109,7 +112,7 @@ Estado actual: 4 de clase A, 10 de clase B y 17 de clase C, más 2 fuera de `Rei
 - **Problema:** `def reidemeister_equivalent K₁ K₂ := ∃ seq, sorry`. Su cuerpo era `sorry`, y `DiagramSetoid` (y por tanto `Knot`) se construía sobre `reidemeister_refl/symm/trans`, que eran `sorry`.
 - **Diseño:** relación inductiva con seis constructores: `refl`, `symm`, `trans`, `R1`, `R2`, `R3`. R1 y R2 solo en dirección de *agregar* (la eliminación sale por `symm`), coherente con 4.6.
 - **Los axiomas `R*_preserves_isotopy` eran vacíos** (`∃ K', K' = apply_R1 K move` siempre se cumple). Se reemplazaron por enunciados con contenido: cada movimiento preserva `topologically_equivalent`. Sin eso no se puede probar la solidez.
-- **Resultado:** `reidemeister_refl/symm/trans` (una línea cada una), `reidemeister_soundness` e `invariant_criterion` (por inducción). `Reidemeister` pasó de 12 a 5 `sorry` en el código. Commit `ed140db`.
+- **Resultado:** `reidemeister_refl/symm/trans` (una línea cada una), `reidemeister_soundness` e `invariant_criterion` (por inducción). `Reidemeister` pasó de 11 a 5 `sorry` en el código en el commit `ed140db` (12 → 11 en `df86e7b`, al demostrar `reidemeister_inverse`).
 - **Detalle técnico:** en `invariant_criterion` hubo que hacer `clear h_equiv` antes de `induction`, porque la hipótesis dependía de `K₁` y `K₂` y la de inducción arrastraba una implicación inservible.
 - **Nota:** las demostraciones siguen dependiendo de `sorryAx` de forma indirecta porque `apply_R1/R2/R3` están definidos con `sorry`.
 
@@ -140,8 +143,8 @@ Estado actual: 4 de clase A, 10 de clase B y 17 de clase C, más 2 fuera de `Rei
 
 - **Discusión con el autor sobre orientación.** Se propusieron dos salidas (un gap simétrico o redefinir `mirror := σ∘τ`). El autor planteó que el nudo orientado es el análisis de primer nivel y el no orientado el de segundo nivel (analizar la estructura en ambas direcciones). Se confirmó con tres precisiones: punto de partida y sentido son elecciones distintas; "analizar en ambas direcciones" es una definición (tomar la clase `{K, σK}`), no una verificación; el primer nivel distingue más (existen nudos no invertibles).
 - **Decisión:** convención de **dos niveles**.
-  - Nivel 1 (orientado, grupo ℤ/2n): `IME₁` = el `IME` actual. En `Basic` (`Isotopic`), `KN_03`, `KN_03b`.
-  - Nivel 2 (no orientado, D₂ₙ): `IME2 K = (min, max)` de `IME₁` sobre `K` y `σK`. En `KN_04` y `TCN_*`.
+  - Nivel 1 (orientado, sin σ): `IME₁` = el `IME` entero de `KN_03`. Es el nivel de `Basic`, cuya relación `Isotopic` se genera con rotaciones y movimientos R1-R3, sin σ. **Ojo:** el `IME` de `Basic.lean` es una *lista* de razones por cruce (`List ℕ`), un objeto distinto del `IME` entero de `KN_03`; los documentos los llaman igual y no están relacionados formalmente.
+  - Nivel 2 (no orientado, D₂ₙ): `IME2 K = (min, max)` de `IME₁` sobre `K` y `σK`. `IME2` se define en `KN_03b` y su teorema de órbita está en `KN_04`; `TCN_*` usa la misma acción de D₆ (segundo nivel) pero no `IME2`.
   - No se simetriza el `gap`: eso perdería información; `IME2` conserva el poder de discriminación de `IME₁`.
 - **Implementado:**
   - `gap_mirror` → `gap_mirror_add` (`p.gap + p.mirror.gap + 2 = 2n`) y `gap_reverse_mirror`.
@@ -231,3 +234,13 @@ Todo desde la raíz del proyecto (`TME_Nudos`):
 | Pruebas históricas de inconsistencia | `01_...` y `02_...` **ya no compilan**; es lo esperado y prueba que la contradicción quedó bloqueada. Sirven de documentación del razonamiento. |
 
 Para volver a ver el estado: `git log --oneline master..auditoria-2026-09-29` lista los commits de esta sesión, y `git diff master --stat` el alcance total.
+
+### 5.5 Correcciones hechas al revisar estos tres documentos
+Revisión posterior, contrastando los documentos con el repositorio:
+- El número de módulos que compilaban al empezar (26) estaba sobrestimado: 8 fallaban y otros 8 dependían de ellos y no llegaron a compilarse.
+- El conteo de axiomas "49 al empezar" era en realidad el de después de la auditoría inicial.
+- La sección 3.4 del reporte seguía listando como pendientes `configsNoR1NoR2` y `card_k3_config`, ya resueltos en la etapa 0.
+- La sección 4 del reporte decía que los axiomas de `Reidemeister` y `Schubert` seguían siendo 33; ahora son 32 (11 + 21).
+- El `sorry` que aparece en `KN_04_Clasificacion_General.lean` (línea ~237) está dentro de un bloque de comentario; no cuenta.
+- "`Basic` (`Isotopic`) = rotaciones" era impreciso: incluye también los movimientos R1-R3.
+- Faltaba aclarar que el `IME` de `Basic` (lista) y el de `KN_03` (entero) son objetos distintos.
