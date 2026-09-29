@@ -90,10 +90,6 @@ noncomputable def apply_R1 {n : ℕ} (K : KnotConfig n) (move : R1Move) :
     KnotConfig (if move.add_twist then n + 1 else n - 1) :=
   sorry
 
-/-- R1 preserva la equivalencia topológica -/
-axiom R1_preserves_isotopy {n : ℕ} (K : KnotConfig n) (move : R1Move) :
-    ∃ (K' : KnotConfig _), K' = apply_R1 K move
-
 /-!
 ## Movimiento de Reidemeister II (R2)
 
@@ -125,10 +121,6 @@ structure R2Move where
 noncomputable def apply_R2 {n : ℕ} (K : KnotConfig n) (move : R2Move) :
     KnotConfig (if move.add_crossings then n + 2 else n - 2) :=
   sorry
-
-/-- R2 preserva la equivalencia topológica -/
-axiom R2_preserves_isotopy {n : ℕ} (K : KnotConfig n) (move : R2Move) :
-    ∃ (K' : KnotConfig _), K' = apply_R2 K move
 
 /-!
 ## Movimiento de Reidemeister III (R3)
@@ -162,10 +154,6 @@ structure R3Move where
 noncomputable def apply_R3 {n : ℕ} (K : KnotConfig n) (move : R3Move) : KnotConfig n :=
   sorry
 
-/-- R3 preserva la equivalencia topológica y el número de cruces -/
-axiom R3_preserves_isotopy {n : ℕ} (K : KnotConfig n) (move : R3Move) :
-    ∃ (K' : KnotConfig n), K' = apply_R3 K move
-
 /-! ## Secuencias de Movimientos de Reidemeister -/
 
 /-- Un movimiento de Reidemeister general -/
@@ -178,9 +166,25 @@ inductive ReidemeisterMove (n : ℕ) where
 /-- Una secuencia finita de movimientos de Reidemeister -/
 def ReidemeisterSequence (_n _m : ℕ) := List (Σ k : ℕ, ReidemeisterMove k)
 
-/-- Dos configuraciones están relacionadas por movimientos de Reidemeister -/
-def reidemeister_equivalent {n m : ℕ} (K₁ : KnotConfig n) (K₂ : KnotConfig m) : Prop :=
-  ∃ (seq : ReidemeisterSequence n m), sorry  -- Aplicar secuencia transforma K₁ en K₂
+/-- Dos configuraciones están relacionadas por movimientos de Reidemeister.
+
+    Es la relación de equivalencia generada por los tres movimientos. R1 y R2 se dan solo
+    en su dirección de *agregar* cruces (`add_twist = true`, `add_crossings = true`);
+    la eliminación se obtiene por `symm`. Esto evita hablar de "eliminar" en un diagrama
+    que no tiene nada que eliminar. -/
+inductive reidemeister_equivalent : {n m : ℕ} → KnotConfig n → KnotConfig m → Prop where
+  | refl {n : ℕ} (K : KnotConfig n) : reidemeister_equivalent K K
+  | symm {n m : ℕ} {K₁ : KnotConfig n} {K₂ : KnotConfig m} :
+      reidemeister_equivalent K₁ K₂ → reidemeister_equivalent K₂ K₁
+  | trans {n m p : ℕ} {K₁ : KnotConfig n} {K₂ : KnotConfig m} {K₃ : KnotConfig p} :
+      reidemeister_equivalent K₁ K₂ → reidemeister_equivalent K₂ K₃ →
+      reidemeister_equivalent K₁ K₃
+  | R1 {n : ℕ} (K : KnotConfig n) (move : R1Move) :
+      move.add_twist = true → reidemeister_equivalent K (apply_R1 K move)
+  | R2 {n : ℕ} (K : KnotConfig n) (move : R2Move) :
+      move.add_crossings = true → reidemeister_equivalent K (apply_R2 K move)
+  | R3 {n : ℕ} (K : KnotConfig n) (move : R3Move) :
+      reidemeister_equivalent K (apply_R3 K move)
 
 /-! ## Propiedades de los Movimientos de Reidemeister -/
 
@@ -208,26 +212,21 @@ axiom R3_inverse {n : ℕ} (K : KnotConfig n) (move : R3Move) :
 
 /-- La equivalencia de Reidemeister es reflexiva -/
 theorem reidemeister_refl {n : ℕ} (K : KnotConfig n) :
-    reidemeister_equivalent K K := by
-  use []
-  sorry
+    reidemeister_equivalent K K :=
+  reidemeister_equivalent.refl K
 
 /-- La equivalencia de Reidemeister es simétrica -/
 theorem reidemeister_symm {n m : ℕ} {K₁ : KnotConfig n} {K₂ : KnotConfig m} :
-    reidemeister_equivalent K₁ K₂ → reidemeister_equivalent K₂ K₁ := by
-  intro ⟨seq, _⟩
-  -- Invertir la secuencia de movimientos
-  sorry
+    reidemeister_equivalent K₁ K₂ → reidemeister_equivalent K₂ K₁ :=
+  reidemeister_equivalent.symm
 
 /-- La equivalencia de Reidemeister es transitiva -/
 theorem reidemeister_trans {n m p : ℕ}
     {K₁ : KnotConfig n} {K₂ : KnotConfig m} {K₃ : KnotConfig p} :
     reidemeister_equivalent K₁ K₂ →
     reidemeister_equivalent K₂ K₃ →
-    reidemeister_equivalent K₁ K₃ := by
-  intro ⟨seq₁, _⟩ ⟨seq₂, _⟩
-  -- Concatenar secuencias
-  sorry
+    reidemeister_equivalent K₁ K₃ :=
+  reidemeister_equivalent.trans
 
 /-!
 ## TEOREMA DE REIDEMEISTER (1927)
@@ -250,6 +249,18 @@ axiom topo_equiv_trans {n m p : ℕ}
     topologically_equivalent K₁ K₂ →
     topologically_equivalent K₂ K₃ →
     topologically_equivalent K₁ K₃
+
+/-- Agregar un giro (R1) no cambia el nudo. -/
+axiom R1_preserves_isotopy {n : ℕ} (K : KnotConfig n) (move : R1Move) :
+    move.add_twist = true → topologically_equivalent K (apply_R1 K move)
+
+/-- Agregar dos cruces (R2) no cambia el nudo. -/
+axiom R2_preserves_isotopy {n : ℕ} (K : KnotConfig n) (move : R2Move) :
+    move.add_crossings = true → topologically_equivalent K (apply_R2 K move)
+
+/-- Un deslizamiento R3 no cambia el nudo ni el número de cruces. -/
+axiom R3_preserves_isotopy {n : ℕ} (K : KnotConfig n) (move : R3Move) :
+    topologically_equivalent K (apply_R3 K move)
 
 /-!
 ### TEOREMA DE REIDEMEISTER (Enunciado Principal)
@@ -285,9 +296,14 @@ corresponde a una isotopía del espacio ambiente.
 theorem reidemeister_soundness {n m : ℕ}
     (K₁ : KnotConfig n) (K₂ : KnotConfig m) :
     reidemeister_equivalent K₁ K₂ → topologically_equivalent K₁ K₂ := by
-  intro ⟨seq, h_seq⟩
-  -- Inducción sobre la longitud de la secuencia
-  sorry
+  intro h
+  induction h with
+  | refl K => exact topo_equiv_refl K
+  | symm _ ih => exact topo_equiv_symm ih
+  | trans _ _ ih₁ ih₂ => exact topo_equiv_trans ih₁ ih₂
+  | R1 K move hmove => exact R1_preserves_isotopy K move hmove
+  | R2 K move hmove => exact R2_preserves_isotopy K move hmove
+  | R3 K move => exact R3_preserves_isotopy K move
 
 /--
 **TEOREMA DE REIDEMEISTER - DIRECCIÓN (⇒) COMPLETITUD**
@@ -334,7 +350,7 @@ theorem reidemeister_inverse {n : ℕ} (K : KnotConfig n) :
       HEq (apply_R2 (apply_R2 K move) move_inv) K) := by
   exact ⟨fun move h => ⟨_, R1_inverse K move h⟩, fun move h => ⟨_, R2_inverse K move h⟩⟩
 
-theorem invariant_criterion {n : ℕ} (f : ∀ k, KnotConfig k → ℚ) :
+theorem invariant_criterion (f : ∀ k, KnotConfig k → ℚ) :
     (∀ k (K : KnotConfig k) (move : R1Move),
       f _ (apply_R1 K move) = f k K) →
     (∀ k (K : KnotConfig k) (move : R2Move),
@@ -344,10 +360,17 @@ theorem invariant_criterion {n : ℕ} (f : ∀ k, KnotConfig k → ℚ) :
     (∀ n m (K₁ : KnotConfig n) (K₂ : KnotConfig m),
       topologically_equivalent K₁ K₂ → f n K₁ = f m K₂) := by
   intro h1 h2 h3 n m K₁ K₂ h_equiv
-  -- Usar reidemeister_completeness para obtener secuencia
-  have ⟨seq, _⟩ := reidemeister_completeness K₁ K₂ h_equiv
-  -- Inducción sobre la secuencia usando h1, h2, h3
-  sorry
+  -- Usar reidemeister_completeness para obtener la cadena de movimientos
+  have h_reid := reidemeister_completeness K₁ K₂ h_equiv
+  clear h_equiv
+  -- Inducción sobre la cadena usando h1, h2, h3
+  induction h_reid with
+  | refl K => rfl
+  | symm _ ih => exact ih.symm
+  | trans _ _ ih₁ ih₂ => exact ih₁.trans ih₂
+  | R1 K move _ => exact (h1 _ K move).symm
+  | R2 K move _ => exact (h2 _ K move).symm
+  | R3 K move => exact (h3 _ K move).symm
 
 /--
 **Corolario 2: Problema de la Palabra para Nudos**
