@@ -184,13 +184,21 @@ def reidemeister_equivalent {n m : ℕ} (K₁ : KnotConfig n) (K₂ : KnotConfig
 
 /-! ## Propiedades de los Movimientos de Reidemeister -/
 
-/-- Los movimientos R1 son invertibles -/
-axiom R1_inverse {n : ℕ} (K : KnotConfig n) (move : R1Move) :
+/-- Agregar un giro y luego eliminarlo devuelve el diagrama original.
+    Solo se afirma esta dirección: eliminar un giro pierde información, así que
+    "eliminar y luego agregar" no puede ser la identidad para todo diagrama.
+    La versión anterior, que afirmaba ambas direcciones sin hipótesis, era inconsistente
+    (para `n = 0`, y aun con `1 ≤ n`, por cardinalidad: `KnotConfig 0` tiene un único
+    elemento). -/
+axiom R1_inverse {n : ℕ} (K : KnotConfig n) (move : R1Move)
+    (h : move.add_twist = true) :
     let move_inv : R1Move := { move with add_twist := !move.add_twist }
     HEq (apply_R1 (apply_R1 K move) move_inv) K
 
-/-- Los movimientos R2 son invertibles -/
-axiom R2_inverse {n : ℕ} (K : KnotConfig n) (move : R2Move) :
+/-- Agregar dos cruces y luego eliminarlos devuelve el diagrama original
+    (misma razón que en `R1_inverse`: solo se afirma la dirección agregar-eliminar). -/
+axiom R2_inverse {n : ℕ} (K : KnotConfig n) (move : R2Move)
+    (h : move.add_crossings = true) :
     let move_inv : R2Move := { move with add_crossings := !move.add_crossings }
     HEq (apply_R2 (apply_R2 K move) move_inv) K
 
@@ -320,11 +328,11 @@ Reidemeister es automáticamente un invariante de nudos.
 Esto proporciona un método sistemático para construir invariantes.
 -/
 theorem reidemeister_inverse {n : ℕ} (K : KnotConfig n) :
-    (∀ (move : R1Move), ∃ (move_inv : R1Move),
+    (∀ (move : R1Move), move.add_twist = true → ∃ (move_inv : R1Move),
       HEq (apply_R1 (apply_R1 K move) move_inv) K) ∧
-    (∀ (move : R2Move), ∃ (move_inv : R2Move),
+    (∀ (move : R2Move), move.add_crossings = true → ∃ (move_inv : R2Move),
       HEq (apply_R2 (apply_R2 K move) move_inv) K) := by
-  sorry
+  exact ⟨fun move h => ⟨_, R1_inverse K move h⟩, fun move h => ⟨_, R2_inverse K move h⟩⟩
 
 theorem invariant_criterion {n : ℕ} (f : ∀ k, KnotConfig k → ℚ) :
     (∀ k (K : KnotConfig k) (move : R1Move),
