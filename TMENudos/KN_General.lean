@@ -304,13 +304,14 @@ private lemma partition_reverse {n : ℕ} (K : KnConfig n) :
           exact hi_qsnd
     rw [hr_eq]
 
-/-- Reflexión especular (imagen en espejo) de una configuración Kₙ.
+/-- swap (τ, imagen especular / quiralidad) de una configuración Kₙ.
 
-    **Operación: K ↦ K̄**
+    **Operación: K ↦ τ(K)**
 
-    Invierte cada par ordenado: (e, s) ↦ (s, e)
+    Intercambia over/under en cada par ordenado: (o, u) ↦ (u, o).
+    No confundir con σ (reflexión de posiciones (a,b) ↦ (-a,-b)), que en KN_02 se llama `mirror`.
 -/
-def mirror {n : ℕ} (K : KnConfig n) : KnConfig n :=
+def swap {n : ℕ} (K : KnConfig n) : KnConfig n :=
   ⟨K.pairs.image OrderedPairN.reverse,
    card_image_reverse K,
    partition_reverse K⟩

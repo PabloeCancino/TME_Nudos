@@ -474,20 +474,23 @@ def interlacing_matrix {n : ℕ} (K : RationalConfiguration n) (i j : Fin n) : �
   if are_interlaced (K.crossings i) (K.crossings j) then 1 else 0
 
 /-!
-## D7 — Operación de espejo (Involución)
+## D7 — Operación swap τ (imagen especular / quiralidad; involución)
+
+τ intercambia over/under: (o,u) ↦ (u,o). NO es la reflexión σ de posiciones
+(a,b) ↦ (-a,-b) de KN_02 (`mirror`), que lee el mismo diagrama al revés.
 
 K* := {(u₁, o₁), ..., (uₙ, oₙ)}.
 -/
 
-/-- Operación de espejo sobre un cruce -/
-def mirror_crossing {n : ℕ} (c : RationalCrossing n) : RationalCrossing n :=
+/-- swap (τ) sobre un cruce: intercambia over/under -/
+def swap_crossing {n : ℕ} (c : RationalCrossing n) : RationalCrossing n :=
   { over_pos := c.under_pos,
     under_pos := c.over_pos,
     distinct := Ne.symm c.distinct }
 
-/-- Operación de espejo sobre una configuración -/
-def mirror_knot {n : ℕ} (K : RationalConfiguration n) : RationalConfiguration n :=
-  { crossings := fun i => mirror_crossing (K.crossings i),
+/-- swap (τ) sobre una configuración (imagen especular real) -/
+def swap_knot {n : ℕ} (K : RationalConfiguration n) : RationalConfiguration n :=
+  { crossings := fun i => swap_crossing (K.crossings i),
     coverage := by
       intro x
       rcases K.coverage x with ⟨i, h⟩
@@ -618,7 +621,7 @@ def progression {n : ℕ} [NeZero n] (K : RationalConfiguration n) : RationalCon
 
 /-- Operación Inversión -/
 def inversion {n : ℕ} (K : RationalConfiguration n) : RationalConfiguration n :=
-  mirror_knot K
+  swap_knot K
 
 /-!
 # 3. Reidemeister Racional
@@ -782,17 +785,20 @@ dos nudos irreducibles son isotópicos si y solo si tienen el mismo IME.
 -/
 
 /-!
-## Teorema T3 — Involución del espejo
+## Teorema T3 — Involución de swap (τ)
 (K*)* = K
 -/
 
-theorem mirror_involution {n : ℕ} (K : RationalConfiguration n) :
-  mirror_knot (mirror_knot K) = K := by
-  simp [mirror_knot, mirror_crossing]
+theorem swap_involution {n : ℕ} (K : RationalConfiguration n) :
+  swap_knot (swap_knot K) = K := by
+  simp [swap_knot, swap_crossing]
 
 /-!
-## Teorema T4.1 — Estructura Diédrica
-I ∘ P ∘ I = P⁻¹
+## Teorema T4.1 — τ conmuta con las rotaciones
+Lo que se demuestra es `inversion (progression (inversion K)) = progression K`,
+es decir I ∘ P ∘ I = P (τ conmuta con ρ). Por tanto el grupo generado por ρ y τ
+es ABELIANO (≅ ℤ/n × ℤ/2), NO diédrico. La estructura diédrica (I∘P∘I = P⁻¹)
+proviene de la reflexión de posiciones σ (`mirror` en KN_02), no de τ.
 -/
 
 /-- Progresión inversa (P⁻¹) -/
@@ -801,7 +807,7 @@ def progression_inv {n : ℕ} [NeZero n] (K : RationalConfiguration n) : Rationa
 
 theorem dihedral_structure_commutes {n : ℕ} [NeZero n] (K : RationalConfiguration n) :
   inversion (progression (inversion K)) = progression K := by
-  simp [inversion, progression, mirror_knot, rotate_knot, mirror_crossing, rotate_crossing]
+  simp [inversion, progression, swap_knot, rotate_knot, swap_crossing, rotate_crossing]
 
 /-!
 ## Teorema T2 — Antisimetría de la matriz firmada

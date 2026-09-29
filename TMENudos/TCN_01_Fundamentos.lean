@@ -515,7 +515,7 @@ def fromNotation (cn : CanonicalNotation) : Option K3Config :=
     - **σ(K̄) = -σ(K)**
 -/
 
-/-! ## Lemas Auxiliares para Mirror -/
+/-! ## Lemas Auxiliares para swap (τ) -/
 
 /-- Cardinalidad se preserva bajo función involutiva -/
 private lemma card_image_involutive {α : Type*} [DecidableEq α]
@@ -585,8 +585,9 @@ private lemma partition_reverse (K : K3Config) :
           exact hi_qsnd
     rw [hr_eq]
 
-/-- **REFLEXIÓN ESPECULAR COMPLETA** - Implementación sin sorry -/
-def mirror (K : K3Config) : K3Config :=
+/-- **swap (τ, imagen especular / quiralidad)**: intercambia over/under, (o,u) ↦ (u,o).
+    Distinta de σ (reflexión de posiciones, `mirror` en KN_02). Implementación sin sorry -/
+def swap (K : K3Config) : K3Config :=
   ⟨K.pairs.image OrderedPair.reverse,
    card_image_reverse K,
    partition_reverse K⟩
@@ -944,9 +945,9 @@ axiom finset_image_toList_reverse (K : K3Config) :
 /-- **TEOREMA**: DME cambia de signo bajo reflexión especular.
 
     DME(K̄) = -DME(K) -/
-theorem dme_mirror (K : K3Config) :
-  K.mirror.dme = K.dme.map (· * (-1)) := by
-  unfold dme mirror pairsList
+theorem dme_swap (K : K3Config) :
+  K.swap.dme = K.dme.map (· * (-1)) := by
+  unfold dme swap pairsList
   rw [finset_image_toList_reverse]
   simp only [List.map_map]
   congr 1
@@ -956,10 +957,10 @@ theorem dme_mirror (K : K3Config) :
 /-- **TEOREMA**: IME es invariante bajo reflexión (invariante aquiral).
 
     IME(K̄) = IME(K) -/
-theorem ime_mirror (K : K3Config) :
-  K.mirror.ime = K.ime := by
+theorem ime_swap (K : K3Config) :
+  K.swap.ime = K.ime := by
   unfold ime
-  rw [dme_mirror]
+  rw [dme_swap]
   -- Ahora tenemos: (K.dme.map (· * (-1))).map Int.natAbs = K.dme.map Int.natAbs
   rw [List.map_map]
   -- Necesitamos: K.dme.map (fun x => Int.natAbs (x * (-1))) = K.dme.map Int.natAbs
@@ -970,20 +971,20 @@ theorem ime_mirror (K : K3Config) :
 /-- **TEOREMA**: Gap es invariante bajo reflexión.
 
     Gap(K̄) = Gap(K) -/
-theorem gap_mirror (K : K3Config) :
-  K.mirror.gap = K.gap := by
+theorem gap_swap (K : K3Config) :
+  K.swap.gap = K.gap := by
   unfold gap ime
-  have h_dme : K.mirror.dme = K.dme.map (· * (-1)) := dme_mirror K
+  have h_dme : K.swap.dme = K.dme.map (· * (-1)) := dme_swap K
   rw [h_dme]
   rw [natAbs_map_neg_eq]
 
 /-- **TEOREMA**: Writhe cambia de signo bajo reflexión.
 
     Writhe(K̄) = -Writhe(K) -/
-theorem writhe_mirror (K : K3Config) :
-  K.mirror.writhe = -K.writhe := by
+theorem writhe_swap (K : K3Config) :
+  K.swap.writhe = -K.writhe := by
   unfold writhe
-  have h_dme : K.mirror.dme = K.dme.map (· * (-1)) := dme_mirror K
+  have h_dme : K.swap.dme = K.dme.map (· * (-1)) := dme_swap K
   rw [h_dme]
   exact foldl_sum_neg K.dme
 
@@ -1002,8 +1003,8 @@ theorem writhe_mirror (K : K3Config) :
     La prueba usa solo propiedades de multiconjuntos y es independiente
     de la representación interna de `toList`. -/
 theorem dme_as_multiset (K : K3Config) :
-  (K.mirror.dme : Multiset ℤ) = ((K.dme.map (· * (-1))) : Multiset ℤ) := by
-  have h := dme_mirror K
+  (K.swap.dme : Multiset ℤ) = ((K.dme.map (· * (-1))) : Multiset ℤ) := by
+  have h := dme_swap K
   simp [h]
 
 /-- **TEOREMA**: La reflexión es involutiva.
@@ -1022,9 +1023,9 @@ private lemma image_reverse_twice (s : Finset OrderedPair) :
   · intro hp
     refine ⟨p.reverse, ⟨p, hp, rfl⟩, OrderedPair.reverse_involutive p⟩
 
-theorem mirror_involutive (K : K3Config) :
-  K.mirror.mirror = K := by
-  unfold mirror
+theorem swap_involutive (K : K3Config) :
+  K.swap.swap = K := by
+  unfold swap
   simp only
   have h_pairs : (K.pairs.image OrderedPair.reverse).image OrderedPair.reverse = K.pairs :=
     image_reverse_twice K.pairs
@@ -1040,11 +1041,11 @@ theorem normalize_preserves_matching (K : K3Config) :
 /-- **TEOREMA**: Si Writhe ≠ 0, entonces el nudo es quiral -/
 theorem nonzero_writhe_implies_chiral (K : K3Config)
     (h : K.writhe ≠ 0) :
-    K ≠ K.mirror := by
+    K ≠ K.swap := by
   intro heq
-  have hw : K.writhe = K.mirror.writhe := congrArg writhe heq
-  have hw_mirror : K.mirror.writhe = -K.writhe := writhe_mirror K
-  rw [hw_mirror] at hw
+  have hw : K.writhe = K.swap.writhe := congrArg writhe heq
+  have hw_swap : K.swap.writhe = -K.writhe := writhe_swap K
+  rw [hw_swap] at hw
   have : K.writhe + K.writhe = 0 := by
     calc K.writhe + K.writhe
         = K.writhe + (-K.writhe) := by rw [← hw]
@@ -1053,10 +1054,10 @@ theorem nonzero_writhe_implies_chiral (K : K3Config)
   exact h this
 
 /-- Corolario: Un nudo aquiral tiene writhe = 0 -/
-theorem achiral_has_zero_writhe (K : K3Config) (h : K = K.mirror) :
+theorem achiral_has_zero_writhe (K : K3Config) (h : K = K.swap) :
     K.writhe = 0 := by
-  have : K.writhe = K.mirror.writhe := congrArg writhe h
-  rw [writhe_mirror] at this
+  have : K.writhe = K.swap.writhe := congrArg writhe h
+  rw [writhe_swap] at this
   omega
 
 /-! ## Resumen de la Jerarquía Conceptual -/

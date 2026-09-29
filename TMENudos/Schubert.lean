@@ -332,13 +332,17 @@ theorem genus_additive (K₁ K₂ : Knot) :
 /-- **Relación con el Teorema de Reidemeister**
 
 Los movimientos de Reidemeister preservan la descomposición prima.
--/
-axiom reidemeister_equivalent : Knot → Knot → Prop
 
+Saneamiento 0.3: antes existía `axiom reidemeister_equivalent : Knot → Knot → Prop`
+(chocaba con `Reidemeister.reidemeister_equivalent`, ahora inductiva sobre `KnotConfig`)
+y el teorema tenía `sorry`. En el cociente `Knot` la equivalencia de Reidemeister es la
+igualdad, así que la hipótesis pasa a ser `K₁ ≅ K₂` y el teorema se demuestra.
+-/
 theorem reidemeister_preserves_decomposition (K₁ K₂ : Knot) :
-    reidemeister_equivalent K₁ K₂ →
+    K₁ ≅ K₂ →
     (prime_decomposition K₁).length = (prime_decomposition K₂).length := by
-  sorry
+  intro h
+  exact congrArg (fun K => (prime_decomposition K).length) h
 
 /-- **Relación con Invariantes Polinomiales**
 

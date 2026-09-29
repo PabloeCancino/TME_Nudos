@@ -2,6 +2,12 @@
 -- Invariantes para Configuraciones K_n
 -- Autor: Dr. Pablo Eduardo Cancino Marentes
 -- Fecha: Enero 9, 2026
+--
+-- CONVENCION: este modulo (IME₁ = `KnConfig.IME`) es de PRIMER nivel (nudo
+-- ORIENTADO: solo rotaciones, grupo Z/2n; igual que `Isotopic` en `Basic.lean`).
+-- El segundo nivel (no orientado, con σ = `mirror`, grupo D₂ₙ) esta en KN_03b
+-- (`IME2`) y KN_04. La involucion over/under (`p.reverse`, KN_00: imagen
+-- especular real τ, quiralidad) es un eje ortogonal y no es σ.
 
 import TMENudos.KN_00_Fundamentos_General
 import TMENudos.KN_02_Grupo_Dihedral_General
@@ -82,12 +88,37 @@ theorem isInterlaced_rotate (p q : OrderedPair n) (k : ZMod (2 * n)) :
                exact ⟨mt (encompasses_rotate p q.fst k).mp h.1,
                       (encompasses_rotate p q.snd k).mpr h.2⟩
 
-/-- El gap es invariante bajo reflexión -/
-theorem gap_mirror (p : OrderedPair n) :
-    p.mirror.gap = p.gap := by
-  -- TODO: el enunciado es falso en general: gap(mirror p) usa (fst - snd).val,
-  -- mientras que gap p usa (snd - fst).val (ej. n=2, p=(0,1): gaps 0 y 2).
-  sorry
+/-- CAMBIO DE ENUNCIADO (auditoría):
+    antes:   `p.mirror.gap = p.gap`  (FALSO: contraejemplo n=2, p=(0,1): huecos 0 y 2)
+    después: `p.gap + p.mirror.gap + 2 = 2 * n` (con `[NeZero n]`; para n = 0, ZMod 0 = ℤ
+    y la identidad no aplica).
+    `mirror` manda (a,b) a (-a,-b): invierte el sentido de recorrido, así que el arco
+    a → b pasa a ser (en las etiquetas nuevas) el arco complementario, y los huecos
+    de ambos arcos suman 2n - 2. -/
+theorem gap_mirror_add [NeZero n] (p : OrderedPair n) :
+    p.gap + p.mirror.gap + 2 = 2 * n := by
+  have hne : p.snd - p.fst ≠ 0 := p.ratio_ne_zero
+  have hne' : p.fst - p.snd ≠ 0 := fun h => hne (by rw [← neg_sub, h, neg_zero])
+  have h1 : (p.fst - p.snd).val = 2 * n - (p.snd - p.fst).val := by
+    rw [← neg_sub, ZMod.neg_val, if_neg hne]
+  have h2 : (p.mirror.snd - p.mirror.fst) = p.fst - p.snd := by
+    simp only [mirror]; ring
+  have hpos1 : 0 < (p.snd - p.fst).val := ZMod.val_pos.mpr hne
+  have hpos2 : 0 < (p.fst - p.snd).val := ZMod.val_pos.mpr hne'
+  have hlt := ZMod.val_lt (p.snd - p.fst)
+  unfold gap
+  rw [h2]
+  omega
+
+/-- CAMBIO DE ENUNCIADO (auditoría): el gap SÍ es invariante bajo la reflexión
+    geométrica que además intercambia over y under, `p ↦ p.reverse.mirror = (-b, -a)`.
+    (Esto es la reflexión de imagen especular más el cambio de parametrización.) -/
+theorem gap_reverse_mirror (p : OrderedPair n) :
+    p.reverse.mirror.gap = p.gap := by
+  have h : p.reverse.mirror.snd - p.reverse.mirror.fst = p.snd - p.fst := by
+    simp only [mirror, reverse]; ring
+  unfold gap
+  rw [h]
 
 end OrderedPair
 
@@ -135,13 +166,16 @@ theorem IDE_rotate (K : KnConfig n) (p : OrderedPair n) (k : ZMod (2 * n)) :
   cases p₁; cases p₂
   simp_all
 
-/-- IDE es invariante bajo reflexión -/
-theorem IDE_mirror (K : KnConfig n) (p : OrderedPair n) :
-    K.mirror.IDE (p.mirror) = K.IDE p := by
-  simp only [IDE, KnConfig.mirror, OrderedPair.gap_mirror]
-  congr 1
-  -- TODO: falso en general porque gap_mirror lo es. Requires isInterlaced_mirror
-  sorry  -- Requires isInterlaced_mirror and filter/image commutation
+/-- CAMBIO DE ENUNCIADO (auditoría): se ELIMINA `IDE_mirror`
+    (antes: `K.mirror.IDE p.mirror = K.IDE p`, sorry y FALSO).
+    Como `gap p.mirror = 2n - 2 - gap p` (ver `gap_mirror_add`), IDE no es invariante bajo
+    `mirror`; ver el contraejemplo `not_IME_mirror` (n = 2).
+    Esto muestra que IME₁ NO es un invariante de segundo nivel; para eso se usa
+    `IME2` (KN_03b). -/
+theorem not_IME_mirror : ∃ K : KnConfig 2, K.mirror.IME ≠ K.IME := by
+  let S : Finset (OrderedPair 2) := {⟨0, 1, by decide⟩, ⟨2, 3, by decide⟩}
+  refine ⟨⟨S, by decide, by decide⟩, ?_⟩
+  decide
 
 end KnConfig
 

@@ -37,22 +37,11 @@ section OrbitTheorems
 
 variable {K R S : K3Config}
 
-/-- **TEOREMA CLAVE 1: Transitividad de Órbitas**
+/- **TEOREMA CLAVE 1: Transitividad de Órbitas** (`orbit_eq_of_mem`)
 
-    Si K está en la órbita de R, entonces la órbita de K es igual a la órbita de R. -/
-theorem orbit_eq_of_mem (h : K ∈ orbit R) : orbit K = orbit R := by
-  obtain ⟨h, hK⟩ := (in_same_orbit_iff R K).mp h
-  ext S
-  rw [in_same_orbit_iff, in_same_orbit_iff]
-  constructor
-  · rintro ⟨g, hg⟩
-    refine ⟨g * h, ?_⟩
-    rw [actOnConfig_comp, hK, hg]
-  · rintro ⟨g, hg⟩
-    refine ⟨g * h⁻¹, ?_⟩
-    have hR : h⁻¹ • K = R := by
-      rw [← hK, ← actOnConfig_comp, inv_mul_cancel, actOnConfig_id]
-    rw [actOnConfig_comp, hR, hg]
+    Si K está en la órbita de R, entonces la órbita de K es igual a la órbita de R.
+    Se MOVIÓ a `TCN_06_Representantes.lean` (auditoría 2026-09-29), porque TCN_07 lo necesita;
+    se usa aquí desde ese módulo. -/
 
 /-- **TEOREMA CLAVE 2: Pertenencia a Órbita e Igualdad de Órbitas** -/
 theorem orbit_eq_iff_mem : K ∈ orbit R ↔ orbit K = orbit R := by
@@ -175,17 +164,18 @@ end ReidemeisterPreservation
 /-! ## 3. TEOREMAS PARA TCN_07_Clasificacion.lean -/
 
 section ClassificationTheorems
-
 /-- **COROLARIO: Los representantes son distintos**
 
-    trefoilKnot y mirrorTrefoil no están en la misma órbita.
-    (Depende de `orbits_disjoint_trefoil_mirror`, TCN_06.) -/
-theorem trefoil_not_in_mirror_orbit :
-    trefoilKnot ∉ orbit mirrorTrefoil := by
+    trefoilKnot no está en la órbita de specialClass.
+
+    (Auditoría 2026-09-29: el enunciado anterior `trefoil_not_in_mirror_orbit` era FALSO,
+    pues `mirrorTrefoil ∈ Orb(trefoilKnot)`; se eliminó y se reemplazó por este.) -/
+theorem trefoil_not_in_special_orbit :
+    trefoilKnot ∉ orbit specialClass := by
   intro h
-  have hmem : trefoilKnot ∈ orbit trefoilKnot ∩ orbit mirrorTrefoil :=
-    Finset.mem_inter.mpr ⟨mem_orbit_self _, h⟩
-  rw [orbits_disjoint_trefoil_mirror] at hmem
+  have hmem : trefoilKnot ∈ orbit specialClass ∩ orbit trefoilKnot :=
+    Finset.mem_inter.mpr ⟨h, mem_orbit_self _⟩
+  rw [orbits_disjoint_special_trefoil] at hmem
   exact absurd hmem (Finset.notMem_empty _)
 
 end ClassificationTheorems
@@ -228,7 +218,7 @@ end KnotTheory
 ## Resumen de Teoremas Auxiliares
 
 ### Para agregar a TCN_05_Orbitas.lean
-1. `orbit_eq_of_mem`: K ∈ Orb(R) ⟹ Orb(K) = Orb(R)
+1. `orbit_eq_of_mem`: (ahora en TCN_06) K ∈ Orb(R) ⟹ Orb(K) = Orb(R)
 2. `orbit_eq_iff_mem`: K ∈ Orb(R) ⟺ Orb(K) = Orb(R)
 3. `mem_orbit_of_smul_mem`: K ∈ Orb(R) ⟹ g•K ∈ Orb(R)
 4. `orbit_closed_under_action`: S ∈ Orb(K) ⟹ g•S ∈ Orb(K)
@@ -242,8 +232,8 @@ end KnotTheory
 10. `hasR2_eq_of_mem_orbit`: Órbitas preservan R2
 
 ### Para agregar a TCN_07_Clasificacion.lean
-11. `orbits_disjoint_trefoil_mirror`: Órbitas disjuntas
-12. `trefoil_not_in_mirror_orbit`: Representantes distintos
+11. `orbits_disjoint_special_trefoil`: Órbitas disjuntas (TCN_06)
+12. `trefoil_not_in_special_orbit`: Representantes distintos
 
 ### Lemmas de Finset (ya en Mathlib o triviales)
 13. `finset_partition_by_decidable`: Partición por predicado

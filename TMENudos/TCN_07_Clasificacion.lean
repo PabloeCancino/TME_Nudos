@@ -28,10 +28,11 @@ La clasificación completa de configuraciones K₃ sin movimientos Reidemeister.
 
 TEOREMA: Toda configuración K₃ sin R1 ni R2 es equivalente (bajo D₆)
 a exactamente uno de los 2 representantes:
-- trefoilKnot (nudo trébol derecho)
-- mirrorTrefoil (nudo trefoil izquierdo)
+- specialClass (órbita de 12 configuraciones)
+- trefoilKnot (órbita de 2 configuraciones; contiene a mirrorTrefoil)
 
-(La antigua "specialClass" se demostró inválida por tener R2).
+(Corrección 2026-09-29: specialClass NO tiene R1 ni R2 ordenados; mirrorTrefoil está en
+la órbita de trefoilKnot, por lo que los representantes son specialClass y trefoilKnot.)
 
 ## Referencias
 
@@ -49,177 +50,186 @@ namespace KnotTheory
 
 open DihedralD6 K3Config
 
+/-! ## Saneamiento (auditoría 2026-09-29)
+
+Con las definiciones actuales, las configuraciones sin R1 ni R2 son 14 y forman DOS órbitas
+bajo D₆: la de `specialClass` (12 elementos, |Stab| = 1) y la de `trefoilKnot`
+(2 elementos, |Stab| = 6), a la cual pertenece `mirrorTrefoil` (= r³ • trefoilKnot).
+Por tanto los dos representantes de la clasificación son `specialClass` y `trefoilKnot`
+(antes: `trefoilKnot` y `mirrorTrefoil`, lo cual era falso porque ambos son equivalentes
+y dejaba sin cubrir 12 configuraciones). Los nombres de los teoremas se conservan. -/
+
 /-! ## Teorema de Cobertura -/
 
 /-- TEOREMA: Toda configuración sin R1 ni R2 está en una de las 2 órbitas
-
-    Este teorema establece que las 2 órbitas (trefoil y mirror) cubren completamente
-    el espacio de configuraciones triviales (que resultaron ser solo 8). -/
+    (la de `specialClass`, con 12 elementos, o la de `trefoilKnot`, con 2). -/
 theorem config_in_one_of_two_orbits (K : K3Config)
     (hR1 : ¬hasR1 K) (hR2 : ¬hasR2 K) :
-  K ∈ Orb(trefoilKnot) ∨ K ∈ Orb(mirrorTrefoil) := by
-  -- Argumento de cobertura
-  -- Sabemos por k3_classification anterior que estaban en special, trefoil o mirror.
-  -- Pero si K está en specialClass, entonces TIENE R2 (specialClass tiene R2 y R2 es invariante).
-  -- Como hR2 dice que no tiene R2, no puede estar en specialClass.
+  K ∈ Orb(specialClass) ∨ K ∈ Orb(trefoilKnot) :=
+  two_orbits_cover_all K ((mem_configsNoR1NoR2 K).mpr ⟨hR1, hR2⟩)
 
-  -- Para formalizar esto limpiamente, asumimos la cobertura de las 3 órbitas original
-  -- (aunque special sea inválida) o probamos exhaustivamente que
-  -- configsNoR1NoR2 = Orb(trefoil) U Orb(mirror).
-
-  -- Estrategia: Verificar exhaustivamente que cualquier config con no R1/R2 es trefoil o mirror.
-  sorry -- TODO: depende de configsNoR1NoR2 y del error de representantes (ver TCN_06)
+/-- Ninguna configuración está a la vez en las órbitas de `specialClass` y `trefoilKnot`. -/
+theorem not_mem_both_orbits (K : K3Config) :
+    ¬(K ∈ Orb(specialClass) ∧ K ∈ Orb(trefoilKnot)) := by
+  rintro ⟨h1, h2⟩
+  have : K ∈ Orb(specialClass) ∩ Orb(trefoilKnot) := Finset.mem_inter.mpr ⟨h1, h2⟩
+  rw [orbits_disjoint_special_trefoil] at this
+  exact absurd this (Finset.notMem_empty K)
 
 /-- Partición en 2 órbitas: versión con hipótesis separadas -/
 theorem two_orbits_partition (K : K3Config) (hR1 : ¬hasR1 K) (hR2 : ¬hasR2 K) :
-  (K ∈ Orb(trefoilKnot) ∧ K ∉ Orb(mirrorTrefoil)) ∨
-  (K ∉ Orb(trefoilKnot) ∧ K ∈ Orb(mirrorTrefoil)) := by
-  have h_in_one := config_in_one_of_two_orbits K hR1 hR2
-  have h_disjoint := orbits_disjoint_trefoil_mirror
-  cases h_in_one with
-  | inl h_trefoil =>
-    left
-    constructor; · exact h_trefoil
-    intro h_mirror
-    have : Orb(trefoilKnot) ∩ Orb(mirrorTrefoil) ≠ ∅ := by
-      exact Finset.nonempty_iff_ne_empty.mp ⟨K, Finset.mem_inter.mpr ⟨h_trefoil, h_mirror⟩⟩
-    rw [h_disjoint] at this
-    contradiction
-  | inr h_mirror =>
-    right
-    constructor
-    · intro h_trefoil
-      have : Orb(trefoilKnot) ∩ Orb(mirrorTrefoil) ≠ ∅ := by
-        exact Finset.nonempty_iff_ne_empty.mp
-          ⟨K, Finset.mem_inter.mpr ⟨h_trefoil, h_mirror⟩⟩
-      rw [h_disjoint] at this
-      contradiction
-    · exact h_mirror
+  (K ∈ Orb(specialClass) ∧ K ∉ Orb(trefoilKnot)) ∨
+  (K ∉ Orb(specialClass) ∧ K ∈ Orb(trefoilKnot)) := by
+  rcases config_in_one_of_two_orbits K hR1 hR2 with h | h
+  · exact Or.inl ⟨h, fun h' => not_mem_both_orbits K ⟨h, h'⟩⟩
+  · exact Or.inr ⟨fun h' => not_mem_both_orbits K ⟨h', h⟩, h⟩
+
+/-- Si `K ∈ Orb(R)`, existe `g` con `g • K = R`. -/
+theorem exists_smul_eq_of_mem_orbit {K R : K3Config} (h : K ∈ Orb(R)) :
+    ∃ g : DihedralD6, g • K = R := by
+  rw [in_same_orbit_iff] at h
+  obtain ⟨g, h_eq⟩ := h
+  use g⁻¹
+  calc g⁻¹ • K = g⁻¹ • (g • R) := by rw [h_eq]
+       _ = (g⁻¹ * g) • R := by rw [actOnConfig_comp]
+       _ = (1 : DihedralD6) • R := by rw [inv_mul_cancel]
+       _ = R := by rw [actOnConfig_id]
+
+/-- Si `g • K = R`, entonces `K ∈ Orb(R)`. -/
+theorem mem_orbit_of_smul_eq {K R : K3Config} {g : DihedralD6} (h : g • K = R) :
+    K ∈ Orb(R) := by
+  rw [in_same_orbit_iff]
+  use g⁻¹
+  calc g⁻¹ • R = g⁻¹ • (g • K) := by rw [h]
+       _ = (g⁻¹ * g) • K := by rw [actOnConfig_comp]
+       _ = (1 : DihedralD6) • K := by rw [inv_mul_cancel]
+       _ = K := by rw [actOnConfig_id]
 
 /-! ## Teorema Principal de Clasificación -/
 
 /-- **TEOREMA PRINCIPAL (Versión Básica)**:
 
     Toda configuración K₃ sin movimientos Reidemeister R1 ni R2
-    es equivalente bajo D₆ a uno de los 2 representantes canónicos.
-
-    En otras palabras: Solo hay 2 nudos de tres cruces (trefoil derecho e izquierdo). -/
+    es equivalente bajo D₆ a uno de los 2 representantes canónicos:
+    `specialClass` (órbita de 12 elementos) o `trefoilKnot` (órbita de 2 elementos,
+    que contiene a `mirrorTrefoil`). -/
 theorem k3_classification :
   ∀ K : K3Config, ¬hasR1 K → ¬hasR2 K →
-    (∃ g : DihedralD6, g • K = trefoilKnot) ∨
-    (∃ g : DihedralD6, g • K = mirrorTrefoil) := by
+    (∃ g : DihedralD6, g • K = specialClass) ∨
+    (∃ g : DihedralD6, g • K = trefoilKnot) := by
   intro K hR1 hR2
-  have h_partition := two_orbits_partition K hR1 hR2
-  rcases h_partition with ⟨h_in_trefoil, _⟩ | ⟨_, h_in_mirror⟩
-  · -- K ∈ Orb(trefoilKnot)
-    left
-    rw [in_same_orbit_iff] at h_in_trefoil
-    obtain ⟨g, h_eq⟩ := h_in_trefoil
-    use g⁻¹
-    calc g⁻¹ • K = g⁻¹ • (g • trefoilKnot) := by rw [h_eq]
-         _ = (g⁻¹ * g) • trefoilKnot := by rw [actOnConfig_comp]
-         _ = (1 : DihedralD6) • trefoilKnot := by rw [inv_mul_cancel]
-         _ = trefoilKnot := by rw [actOnConfig_id]
-  · -- K ∈ Orb(mirrorTrefoil)
-    right
-    rw [in_same_orbit_iff] at h_in_mirror
-    obtain ⟨g, h_eq⟩ := h_in_mirror
-    use g⁻¹
-    calc g⁻¹ • K = g⁻¹ • (g • mirrorTrefoil) := by rw [h_eq]
-         _ = (g⁻¹ * g) • mirrorTrefoil := by rw [actOnConfig_comp]
-         _ = (1 : DihedralD6) • mirrorTrefoil := by rw [inv_mul_cancel]
-         _ = mirrorTrefoil := by rw [actOnConfig_id]
+  rcases config_in_one_of_two_orbits K hR1 hR2 with h | h
+  · exact Or.inl (exists_smul_eq_of_mem_orbit h)
+  · exact Or.inr (exists_smul_eq_of_mem_orbit h)
 
 /-! ## Teorema Principal de Clasificación (Versión Fuerte) -/
 
 /-- **TEOREMA PRINCIPAL (Versión Fuerte con Unicidad)**:
 
     Toda configuración K₃ sin R1 ni R2 es equivalente bajo D₆ a
-    EXACTAMENTE UNO de los 2 representantes canónicos. -/
+    EXACTAMENTE UNO de los 2 representantes canónicos (`specialClass`, `trefoilKnot`). -/
 theorem k3_classification_strong :
   ∀ K : K3Config, ¬hasR1 K → ¬hasR2 K →
-    let reps : Finset K3Config := {trefoilKnot, mirrorTrefoil}
+    let reps : Finset K3Config := {specialClass, trefoilKnot}
     ∃! R, R ∈ reps ∧ ∃ g : DihedralD6, g • K = R := by
   intro K hR1 hR2
-  let reps : Finset K3Config := {trefoilKnot, mirrorTrefoil}
-  have h_partition := two_orbits_partition K hR1 hR2
-  rcases h_partition with ⟨h_in_trefoil, h_not_mirror⟩ | ⟨h_not_trefoil, h_in_mirror⟩
-  · -- Caso: K ∈ Orb(trefoilKnot)
-    use trefoilKnot
-    constructor
-    · constructor
-      · simp
-      · rw [in_same_orbit_iff] at h_in_trefoil
-        obtain ⟨g, h_eq⟩ := h_in_trefoil
-        use g⁻¹
-        calc g⁻¹ • K = g⁻¹ • (g • trefoilKnot) := by rw [h_eq]
-             _ = (g⁻¹ * g) • trefoilKnot := by rw [actOnConfig_comp]
-             _ = (1 : DihedralD6) • trefoilKnot := by rw [inv_mul_cancel]
-             _ = trefoilKnot := by rw [actOnConfig_id]
-    · intro R' ⟨hR'_in, g', hg'⟩
-      simp only [Finset.mem_insert, Finset.mem_singleton] at hR'_in
-      rcases hR'_in with rfl | rfl
-      · rfl
-      · exfalso
-        have : K ∈ Orb(mirrorTrefoil) := by
-          rw [in_same_orbit_iff]
-          use g'⁻¹
-          calc g'⁻¹ • mirrorTrefoil = g'⁻¹ • (g' • K) := by rw [hg']
-               _ = (g'⁻¹ * g') • K := by rw [actOnConfig_comp]
-               _ = (1 : DihedralD6) • K := by rw [inv_mul_cancel]
-               _ = K := by rw [actOnConfig_id]
-        exact h_not_mirror this
-  · -- Caso: K ∈ Orb(mirrorTrefoil)
-    use mirrorTrefoil
-    constructor
-    · constructor
-      · simp
-      · rw [in_same_orbit_iff] at h_in_mirror
-        obtain ⟨g, h_eq⟩ := h_in_mirror
-        use g⁻¹
-        calc g⁻¹ • K = g⁻¹ • (g • mirrorTrefoil) := by rw [h_eq]
-             _ = (g⁻¹ * g) • mirrorTrefoil := by rw [actOnConfig_comp]
-             _ = (1 : DihedralD6) • mirrorTrefoil := by rw [inv_mul_cancel]
-             _ = mirrorTrefoil := by rw [actOnConfig_id]
-    · intro R' ⟨hR'_in, g', hg'⟩
-      simp only [Finset.mem_insert, Finset.mem_singleton] at hR'_in
-      rcases hR'_in with rfl | rfl
-      · exfalso
-        have : K ∈ Orb(trefoilKnot) := by
-          rw [in_same_orbit_iff]
-          use g'⁻¹
-          calc g'⁻¹ • trefoilKnot = g'⁻¹ • (g' • K) := by rw [hg']
-               _ = (g'⁻¹ * g') • K := by rw [actOnConfig_comp]
-               _ = (1 : DihedralD6) • K := by rw [inv_mul_cancel]
-               _ = K := by rw [actOnConfig_id]
-        exact h_not_trefoil this
-      · rfl
+  rcases config_in_one_of_two_orbits K hR1 hR2 with h | h
+  · refine ⟨specialClass, ⟨by simp, exists_smul_eq_of_mem_orbit h⟩, ?_⟩
+    rintro R' ⟨hR'_in, g', hg'⟩
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hR'_in
+    rcases hR'_in with rfl | rfl
+    · rfl
+    · exact absurd ⟨h, mem_orbit_of_smul_eq hg'⟩ (not_mem_both_orbits K)
+  · refine ⟨trefoilKnot, ⟨by simp, exists_smul_eq_of_mem_orbit h⟩, ?_⟩
+    rintro R' ⟨hR'_in, g', hg'⟩
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hR'_in
+    rcases hR'_in with rfl | rfl
+    · exact absurd ⟨mem_orbit_of_smul_eq hg', h⟩ (not_mem_both_orbits K)
+    · rfl
 
 /-! ## Corolarios -/
 
-/-- Corolario: Hay exactamente 2 clases de equivalencia -/
+/-- Cada configuración sin R1/R2 tiene por órbita la de `specialClass` o la de `trefoilKnot`. -/
+theorem orbit_of_config_no_r1_r2 (K : K3Config) (hK : K ∈ configsNoR1NoR2) :
+    Orb(K) = Orb(specialClass) ∨ Orb(K) = Orb(trefoilKnot) := by
+  rw [configsNoR1NoR2_eq_two_orbits, Finset.mem_union] at hK
+  rcases hK with h | h
+  · exact Or.inl (orbit_eq_of_mem h)
+  · exact Or.inr (orbit_eq_of_mem h)
+
+/-- Corolario: Hay exactamente 2 clases de equivalencia (órbitas) entre las
+    configuraciones sin R1 ni R2: la de `specialClass` y la de `trefoilKnot`.
+
+    Nota: se añadió la condición «cada clase es una órbita»; sin ella la unicidad sería
+    falsa (cualquier partición de las 14 configuraciones en 2 bloques cumpliría el resto). -/
 theorem exactly_two_classes :
   ∃! (classes : Finset (Finset K3Config)),
     classes.card = 2 ∧
+    (∀ C ∈ classes, ∃ K ∈ C, C = Orb(K)) ∧
     (∀ C ∈ classes, ∀ K ∈ C, ¬hasR1 K ∧ ¬hasR2 K) ∧
-    (∀ K ∈ configsNoR1NoR2, ∃! C ∈ classes, K ∈ C) := by
-  use {Orb(trefoilKnot), Orb(mirrorTrefoil)}
-  -- (Prueba omitida por brevedad, análoga a la anterior pero con 2 clases)
-  sorry -- TODO
+    (∀ K ∈ configsNoR1NoR2, ∃! C, C ∈ classes ∧ K ∈ C) := by
+  have h_ne : Orb(specialClass) ≠ Orb(trefoilKnot) := by
+    intro h
+    have := congrArg Finset.card h
+    rw [orbit_specialClass_card, orbit_trefoilKnot_card] at this
+    omega
+  refine ⟨{Orb(specialClass), Orb(trefoilKnot)}, ⟨?_, ?_, ?_, ?_⟩, ?_⟩
+  · exact Finset.card_pair h_ne
+  · intro C hC
+    simp only [Finset.mem_insert, Finset.mem_singleton] at hC
+    rcases hC with rfl | rfl
+    · exact ⟨specialClass, mem_orbit_self _, rfl⟩
+    · exact ⟨trefoilKnot, mem_orbit_self _, rfl⟩
+  · intro C hC K hK
+    have hsub : K ∈ configsNoR1NoR2 := by
+      apply orbits_subset_configsNoR1NoR2
+      simp only [Finset.mem_insert, Finset.mem_singleton] at hC
+      rcases hC with rfl | rfl
+      · exact Finset.mem_union_left _ hK
+      · exact Finset.mem_union_right _ hK
+    exact (mem_configsNoR1NoR2 K).mp hsub
+  · intro K hK
+    have hK' := hK
+    rw [configsNoR1NoR2_eq_two_orbits, Finset.mem_union] at hK'
+    rcases hK' with h | h
+    · refine ⟨Orb(specialClass), ⟨by simp, h⟩, ?_⟩
+      rintro C ⟨hC, hKC⟩
+      simp only [Finset.mem_insert, Finset.mem_singleton] at hC
+      rcases hC with rfl | rfl
+      · rfl
+      · exact absurd ⟨h, hKC⟩ (not_mem_both_orbits K)
+    · refine ⟨Orb(trefoilKnot), ⟨by simp, h⟩, ?_⟩
+      rintro C ⟨hC, hKC⟩
+      simp only [Finset.mem_insert, Finset.mem_singleton] at hC
+      rcases hC with rfl | rfl
+      · exact absurd ⟨hKC, h⟩ (not_mem_both_orbits K)
+      · rfl
+  · rintro classes' ⟨hcard, horb, hno, _⟩
+    apply Finset.eq_of_subset_of_card_le
+      (t := ({Orb(specialClass), Orb(trefoilKnot)} : Finset (Finset K3Config)))
+    · intro C hC
+      obtain ⟨K, hKC, rfl⟩ := horb C hC
+      have hKcfg : K ∈ configsNoR1NoR2 := (mem_configsNoR1NoR2 K).mpr (hno _ hC K hKC)
+      simp only [Finset.mem_insert, Finset.mem_singleton]
+      exact orbit_of_config_no_r1_r2 K hKcfg
+    · rw [hcard, Finset.card_pair h_ne]
 
-/-- Corolario: Los 2 representantes no son equivalentes entre sí -/
+/-- Corolario: `specialClass` y `trefoilKnot` NO son equivalentes bajo D₆
+    (los dos representantes son de clases distintas). -/
 theorem representatives_not_equivalent :
-  ∀ g : DihedralD6, g • trefoilKnot ≠ mirrorTrefoil := by
-  intro g h_eq
-  have : mirrorTrefoil ∈ Orb(trefoilKnot) :=
-    (in_same_orbit_iff _ _).mpr ⟨g, h_eq⟩
-  have : Orb(trefoilKnot) ∩ Orb(mirrorTrefoil) ≠ ∅ := by
-    exact Finset.nonempty_iff_ne_empty.mp
-      ⟨mirrorTrefoil, Finset.mem_inter.mpr ⟨this, mem_orbit_self mirrorTrefoil⟩⟩
-  rw [orbits_disjoint_trefoil_mirror] at this
-  contradiction
+  ∀ g : DihedralD6, g • trefoilKnot ≠ specialClass := by
+  decide
 
-/-- Corolario: El número de nudos de tres cruces es exactamente 2 -/
+/-- (Nota: `mirrorTrefoil` es el nombre histórico del representante izquierdo; ver TCN_06.)
+    `mirrorTrefoil` SÍ es equivalente a `trefoilKnot` (`mirrorTrefoil = r³ • trefoilKnot`);
+    reemplaza al enunciado falso anterior de que los trefoils eran inequivalentes. -/
+theorem trefoil_mirror_equivalent :
+  ∃ g : DihedralD6, g • trefoilKnot = mirrorTrefoil := by
+  have h : mirrorTrefoil ∈ Orb(trefoilKnot) := mirrorTrefoil_mem_orbit_trefoilKnot
+  rw [in_same_orbit_iff] at h
+  exact h
+
+/-- Corolario: El número de clases de configuraciones sin R1 ni R2 es exactamente 2 -/
 theorem number_of_k3_knots_is_two :
   ∃! (n : ℕ), n = 2 := by
   use 2
@@ -228,31 +238,24 @@ theorem number_of_k3_knots_is_two :
 /-! ## Resumen Final del Proyecto -/
 
 /-
-## TEOREMA PRINCIPAL DEL PROYECTO ⭐
+## TEOREMA PRINCIPAL DEL PROYECTO
 
 **k3_classification_strong**:
 Toda configuración K₃ sin movimientos Reidemeister R1 ni R2 es equivalente
 a EXACTAMENTE UNO de los 2 representantes:
 
-1. **trefoilKnot**: Nudo trefoil derecho
-2. **mirrorTrefoil**: Nudo trefoil izquierdo
+1. **specialClass**: órbita de 12 configuraciones (|Stab| = 1)
+2. **trefoilKnot**: órbita de 2 configuraciones (|Stab| = 6), que contiene a mirrorTrefoil
 
-(La clase "specialClass" fue eliminada por contener pares R2).
+(Corrección de la auditoría 2026-09-29: antes se afirmaba que los representantes eran
+trefoilKnot y mirrorTrefoil con 4 + 4 = 8 configuraciones, lo cual era falso.)
 
 ## Estadísticas Completas
 
 - **Total de configuraciones K₃**: 120
-- **Con movimiento R1**: 88 (73.3%)
-- **Con movimiento R2**: 110 (incluyendo órbita de specialClass)
-- **Sin R1 ni R2**: 8 (6.7%)  (4 trefoil + 4 mirror)
+- **Sin R1 ni R2**: 14 (`configs_no_r1_no_r2_card`, demostrado con `decide +kernel`)
 - **Clases de equivalencia**: 2
-- **Distribución**: 4 + 4 = 8
-
-## Estado del Proyecto
-
-✅ **PROYECTO COMPLETO Y CORREGIDO**
-✅ **specialClass inválida (tiene R2)**
-✅ **Clasificación reducida a 2 clases**
+- **Distribución**: 12 + 2 = 14
 
 ## Autor
 

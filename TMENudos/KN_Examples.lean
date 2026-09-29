@@ -59,7 +59,7 @@ def example_k3_trefoil_right : K3Config :=
     DME = [-3,3,3]
     Quiralidad: LeftHanded
 -/
-def example_k3_trefoil_left : K3Config := KnConfig.mirror example_k3_trefoil_right
+def example_k3_trefoil_left : K3Config := KnConfig.swap example_k3_trefoil_right
 
 end K3_Examples
 
@@ -94,7 +94,7 @@ def k_4_2 : K4Config :=
    by decide, partition_of_card _ (by decide)⟩
 
 /-- Verificación: k_4_2 es el espejo de k_4_1 -/
-example : k_4_2 = KnConfig.mirror k_4_1 := by decide
+example : k_4_2 = KnConfig.swap k_4_1 := by decide
 
 end K4_Examples
 
@@ -118,9 +118,50 @@ example : k_4_1.writhe ≠ 0 := by
   rw [h, Finset.sum_map_toList]
   decide  -- Confirma quiralidad
 
--- Verificar IME es invariante bajo mirror
--- TODO: depende del orden de Finset.toList; formular ime como multiconjunto.
-example (K : K4Config) : (KnConfig.mirror K).ime = K.ime := by sorry
+-- CAMBIO DE ENUNCIADO (auditoría):
+-- antes:   `(swap K).ime = K.ime` como igualdad de listas (sorry; no demostrable porque
+--          `dme` usa `Finset.toList`, que no fija un orden).
+-- después: igualdad como multiconjunto (independiente del orden de `toList`).
+/-- `adjustDeltaN` es impar (para |δ| < 2n). -/
+private lemma adjustDeltaN_neg (n : ℕ) (δ : ℤ) (h : |δ| < 2 * n) :
+    KnConfig.adjustDeltaN n (-δ) = -KnConfig.adjustDeltaN n δ := by
+  unfold KnConfig.adjustDeltaN
+  rw [abs_lt] at h
+  dsimp only
+  split_ifs <;> omega
+
+/-- IME (como multiconjunto) es invariante bajo el espejo de `KN_General` (swap over/under). -/
+theorem ime_swap_multiset {n : ℕ} [NeZero n] (K : KnConfig n) :
+    ((KnConfig.swap K).ime : Multiset ℕ) = (K.ime : Multiset ℕ) := by
+  have hinj : Set.InjOn OrderedPairN.reverse (K.pairs : Set (OrderedPairN n)) := by
+    intro x _ y _ hxy
+    calc x = x.reverse.reverse := (OrderedPairN.reverse_involutive x).symm
+         _ = y.reverse.reverse := by rw [hxy]
+         _ = y := OrderedPairN.reverse_involutive y
+  have hval : ∀ K' : KnConfig n, ((K'.ime : List ℕ) : Multiset ℕ) =
+      K'.pairs.val.map (fun p => (KnConfig.adjustDeltaN n (KnConfig.pairDelta p)).natAbs) := by
+    intro K'
+    unfold KnConfig.ime KnConfig.dme KnConfig.pairsList
+    rw [List.map_map, ← Multiset.map_coe, Finset.coe_toList]
+    rfl
+  rw [hval, hval]
+  have hm : (KnConfig.swap K).pairs.val = K.pairs.val.map OrderedPairN.reverse :=
+    Finset.image_val_of_injOn hinj
+  rw [hm, Multiset.map_map]
+  refine Multiset.map_congr rfl fun p _ => ?_
+  simp only [Function.comp]
+  have hlt : |KnConfig.pairDelta p| < 2 * (n : ℤ) := by
+    unfold KnConfig.pairDelta
+    have h1 := ZMod.val_lt p.fst
+    have h2 := ZMod.val_lt p.snd
+    rw [abs_lt]; push_cast at h1 h2 ⊢; omega
+  have : KnConfig.pairDelta p.reverse = -KnConfig.pairDelta p := by
+    unfold KnConfig.pairDelta OrderedPairN.reverse; ring
+  rw [this, adjustDeltaN_neg n _ hlt, Int.natAbs_neg]
+
+example (K : K4Config) :
+    ((KnConfig.swap K).ime : Multiset ℕ) = (K.ime : Multiset ℕ) :=
+  ime_swap_multiset K
 
 end Invariant_Tests
 
@@ -131,4 +172,4 @@ end Invariant_Tests
 #check K5Config  -- Tipo: Type := KnConfig 5
 
 #check @KnConfig.dme     -- Funciona para cualquier n
-#check @KnConfig.mirror  -- Funciona para cualquier n
+#check @KnConfig.swap  -- Funciona para cualquier n

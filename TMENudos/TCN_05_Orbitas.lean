@@ -214,12 +214,98 @@ theorem orbit_card_3_of_stab_4 (K : K3Config) :
 
 /-! ## Configuraciones sin R1 ni R2 -/
 
-/-- Conjunto de todas las configuraciones K₃ sin movimientos R1 ni R2 -/
-def configsNoR1NoR2 : Finset K3Config :=
-  sorry  -- TODO: Requiere Fintype K3Config
+/-- Conjunto de todas las configuraciones K₃ sin movimientos R1 ni R2.
 
-/-- El número de configuraciones sin R1 ni R2 es 14 -/
-axiom configs_no_r1_no_r2_card : configsNoR1NoR2.card = 14
+    Definición concreta (antes era `sorry`): el filtro de `Finset.univ` (que existe porque
+    `K3Config` es `Fintype`, de forma no computable). -/
+noncomputable def configsNoR1NoR2 : Finset K3Config :=
+  Finset.univ.filter (fun K => ¬hasR1 K ∧ ¬hasR2 K)
+
+/-- Membresía en `configsNoR1NoR2`. -/
+theorem mem_configsNoR1NoR2 (K : K3Config) :
+    K ∈ configsNoR1NoR2 ↔ ¬hasR1 K ∧ ¬hasR2 K := by
+  simp [configsNoR1NoR2]
+
+/-! ### Conteo computable de `configsNoR1NoR2`
+
+`K3Config` sólo es `Fintype` de forma no computable, así que el conteo se hace sobre
+una enumeración computable: los subconjuntos de 3 elementos del conjunto de las 30
+tuplas ordenadas, filtrados por las mismas condiciones (partición, sin R1, sin R2). -/
+
+/-- Las 30 tuplas ordenadas de `Z/6Z`, como `Finset` computable. -/
+def allOrderedPairs : Finset OrderedPair :=
+  (Finset.univ : Finset {p : ZMod 6 × ZMod 6 // p.1 ≠ p.2}).image
+    (fun p => (⟨p.1.1, p.1.2, p.2⟩ : OrderedPair))
+
+theorem mem_allOrderedPairs (p : OrderedPair) : p ∈ allOrderedPairs := by
+  unfold allOrderedPairs
+  rw [Finset.mem_image]
+  exact ⟨⟨(p.fst, p.snd), p.distinct⟩, Finset.mem_univ _, rfl⟩
+
+/-- Condición computable para que un conjunto de tuplas sea una configuración K₃
+    sin R1 ni R2. -/
+def goodPairs (S : Finset OrderedPair) : Prop :=
+  (∀ i : ZMod 6, (S.filter (fun p => i = p.fst ∨ i = p.snd)).card = 1) ∧
+  (∀ p ∈ S, ¬isConsecutive p) ∧
+  (∀ p ∈ S, ∀ q ∈ S, p ≠ q → ¬formsR2Pattern p q)
+
+/-- Decidibilidad computable de `goodPairs` (se evita la instancia no computable
+    `Fintype OrderedPair`, usando explícitamente `Finset.decidableDforallFinset`). -/
+instance (S : Finset OrderedPair) : Decidable (goodPairs S) :=
+  haveI : Decidable (∀ p ∈ S, ¬isConsecutive p) := Finset.decidableDforallFinset
+  haveI : Decidable (∀ p ∈ S, ∀ q ∈ S, p ≠ q → ¬formsR2Pattern p q) :=
+    @Finset.decidableDforallFinset _ _ _ (fun _ _ =>
+      @Finset.decidableDforallFinset _ _ _ (fun _ _ => inferInstance))
+  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
+
+/-- Los conjuntos de tuplas de las configuraciones sin R1/R2 son exactamente los
+    subconjuntos de 3 tuplas que cumplen `goodPairs`. -/
+theorem configsNoR1NoR2_map_pairs :
+    configsNoR1NoR2.map ⟨K3Config.pairs, fun K L h => by
+        cases K; cases L; simp only at h; subst h; rfl⟩ =
+      (allOrderedPairs.powersetCard 3).filter goodPairs := by
+  ext S
+  simp only [Finset.mem_map, Function.Embedding.coeFn_mk, Finset.mem_filter,
+    Finset.mem_powersetCard, mem_configsNoR1NoR2]
+  constructor
+  · rintro ⟨K, ⟨hR1, hR2⟩, rfl⟩
+    refine ⟨⟨fun p _ => mem_allOrderedPairs p, K.card_eq⟩, ?_, ?_, ?_⟩
+    · intro i
+      obtain ⟨p, ⟨hp, hi⟩, huniq⟩ := K.is_partition i
+      rw [Finset.card_eq_one]
+      refine ⟨p, ?_⟩
+      ext q
+      simp only [Finset.mem_filter, Finset.mem_singleton]
+      exact ⟨fun h => huniq q h, fun h => h ▸ ⟨hp, hi⟩⟩
+    · exact (not_hasR1_iff K).mp hR1
+    · exact (not_hasR2_iff K).mp hR2
+  · rintro ⟨⟨_, hcard⟩, hpart, hr1, hr2⟩
+    refine ⟨⟨S, hcard, fun i => ?_⟩, ⟨?_, ?_⟩, rfl⟩
+    · obtain ⟨p, hp⟩ := Finset.card_eq_one.mp (hpart i)
+      have hp' : p ∈ S.filter (fun p => i = p.fst ∨ i = p.snd) := by
+        rw [hp]; exact Finset.mem_singleton_self p
+      rw [Finset.mem_filter] at hp'
+      refine ⟨p, hp', fun q hq => ?_⟩
+      have : q ∈ S.filter (fun p => i = p.fst ∨ i = p.snd) :=
+        Finset.mem_filter.mpr hq
+      rw [hp] at this
+      exact Finset.mem_singleton.mp this
+    · exact (not_hasR1_iff _).mpr hr1
+    · exact (not_hasR2_iff _).mpr hr2
+
+/-- Verificación computacional del conteo de subconjuntos buenos. -/
+theorem good_pairs_card :
+    ((allOrderedPairs.powersetCard 3).filter goodPairs).card = 14 := by
+  decide +kernel
+
+/-- El número de configuraciones sin R1 ni R2 es 14.
+
+    ✅ ANTES era un `axiom`; ahora es un teorema demostrado con `decide +kernel`. -/
+theorem configs_no_r1_no_r2_card : configsNoR1NoR2.card = 14 := by
+  have h := congrArg Finset.card configsNoR1NoR2_map_pairs
+  rw [Finset.card_map] at h
+  rw [h]
+  exact good_pairs_card
 
 
 /-!
@@ -234,9 +320,9 @@ axiom configs_no_r1_no_r2_card : configsNoR1NoR2.card = 14
 - `mem_orbit_self`
 - `one_mem_stabilizer`
 
-⚠️ **2 sorry en teoremas avanzados**:
-- `orbit_stabilizer`
-- `orbit_card_from_stabilizer`
+✅ **Teoremas avanzados probados** (sin sorry): `orbit_stabilizer`, `orbit_card_from_stabilizer`,
+`configsNoR1NoR2` (definición concreta) y `configs_no_r1_no_r2_card` (antes axioma, ahora
+teorema con `decide +kernel`).
 
 -/
 

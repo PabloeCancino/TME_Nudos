@@ -2,6 +2,12 @@
 -- Clasificación de Configuraciones K_n: Órbitas y Teorema Órbita-Estabilizador
 -- Autor: Dr. Pablo Eduardo Cancino Marentes
 -- Fecha: Enero 9, 2026
+--
+-- CONVENCION: este modulo es de SEGUNDO nivel (nudo NO orientado: la accion de D₂ₙ
+-- incluye la reflexion σ = `KnConfig.mirror`). El invariante de la orbita completa
+-- es `IME2`; IME₁ (KN_03/KN_03b, primer nivel, orientado) solo es invariante bajo
+-- rotaciones. La involucion over/under (`p.reverse`, KN_00, quiralidad) es un eje
+-- ortogonal y no es σ.
 
 import TMENudos.KN_02_Grupo_Dihedral_General
 import TMENudos.KN_03_Invariantes_General
@@ -231,19 +237,31 @@ theorem IDE_eq_of_mem_orbit (K₁ K₂ : KnConfig n) (p : OrderedPair n) :
   sorry
 -/
 
-/-- Configuraciones en la misma órbita tienen el mismo IME -/
-theorem IME_eq_of_mem_orbit (K₁ K₂ : KnConfig n) :
-    K₂ ∈ Orb(K₁) → K₁.IME = K₂.IME := by
-  intro h
-  rcases (in_same_orbit_iff K₁ K₂).mp h with ⟨k, m, hkm⟩
+omit [NeZero n] in
+/-- CAMBIO DE ENUNCIADO (auditoría):
+    antes:   `K₂ ∈ Orb(K₁) → K₁.IME = K₂.IME`  (FALSO: el caso espejo dependía de
+             `IME_mirror`; contraejemplo `KnConfig.not_IME_mirror`, n = 2).
+    después: IME₁ se enuncia para la órbita bajo ROTACIONES (subgrupo Z/2n, primer
+    nivel); para la órbita completa de D₂ₙ el invariante correcto es `IME2`
+    (ver `IME2_eq_of_mem_orbit`). -/
+theorem IME_eq_of_rotate (K : KnConfig n) (k : ZMod (2 * n)) :
+    (K.rotate k).IME = K.IME := KnConfig.IME_rotate K k
+
+omit [NeZero n] in
+/-- Configuraciones relacionadas por una rotación tienen el mismo IME
+    (ver `IME_eq_of_rotate`; para toda la órbita diedral usar `IME2_eq_of_mem_orbit`). -/
+theorem IME_eq_of_mem_rotate_orbit (K₁ K₂ : KnConfig n)
+    (h : ∃ k : ZMod (2 * n), K₁.rotate k = K₂) : K₁.IME = K₂.IME := by
+  obtain ⟨k, rfl⟩ := h
+  exact (KnConfig.IME_rotate K₁ k).symm
+
+/-- IME₂ (segundo nivel, no orientado) es constante en cada órbita de D₂ₙ.
+    No se afirma que separe órbitas (es un escalar). -/
+theorem IME2_eq_of_mem_orbit (K₁ K₂ : KnConfig n) (h : K₂ ∈ Orb(K₁)) :
+    K₂.IME2 = K₁.IME2 := by
+  obtain ⟨k, m, rfl⟩ := (in_same_orbit_iff K₁ K₂).mp h
   cases m
-  · -- Case: K₂ = K₁.rotate k
-    rw [if_neg (by simp)] at hkm
-    subst hkm
-    exact (KnConfig.IME_rotate K₁ k).symm
-  · -- Case: K₂ = (K₁.mirror).rotate k
-    rw [if_pos rfl] at hkm
-    subst hkm
-    rw [KnConfig.IME_rotate, KnConfig.IME_mirror]
+  · simpa using KnConfig.IME2_rotate K₁ k
+  · simpa using (KnConfig.IME2_rotate K₁.mirror k).trans (KnConfig.IME2_mirror K₁)
 
 end KnotTheory.General

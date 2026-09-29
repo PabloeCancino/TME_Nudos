@@ -21,6 +21,8 @@ Cambios registrados en la rama `auditoria-2026-09-29`:
 | `75708bd` | Auditoría general: 23 archivos corregidos y este reporte. |
 | `df86e7b` | Corrección de los axiomas inconsistentes `R1_inverse` y `R2_inverse`. |
 | `ed140db` | `reidemeister_equivalent` pasa a ser una relación inductiva. |
+| `92dee92`, `bdb627b` | Reporte actualizado y mapa de ruta (`20260929_1408_mapa_de_ruta.md`). |
+| (etapa 0) | Saneamiento de los enunciados falsos de las secciones 3.2 y 3.3, y renombrado de τ a `swap`. |
 
 En la auditoría inicial no se agregaron axiomas; uno pasó de axioma a teorema (`iso_preserves_r1`). Los commits posteriores reemplazaron 5 axiomas por versiones corregidas (secciones 3.1 y 4).
 
@@ -67,21 +69,29 @@ Estas son fallas de contenido matemático. La auditoría inicial no modificó en
 
 **Advertencia.** No se ha demostrado que el sistema sea consistente. Mientras `apply_R1`, `apply_R2` y `apply_R3` sean `sorry`, sus axiomas no tienen un modelo verificado en Lean. El argumento es que las versiones corregidas admiten un modelo (agregar un cruce es inyectivo y quitarlo es su inversa por la izquierda), pero no está formalizado.
 
-### 3.2 Enunciados falsos en TCN_06 (con arrastre a TCN_07 y TCN_08)
-Con las definiciones actuales:
+### 3.2 Enunciados falsos en TCN_06 (corregido en la etapa 0)
+Con las definiciones actuales, los tamaños reales son: `specialClass` estabilizador 1 y órbita 12; `trefoilKnot` 6 y 2; `mirrorTrefoil` 6 y 2. `mirrorTrefoil = r³ • trefoilKnot` (y `= swap trefoilKnot`, comprobado con `decide`), de modo que las dos órbitas del trébol coinciden.
 
-| Representante | |Stab| real | |Orb| real | Enunciado original |
-|---|---|---|---|
-| `specialClass` | 1 | 12 | 2 / 6 |
-| `trefoilKnot` | 6 | 2 | 3 / 4 |
-| `mirrorTrefoil` | 6 | 2 | 3 / 4 |
+**Corrección.** La clasificación de K3 pasa de tres órbitas (6+4+4) a **dos órbitas de 12 y 2 elementos**, que suman las 14 configuraciones sin R1 ni R2, con representantes `specialClass` y `trefoilKnot`.
+- Eliminados: `stab_special_card`, `stab_trefoil_card`, `stab_mirror_card`, `orbits_disjoint_trefoil_mirror`, `three_orbits_pairwise_disjoint` y `trefoil_not_in_mirror_orbit`. Reemplazos: `stab_*_card_actual`, `two_orbits_sum_to_14`, `two_orbits_disjoint`, `two_orbits_cover_all` y `orbit_mirrorTrefoil_eq_orbit_trefoilKnot`.
+- `total_realizable_configs`: 8 → 14. `realizable_fraction`: 1/15 → 7/60. `non_realizable_count`: 112 → 106.
+- `exactly_two_classes` lleva ahora la condición "cada clase es una órbita"; sin ella el enunciado era falso.
+- `configs_no_r1_no_r2_card` y `card_k3_config` (120) dejaron de ser axioma y `sorry`, y se demuestran con `decide +kernel`.
+- Ya no hay `sorry` en `TCN_05` a `TCN_08` ni en `TCN_AUX`.
 
-`mirrorTrefoil = r³ • trefoilKnot`, así que ambas órbitas coinciden y `orbits_disjoint_trefoil_mirror` es falso. También son falsos `three_orbits_sum_to_14`, `representatives_not_equivalent` y los conteos 8 y 4+4. Hay que decidir si se corrigen los representantes o los conteos. Se añadieron versiones verdaderas: `stab_special_card_actual`, `stab_trefoil_card_actual`, `stab_mirror_card_actual`.
+**Decisiones abiertas** (mapa de ruta, sección 10): en este modelo el trébol y su imagen especular caen en la misma órbita; y "realizable" incluye a `specialClass`.
 
-### 3.3 Enunciados falsos en la teoría KN
-- **`OrderedPair.gap_mirror`** (`KN_03_Invariantes_General.lean:90`): falso. `mirror` manda `(a,b)` a `(-a,-b)`. Contraejemplo con n=2 y p=(0,1): los huecos valen 0 y 2.
-- **`KnConfig.IDE_mirror`** (línea 144): probablemente falso por lo mismo. De él dependen `IME_mirror` (KN_03b) y el caso espejo de `IME_eq_of_mem_orbit` (KN_04).
-- **`(mirror K).ime = K.ime`** (`KN_Examples.lean:123`): no se puede probar como igualdad de listas, porque `dme` usa `Finset.toList`, que no fija un orden. Habría que usar multiconjuntos o listas ordenadas.
+### 3.3 Enunciados falsos en la teoría KN (corregido en la etapa 0)
+`gap_mirror`, `IDE_mirror`, `IME_mirror` e `IME_eq_of_mem_orbit` eran falsos, no solo difíciles: con `mirror(a,b) = (-a,-b)`, el gap del reflejado es `2n − 2 − gap`. Contraejemplo con n=2 y K = {(0,1),(2,3)}: `IME K = 0` e `IME K.mirror = 4`.
+
+**Corrección** (detalle de la convención en el mapa de ruta, sección 4):
+- `gap_mirror` → `gap_mirror_add` (`p.gap + p.mirror.gap + 2 = 2n`) y `gap_reverse_mirror`.
+- `IDE_mirror` e `IME_mirror` eliminados; en su lugar `not_IME_mirror`, que prueba que `IME` no es invariante bajo σ.
+- `IME_eq_of_mem_orbit` → `IME_eq_of_mem_rotate_orbit` (primer nivel, orientado) e **`IME2_eq_of_mem_orbit`** (segundo nivel, no orientado), con `IME2 K = (min, max)` de `IME` sobre K y σK. Demostrados también `IME2_mirror` e `IME2_rotate`.
+- `(mirror K).ime = K.ime` → `ime_swap_multiset` (igualdad de multiconjuntos, para todo n).
+- El intercambio over/under (τ) se renombra a `swap` en `Basic`, `TCN_01`, `KN_General` y `KN_Examples`. El comentario T4.1 de `Basic` se corrige: τ conmuta con las rotaciones, así que ese grupo es abeliano, no diédrico.
+
+**Experimento** (n=3 y n=4): `IME2` es constante en cada órbita de D₂ₙ, pero `IME` no es un invariante completo. Es un solo entero y no separa las órbitas (13 órbitas con 10 valores en n=3; 121 con 28 en n=4).
 
 ### 3.4 Otros `sorry` de fondo
 - `perfect_matchings_upper_bound` (`KN_00_Combinatoria.lean:300`): verdadero, falta la biyección de conteo.
@@ -91,12 +101,12 @@ Con las definiciones actuales:
 
 ## 4. Clasificación de los `sorry` de Reidemeister y Schubert
 
-Situación inicial: 39 `sorry` reales (12 en `Reidemeister`, 27 en `Schubert`) y 33 axiomas entre ambos. Tras el commit `ed140db` quedan **32** (5 en `Reidemeister`, 27 en `Schubert`). Los axiomas siguen siendo 33, aunque 5 de ellos (`R1_inverse`, `R2_inverse` y los tres `R*_preserves_isotopy`) cambiaron de enunciado.
+Situación inicial: 39 `sorry` reales (12 en `Reidemeister`, 27 en `Schubert`) y 33 axiomas entre ambos. Tras el commit `ed140db` quedaron 32, y tras la etapa 0 quedan **31** (5 en `Reidemeister`, 26 en `Schubert`, por la reformulación de `reidemeister_preserves_decomposition`). Los axiomas de `Schubert` bajan de 22 a 21. Los axiomas siguen siendo 33, aunque 5 de ellos (`R1_inverse`, `R2_inverse` y los tres `R*_preserves_isotopy`) cambiaron de enunciado.
 
 | Clase | Reidemeister | Schubert | Total |
 |---|---|---|---|
 | A. Demostrables (hoy o con arreglo menor) | 0 | 4 | 4 |
-| B. Enunciado dudoso o falso | 1 | 10 | 11 |
+| B. Enunciado dudoso o falso | 1 | 9 | 10 |
 | C. Dependen de teoría que falta | 4 | 13 | 17 |
 
 ### Resueltos en `Reidemeister` (7 de 12)
@@ -114,12 +124,12 @@ Estas demostraciones aún dependen de `sorryAx`, por una razón indirecta: las f
 ### A. Demostrables (4, todos en Schubert)
 - `prime_decomposition` (110), `schubert_existence` (134), `schubert_unique_factorization` (167) y `factorization_problem` (386): axiomatizando la existencia y filtrando nudos triviales.
 
-### B. Enunciado dudoso o falso (11)
+### B. Enunciado dudoso o falso (10)
 - `minimal_characterization` (`Reidemeister.lean:403`): falso; el lado derecho es siempre `False`, y el diagrama vacío es mínimo.
 - `schubert_torus_knot_primality` (217): falso; T(1,q) es el nudo trivial, no primo, y gcd(1,q)=1. Debería exigir p,q ≥ 2.
 - `schubert_complement_sum` (288): compara tipos con igualdad. El complemento de K₁#K₂ se obtiene pegando los complementos a lo largo de un anillo, no por suma conexa.
 - `schubert_companion_theorem` (195-196) y `schubert_is_JSJ_special_case` (372, 374): tienen `sorry` dentro del propio enunciado.
-- `reidemeister_preserves_decomposition` (341): el axioma `reidemeister_equivalent` de `Schubert` choca en nombre con el de `Reidemeister`, que ahora es una relación inductiva. Sigue pendiente.
+- ~~`reidemeister_preserves_decomposition`~~ Resuelto en la etapa 0: se eliminó el axioma `reidemeister_equivalent` de `Schubert` (chocaba en nombre con la relación inductiva de `Reidemeister`) y el teorema se reformuló con `K₁ ≅ K₂` y se demostró.
 - `alexander_multiplicative` (353): el polinomio de Alexander se define salvo unidades ±tᵏ; aquí es un `Polynomial ℤ`.
 - `square_knot_composite` y `square_knot_decomposition` (406, 410): nombres intercambiados. El nudo cuadrado es trébol # espejo, y el nudo de la abuela (*granny*) es trébol # trébol. Además usan una `prime_decomposition` arbitraria.
 
@@ -133,9 +143,9 @@ Las valoraciones matemáticas de esta sección son del auditor y conviene revisa
 
 ## 5. Estado de `sorry` y axiomas
 
-`sorry` (avisos del compilador en la auditoría inicial, algunos duplicados; `Reidemeister` tiene ahora 5 en el código, ver sección 4): `Reidemeister` 16, `Schubert` 25, `TCN_06` 5, `KN_03` 2, `TCN_07` 2, y 1 en cada uno de `KN_00_Combinatoria`, `KN_Examples`, `KN_Instance_K3`, `TCN_05` y `TCN_08_Realizabilidad`.
+Tras la etapa 0, `sorry` en el código: **33** en total. `Schubert` 26, `Reidemeister` 5, y 1 en cada uno de `KN_00_Combinatoria` (`perfect_matchings_upper_bound`) y `KN_Instance_K3` (línea 40, una igualdad de tipos que debería ser una `Equiv`). Los módulos `KN_03`, `KN_03b`, `KN_04`, `KN_Examples` y toda la cadena `TCN` ya no tienen `sorry`.
 
-Axiomas: `Schubert` 22, `Reidemeister` 11, `Basic` 5, `KN_01` 5, `Bridge` 2, y 1 en cada uno de `KN_00_Combinatoria`, `TCN_01`, `TCN_05` y `TCN_08_UniformityCriterion`. Total: 49.
+Axiomas: **47**. `Schubert` 21, `Reidemeister` 11, `Basic` 5, `KN_01` 5, `Bridge` 2, y 1 en cada uno de `KN_00_Combinatoria`, `TCN_01` y `TCN_08_UniformityCriterion`.
 
 ## 6. Observaciones de mantenimiento
 
@@ -146,8 +156,8 @@ Axiomas: `Schubert` 22, `Reidemeister` 11, `Basic` 5, `KN_01` 5, `Bridge` 2, y 1
 ## 7. Orden de trabajo recomendado
 
 1. ~~Corregir `R1_inverse` y `R2_inverse`~~ Hecho (commit `df86e7b`, sección 3.1).
-2. ~~Redefinir `reidemeister_equivalent` de forma inductiva~~ Hecho (commit `ed140db`, sección 4). Cerró 7 de los 12 `sorry` de `Reidemeister`.
-3. Decidir los representantes o conteos de `TCN_06` (sección 3.2).
-4. Reformular `gap_mirror`, `IDE_mirror` e `ime` (sección 3.3).
-5. Arreglar `prime_decomposition` y los enunciados falsos de la clase B, incluido el choque de nombre entre el axioma `reidemeister_equivalent` de `Schubert` y la relación de `Reidemeister`.
-6. Dar definiciones concretas a `apply_R1`, `apply_R2` y `apply_R3`. Es lo que elimina la dependencia indirecta de `sorryAx` y permite justificar los axiomas del grupo de Reidemeister.
+2. ~~Redefinir `reidemeister_equivalent` de forma inductiva~~ Hecho (commit `ed140db`, sección 4).
+3. ~~Decidir los representantes o conteos de `TCN_06`~~ Hecho en la etapa 0 (sección 3.2).
+4. ~~Reformular `gap_mirror`, `IDE_mirror` e `ime`~~ Hecho en la etapa 0 (sección 3.3).
+5. Arreglar `prime_decomposition` y los enunciados falsos que quedan de la clase B (`Schubert`).
+6. Etapa 1 del mapa de ruta: tipo de diagrama concreto, y con él definiciones para `apply_R1`, `apply_R2` y `apply_R3`. Es lo que elimina la dependencia indirecta de `sorryAx`.
