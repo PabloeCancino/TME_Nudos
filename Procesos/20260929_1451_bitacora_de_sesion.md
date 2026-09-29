@@ -15,7 +15,7 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 | Módulos que compilan (de 34) | 18 o menos (8 fallaban y otros 8, que dependen de ellos, no llegaron a compilarse) | **34** |
 | Errores de compilación | ~90 visibles (8 módulos) más los ocultos por dependencias | **0** |
 | Alertas de linter (excluyendo `sorry`) | 104 solo en `Basic.lean`, más las de otros módulos | **0** |
-| `sorry` en el código | No medido en todo el proyecto al empezar; solo `Reidemeister` 12 y `Schubert` 27. Los agentes reportaron además `sorry` en `CrossingPairIsomorphism` (13), `KN_00_Combinatoria`, `KN_03`, `KN_Examples` (5), `TCN_05` y `TCN_06` a `TCN_08` | **33** (`Schubert` 26, `Reidemeister` 5, `KN_00_Combinatoria` 1, `KN_Instance_K3` 1) |
+| `sorry` en el código (23 al cierre del saneamiento de `Schubert`; 33 al cierre de la etapa 0) | No medido en todo el proyecto al empezar; solo `Reidemeister` 12 y `Schubert` 27. Los agentes reportaron además `sorry` en `CrossingPairIsomorphism` (13), `KN_00_Combinatoria`, `KN_03`, `KN_Examples` (5), `TCN_05` y `TCN_06` a `TCN_08` | **23** (`Schubert` 16, `Reidemeister` 5, `KN_00_Combinatoria` 1, `KN_Instance_K3` 1) |
 | Axiomas | No medido al empezar. 49 tras la auditoría inicial, que ya había convertido `iso_preserves_r1` en teorema y quitado 3 axiomas duplicados de `TCN_08_EJEMPLO` | **47** |
 | Contradicciones demostradas | 1 (`R1_inverse`, y `R2_inverse` igual) | **0 conocidas** (sin modelo formalizado) |
 
@@ -31,7 +31,8 @@ Commits de la sesión:
 | `73f869e` | Etapa 0: saneamiento de enunciados falsos, convención de dos niveles, `IME2`, renombrado a `swap`. |
 | `dbdf9dd` | Esta bitácora y las pruebas archivadas en `Tests/auditoria_20260929/`. |
 
-Un commit posterior corrige imprecisiones detectadas al revisar los tres documentos (ver 5.5).
+| `957e156` | Correcciones de imprecisiones detectadas al revisar los tres documentos (ver 5.5). |
+| (saneamiento de `Schubert`) | Clase A de `Schubert` (ver 4.14). |
 
 ## 2. Los hallazgos que más importan
 
@@ -58,7 +59,7 @@ Hay tres clases, y no todos merecen el mismo esfuerzo:
 | B. Enunciado dudoso o falso | El enunciado mismo está mal. | Reformularlo con aprobación del autor. |
 | C. Dependen de teoría que falta | Requieren topología PL, 3-variedades o un modelo concreto de diagrama. | Los profundos (Reidemeister, Haken, Schubert) como **axiomas con cita**; los combinatorios se construyen. |
 
-Estado actual: 4 de clase A, 10 de clase B y 17 de clase C, más 2 fuera de `Reidemeister` y `Schubert` (ver 5.3).
+Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reidemeister` y `Schubert` (ver 5.3).
 
 ## 4. Registro cronológico detallado
 
@@ -181,6 +182,18 @@ Estado actual: 4 de clase A, 10 de clase B y 17 de clase C, más 2 fuera de `Rei
 - `lake build TMENudos` más los 33 módulos restantes por nombre: 3326 trabajos, 0 errores, 0 alertas distintas de `declaration uses sorry` (dos compilaciones completas independientes, antes y después de la etapa 0).
 - Ninguna de las verificaciones se apoyó solo en los informes de los agentes: cada tanda de agentes se cerró con una compilación completa hecha directamente.
 
+### 4.14 Saneamiento de la clase A de `Schubert`
+- **Diseño** (principio rector del mapa de ruta): los teoremas profundos ya establecidos se declaran axiomas con cita; lo combinatorio se demuestra.
+  - `schubert_existence_axiom` (nuevo): todo nudo tiene una factorización prima (Schubert 1949).
+  - `schubert_uniqueness` pasa de teorema con `sorry` a axioma (Schubert 1949), con la misma firma.
+  - `prime_decomposition` se define con `Classical.choose` sobre la existencia. `prime_decomposition_prime` y `prime_decomposition_reconstructs` dejan de ser axiomas y pasan a ser teoremas; la primera queda más fuerte (sin la disyunción con el nudo trivial).
+- **Demostrados**: `schubert_existence`, `schubert_unique_factorization`, `factorization_problem`, y en cadena `complexity_additive`, `composite_characterization`, `example_has_two_prime_factors`, `square_knot_composite`, `square_knot_decomposition`. Lemas nuevos: `foldl_perm`, `unknot_sum`, `foldl_shift`, `foldl_append`, `decomposition_length_eq`, `decomposition_length_add`, `decomposition_nil_iff`.
+- **Conteo**: `sorry` de `Schubert` 26 → 16 (10 cerrados); axiomas de `Schubert` 21 → 21 (entran 2, salen 2); total del proyecto 23 `sorry` y 47 axiomas.
+- **Detalle técnico**: para pasar de "equivalencia `Fin l₁.length ≃ Fin l₂.length` con elementos iguales" a "igualdad de multiconjuntos" se usó `Fin.univ_val_map`, `List.ofFn_get` y `Multiset.map_univ_val_equiv`. La invariancia de la suma conexa iterada por permutación usa `List.Perm.foldl_eq` con la instancia `RightCommutative` derivada de la asociatividad y la conmutatividad.
+- **Nota sobre los nombres del nudo cuadrado y de la abuela**: los dos teoremas `square_knot_*` valen con cualquiera de los dos nombres, así que se demostraron sin tocar los nombres; el intercambio de nombres sigue pendiente de su aprobación.
+- **Limitación**: los dos axiomas son verdaderos para nudos reales, pero aquí `Knot` es un cociente de diagramas con `apply_R*` aún sin definir, así que su consistencia con el resto del sistema no está verificada.
+- Verificación: compilación completa de los 34 módulos, 0 errores, 0 alertas distintas de `declaration uses sorry`.
+
 ## 5. Pendiente y dónde retomar
 
 ### 5.1 Decisiones del autor
@@ -190,14 +203,14 @@ Estado actual: 4 de clase A, 10 de clase B y 17 de clase C, más 2 fuera de `Rei
 4. **Nombre de σ:** la reflexión de `KN_02` sigue llamándose `mirror` aunque no es una imagen especular. `reflect` sería más fiel, a costa de un renombrado amplio.
 
 ### 5.2 Trabajo técnico identificado
-1. **Clase A de `Schubert`** (4 `sorry`): `prime_decomposition` (línea 110), `schubert_existence` (134), `schubert_unique_factorization` (167), `factorization_problem` (386). Se cierran axiomatizando la existencia de la factorización y filtrando los nudos triviales.
-2. **Clase B de `Schubert`** (9 en `Schubert` y 1 en `Reidemeister`):
+1. ~~Clase A de `Schubert`~~ Resuelta (ver 4.14).
+2. **Clase B** (7 `sorry` en `Schubert` y 1 en `Reidemeister`):
    - `minimal_characterization` (`Reidemeister.lean`): falso, el lado derecho es siempre `False`.
    - `schubert_torus_knot_primality`: falso; T(1,q) es el nudo trivial, no primo. Debe exigir p,q ≥ 2.
    - `schubert_complement_sum`: compara tipos con igualdad, y el complemento de K₁#K₂ se pega a lo largo de un anillo, no por suma conexa.
    - `schubert_companion_theorem` y `schubert_is_JSJ_special_case`: tienen `sorry` dentro del propio enunciado.
    - `alexander_multiplicative`: el polinomio de Alexander está definido salvo unidades ±tᵏ.
-   - `square_knot_*`: **nombres intercambiados**. El nudo cuadrado es trébol # espejo, y el de la abuela (*granny*) es trébol # trébol.
+   - `square_knot` y `granny_knot`: **nombres intercambiados** (`square_knot := trefoil # trefoil` debería ser el nudo de la abuela). Los teoremas `square_knot_*` ya están demostrados; solo falta corregir los nombres.
 3. **Etapa 1 a 5 del mapa de ruta:** dar definiciones concretas a `apply_R1/R2/R3` (elimina la dependencia indirecta de `sorryAx`), corchete de Kauffman, conexión con `Bridge`, y demostrar consistencia exhibiendo un modelo.
 4. `Experiment_K4.lean` sigue llamando `mirror` a τ (`k4_neq_mirror`, `user_k4_mirror_pairs`).
 5. `TMENudos.lean` solo importa 5 de los 34 módulos.

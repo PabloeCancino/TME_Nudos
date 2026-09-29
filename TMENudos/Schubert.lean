@@ -105,17 +105,32 @@ equivalencia) como suma conexa de nudos primos.
 - Primera estructura algebraica profunda en teoría de nudos
 -/
 
-/-- Descomposición en factores primos de un nudo -/
+/-- **Axioma (Schubert 1949, existencia).** Todo nudo es suma conexa de una lista finita
+    de nudos primos. Es un teorema profundo ya establecido (Schubert, "Die eindeutige
+    Zerlegbarkeit eines Knotens in Primknoten", 1949), que depende de la teoría de
+    3-variedades y no se formaliza aquí; ver el principio rector del mapa de ruta.
+
+    CAMBIO (etapa de saneamiento de Schubert): antes `prime_decomposition` se definía con
+    `Classical.choice sorry` y sus dos propiedades eran axiomas, la primera con la
+    disyunción `is_prime P ∨ P ≅ unknot`. Ahora hay un único axioma de existencia y las
+    dos propiedades son teoremas (la primera, sin nudos triviales: `is_prime P`). -/
+axiom schubert_existence_axiom (K : Knot) :
+    ∃ primes : List Knot,
+      (∀ P ∈ primes, is_prime P) ∧ K ≅ primes.foldl (· # ·) unknot
+
+/-- Descomposición en factores primos de un nudo (una elegida con `Classical.choose`) -/
 noncomputable def prime_decomposition (K : Knot) : List Knot :=
-  Classical.choice sorry
+  Classical.choose (schubert_existence_axiom K)
 
 /-- Todo elemento de la descomposición prima es un nudo primo -/
-axiom prime_decomposition_prime (K : Knot) :
-    ∀ P ∈ prime_decomposition K, is_prime P ∨ P ≅ unknot
+theorem prime_decomposition_prime (K : Knot) :
+    ∀ P ∈ prime_decomposition K, is_prime P :=
+  (Classical.choose_spec (schubert_existence_axiom K)).1
 
 /-- La descomposición reconstruye el nudo original -/
-axiom prime_decomposition_reconstructs (K : Knot) :
-    K ≅ (prime_decomposition K).foldl (·#·) unknot
+theorem prime_decomposition_reconstructs (K : Knot) :
+    K ≅ (prime_decomposition K).foldl (·#·) unknot :=
+  (Classical.choose_spec (schubert_existence_axiom K)).2
 
 /--
 **TEOREMA DE SCHUBERT - EXISTENCIA**
@@ -126,13 +141,8 @@ theorem schubert_existence (K : Knot) :
     ∃ (primes : List Knot),
       (∀ P ∈ primes, is_prime P) ∧
       K ≅ primes.foldl (·#·) unknot := by
-  use prime_decomposition K
-  constructor
-  · intro P hP
-    cases prime_decomposition_prime K P hP with
-    | inl h => exact h
-    | inr h => sorry  -- Filtrar unknots de la lista
-  · exact prime_decomposition_reconstructs K
+  exact ⟨prime_decomposition K, prime_decomposition_prime K,
+    prime_decomposition_reconstructs K⟩
 
 /--
 **TEOREMA DE SCHUBERT - UNICIDAD**
@@ -143,8 +153,11 @@ La descomposición prima es única salvo:
 
 Esta es la parte más difícil del teorema. La prueba original de Schubert
 usa teoría de 3-variedades y esferas incompresibles.
+
+CAMBIO: antes era un teorema con `sorry`. Se declara **axioma** (Schubert 1949, unicidad),
+por ser un resultado profundo ya establecido; ver el principio rector del mapa de ruta.
 -/
-theorem schubert_uniqueness (K : Knot)
+axiom schubert_uniqueness (K : Knot)
     (primes₁ primes₂ : List Knot)
     (h₁ : ∀ P ∈ primes₁, is_prime P)
     (h₂ : ∀ P ∈ primes₂, is_prime P)
@@ -152,8 +165,19 @@ theorem schubert_uniqueness (K : Knot)
     (hK₂ : K ≅ primes₂.foldl (· # ·) unknot) :
     ∃ (σ : Fin primes₁.length ≃ Fin primes₂.length),
       ∀ i : Fin primes₁.length,
-        primes₁.get i ≅ primes₂.get (σ i) := by
-  sorry  -- Prueba profunda usando esferas incompresibles
+        primes₁.get i ≅ primes₂.get (σ i)
+
+/-- La suma conexa iterada no depende del orden de los factores (por conmutatividad y
+    asociatividad). -/
+theorem foldl_perm {l l' : List Knot} (h : l.Perm l') :
+    l.foldl (· # ·) unknot = l'.foldl (· # ·) unknot := by
+  haveI : RightCommutative (fun (a b : Knot) => a # b) :=
+    ⟨fun a b c => by
+      have h1 : (a # b) # c = a # (b # c) := connected_sum_assoc a b c
+      have h2 : b # c = c # b := connected_sum_comm b c
+      have h3 : (a # c) # b = a # (c # b) := connected_sum_assoc a c b
+      rw [h1, h2, h3]⟩
+  exact h.foldl_eq _
 
 /--
 **TEOREMA DE DESCOMPOSICIÓN ÚNICA - VERSIÓN COMPLETA**
@@ -164,7 +188,98 @@ theorem schubert_unique_factorization :
     ∀ K : Knot, ∃! (primes : Multiset Knot),
       (∀ P ∈ primes, is_prime P) ∧
       K ≅ primes.toList.foldl (·#·) unknot := by
-  sorry
+  intro K
+  refine ⟨(prime_decomposition K : Multiset Knot), ⟨?_, ?_⟩, ?_⟩
+  · intro P hP
+    exact prime_decomposition_prime K P (Multiset.mem_coe.mp hP)
+  · have hperm : (Multiset.toList (prime_decomposition K : Multiset Knot)).Perm
+        (prime_decomposition K) := Multiset.coe_eq_coe.mp (by simp)
+    rw [foldl_perm hperm]
+    exact prime_decomposition_reconstructs K
+  · rintro m ⟨hm₁, hm₂⟩
+    obtain ⟨σ, hσ⟩ := schubert_uniqueness K (prime_decomposition K) m.toList
+      (prime_decomposition_prime K)
+      (fun P hP => hm₁ P (Multiset.mem_toList.mp hP))
+      (prime_decomposition_reconstructs K) hm₂
+    have hget : (prime_decomposition K).get =
+        m.toList.get ∘ σ := funext fun i => hσ i
+    calc m = (m.toList : Multiset Knot) := (Multiset.coe_toList m).symm
+      _ = Finset.univ.val.map m.toList.get := by
+          rw [Fin.univ_val_map, List.ofFn_get]
+      _ = Finset.univ.val.map (m.toList.get ∘ σ) := by
+          rw [← Multiset.map_map, Multiset.map_univ_val_equiv]
+      _ = Finset.univ.val.map (prime_decomposition K).get := by rw [hget]
+      _ = (prime_decomposition K : Multiset Knot) := by
+          rw [Fin.univ_val_map, List.ofFn_get]
+
+/-!
+### Lemas auxiliares sobre la suma conexa iterada y la longitud de la descomposición
+
+Con la unicidad (axioma de Schubert) la longitud de `prime_decomposition K` no depende de
+la factorización elegida: es la de cualquier factorización prima de `K`.
+-/
+
+/-- El nudo trivial es neutro a la izquierda de la suma conexa. -/
+theorem unknot_sum (K : Knot) : unknot # K = K :=
+  Eq.trans (connected_sum_comm unknot K) (connected_sum_unknot K)
+
+/-- Desplazar el acumulador del `foldl` de la suma conexa. -/
+theorem foldl_shift (l : List Knot) (a : Knot) :
+    l.foldl (· # ·) a = a # l.foldl (· # ·) unknot := by
+  induction l generalizing a with
+  | nil => exact (connected_sum_unknot a).symm
+  | cons x l ih =>
+    rw [List.foldl_cons, List.foldl_cons, ih (a # x), ih (unknot # x), unknot_sum]
+    exact connected_sum_assoc a x _
+
+/-- La suma conexa iterada de una concatenación. -/
+theorem foldl_append (l₁ l₂ : List Knot) :
+    (l₁ ++ l₂).foldl (· # ·) unknot =
+      l₁.foldl (· # ·) unknot # l₂.foldl (· # ·) unknot := by
+  rw [List.foldl_append, foldl_shift l₂]
+
+/-- Cualquier factorización prima de `K` tiene la misma longitud que `prime_decomposition K`
+    (consecuencia de la unicidad). -/
+theorem decomposition_length_eq (K : Knot) (l : List Knot)
+    (hl : ∀ P ∈ l, is_prime P) (hK : K ≅ l.foldl (· # ·) unknot) :
+    (prime_decomposition K).length = l.length := by
+  obtain ⟨σ, _⟩ := schubert_uniqueness K (prime_decomposition K) l
+    (prime_decomposition_prime K) hl (prime_decomposition_reconstructs K) hK
+  exact Fin.equiv_iff_eq.mp ⟨σ⟩
+
+/-- La longitud de la descomposición prima es aditiva bajo la suma conexa. -/
+theorem decomposition_length_add (K₁ K₂ : Knot) :
+    (prime_decomposition (K₁ # K₂)).length =
+      (prime_decomposition K₁).length + (prime_decomposition K₂).length := by
+  have e₁ : K₁ = (prime_decomposition K₁).foldl (· # ·) unknot :=
+    prime_decomposition_reconstructs K₁
+  have e₂ : K₂ = (prime_decomposition K₂).foldl (· # ·) unknot :=
+    prime_decomposition_reconstructs K₂
+  have h := decomposition_length_eq (K₁ # K₂)
+    (prime_decomposition K₁ ++ prime_decomposition K₂)
+    (by
+      intro P hP
+      rcases List.mem_append.mp hP with h | h
+      · exact prime_decomposition_prime K₁ P h
+      · exact prime_decomposition_prime K₂ P h)
+    (by
+      change K₁ # K₂ = _
+      rw [foldl_append, ← e₁, ← e₂])
+  rw [h, List.length_append]
+
+/-- Un nudo cuya descomposición prima es vacía es el nudo trivial, y recíprocamente. -/
+theorem decomposition_nil_iff (K : Knot) :
+    prime_decomposition K = [] ↔ K = unknot := by
+  constructor
+  · intro h
+    have e : K = (prime_decomposition K).foldl (· # ·) unknot :=
+      prime_decomposition_reconstructs K
+    rw [h] at e
+    exact e
+  · intro h
+    have h0 := decomposition_length_eq K [] (by simp)
+      (by rw [h]; rfl)
+    exact List.length_eq_zero_iff.mp h0
 
 /-!
 ## 2. TEOREMA DEL COMPAÑERO (COMPANION THEOREM)
@@ -302,7 +417,8 @@ noncomputable def knot_complexity (K : Knot) : ℕ :=
 theorem complexity_additive (K₁ K₂ : Knot) :
     knot_complexity (K₁ # K₂) ≤
     knot_complexity K₁ + knot_complexity K₂ := by
-  sorry
+  unfold knot_complexity
+  exact (decomposition_length_add K₁ K₂).le
 
 /-- **Aplicación 2: Detección de Nudos Compuestos**
 
@@ -315,7 +431,34 @@ def is_composite (K : Knot) : Prop :=
 theorem composite_characterization (K : Knot) :
     is_composite K ↔
     ∃ K₁ K₂, (K ≅ K₁ # K₂) ∧ (K₁ ≠ unknot) ∧ (K₂ ≠ unknot) := by
-  sorry
+  constructor
+  · intro hc
+    unfold is_composite at hc
+    have e : K = (prime_decomposition K).foldl (· # ·) unknot :=
+      prime_decomposition_reconstructs K
+    have hp := prime_decomposition_prime K
+    generalize prime_decomposition K = l at hc e hp
+    match l, hc, e, hp with
+    | a :: b :: rest, _, e, hp =>
+      have hne : (b :: rest).foldl (· # ·) unknot ≠ unknot := by
+        intro h0
+        have hlen := decomposition_length_eq unknot (b :: rest)
+          (fun P hP => hp P (List.mem_cons_of_mem _ hP)) h0.symm
+        have hnil := (decomposition_nil_iff unknot).mpr rfl
+        rw [hnil] at hlen
+        simp at hlen
+      refine ⟨a, (b :: rest).foldl (· # ·) unknot, ?_, (hp a (by simp)).1, hne⟩
+      change K = a # _
+      rw [e, List.foldl_cons, foldl_shift, unknot_sum]
+  · rintro ⟨K₁, K₂, hK, h₁, h₂⟩
+    unfold is_composite
+    have hK' : K = K₁ # K₂ := hK
+    rw [hK', decomposition_length_add]
+    have n₁ : (prime_decomposition K₁).length ≠ 0 := fun h0 =>
+      h₁ ((decomposition_nil_iff K₁).mp (List.length_eq_zero_iff.mp h0))
+    have n₂ : (prime_decomposition K₂).length ≠ 0 := fun h0 =>
+      h₂ ((decomposition_nil_iff K₂).mp (List.length_eq_zero_iff.mp h0))
+    omega
 
 /-- **Aplicación 3: Cálculo del Género**
 
@@ -387,7 +530,7 @@ Dado un nudo K, encontrar su descomposición prima.
 -/
 noncomputable def factorization_problem (K : Knot) :
     {primes : List Knot // ∀ P ∈ primes, is_prime P} :=
-  ⟨prime_decomposition K, sorry⟩
+  ⟨prime_decomposition K, prime_decomposition_prime K⟩
 
 /-- **Resultado de Complejidad (Agol-Hass-Thurston, 2002)**
 
@@ -407,11 +550,37 @@ noncomputable def square_knot : Knot := trefoil # trefoil
 theorem square_knot_composite :
     is_composite square_knot := by
   unfold is_composite square_knot
-  sorry
+  have h := decomposition_length_eq (trefoil # trefoil) [trefoil, trefoil]
+    (by
+      intro P hP
+      simp only [List.mem_cons, List.not_mem_nil, or_false] at hP
+      rcases hP with rfl | rfl <;> exact trefoil_is_prime)
+    (by simp [List.foldl, unknot_sum]; rfl)
+  rw [h]
+  decide
 
 theorem square_knot_decomposition :
     prime_decomposition square_knot = [trefoil, trefoil] := by
-  sorry
+  have hprimes : ∀ P ∈ [trefoil, trefoil], is_prime P := by
+    intro P hP
+    simp only [List.mem_cons, List.not_mem_nil, or_false] at hP
+    rcases hP with rfl | rfl <;> exact trefoil_is_prime
+  have hfold : square_knot ≅ [trefoil, trefoil].foldl (· # ·) unknot := by
+    change square_knot = _
+    simp [square_knot, List.foldl, unknot_sum]
+  obtain ⟨σ, hσ⟩ := schubert_uniqueness square_knot (prime_decomposition square_knot)
+    [trefoil, trefoil] (prime_decomposition_prime square_knot) hprimes
+    (prime_decomposition_reconstructs square_knot) hfold
+  have hlen : (prime_decomposition square_knot).length = 2 :=
+    Fin.equiv_iff_eq.mp ⟨σ⟩
+  have hget : ∀ j : Fin [trefoil, trefoil].length, [trefoil, trefoil].get j = trefoil := by
+    intro j
+    fin_cases j <;> rfl
+  have hall : ∀ x ∈ prime_decomposition square_knot, x = trefoil := by
+    intro x hx
+    obtain ⟨i, rfl⟩ := List.mem_iff_get.mp hx
+    exact (hσ i).trans (hget (σ i))
+  exact (List.eq_replicate_iff.mpr ⟨hlen, hall⟩).trans rfl
 
 /-- Ejemplo 2: El nudo grammy (granny knot) -/
 axiom mirror : Knot → Knot
@@ -427,6 +596,15 @@ noncomputable def example_composite : Knot := trefoil # figure_eight
 
 theorem example_has_two_prime_factors :
     (prime_decomposition example_composite).length = 2 := by
-  sorry
+  have h := decomposition_length_eq example_composite [trefoil, figure_eight]
+    (by
+      intro P hP
+      simp only [List.mem_cons, List.not_mem_nil, or_false] at hP
+      rcases hP with rfl | rfl
+      · exact trefoil_is_prime
+      · exact figure_eight_is_prime)
+    (by simp [example_composite, List.foldl, unknot_sum]; rfl)
+  rw [h]
+  rfl
 
 end TMENudos.SchubertTheorems
