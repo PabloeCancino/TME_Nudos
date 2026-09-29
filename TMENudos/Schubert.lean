@@ -544,12 +544,19 @@ axiom knot_primality_in_NP :
 ## 10. EJEMPLOS CONCRETOS
 -/
 
-/-- Ejemplo 1: El nudo cuadrado (square knot) -/
-noncomputable def square_knot : Knot := trefoil # trefoil
+/-- Ejemplo 1: El nudo de la abuela (granny knot): la suma conexa de dos tréboles de la
+    misma quiralidad, `trefoil # trefoil`.
 
-theorem square_knot_composite :
-    is_composite square_knot := by
-  unfold is_composite square_knot
+    CAMBIO DE NOMBRE: antes esta definición se llamaba `square_knot` y la de `trefoil # mirror
+    trefoil` se llamaba `granny_knot`; estaban intercambiadas. El nudo cuadrado es el trébol
+    sumado con su imagen especular, y el nudo de la abuela es el trébol sumado consigo mismo.
+    Los teoremas de abajo (`granny_knot_composite`, `granny_knot_decomposition`, antes
+    `square_knot_composite` y `square_knot_decomposition`) no cambian de contenido. -/
+noncomputable def granny_knot : Knot := trefoil # trefoil
+
+theorem granny_knot_composite :
+    is_composite granny_knot := by
+  unfold is_composite granny_knot
   have h := decomposition_length_eq (trefoil # trefoil) [trefoil, trefoil]
     (by
       intro P hP
@@ -559,34 +566,37 @@ theorem square_knot_composite :
   rw [h]
   decide
 
-theorem square_knot_decomposition :
-    prime_decomposition square_knot = [trefoil, trefoil] := by
+theorem granny_knot_decomposition :
+    prime_decomposition granny_knot = [trefoil, trefoil] := by
   have hprimes : ∀ P ∈ [trefoil, trefoil], is_prime P := by
     intro P hP
     simp only [List.mem_cons, List.not_mem_nil, or_false] at hP
     rcases hP with rfl | rfl <;> exact trefoil_is_prime
-  have hfold : square_knot ≅ [trefoil, trefoil].foldl (· # ·) unknot := by
-    change square_knot = _
-    simp [square_knot, List.foldl, unknot_sum]
-  obtain ⟨σ, hσ⟩ := schubert_uniqueness square_knot (prime_decomposition square_knot)
-    [trefoil, trefoil] (prime_decomposition_prime square_knot) hprimes
-    (prime_decomposition_reconstructs square_knot) hfold
-  have hlen : (prime_decomposition square_knot).length = 2 :=
+  have hfold : granny_knot ≅ [trefoil, trefoil].foldl (· # ·) unknot := by
+    change granny_knot = _
+    simp [granny_knot, List.foldl, unknot_sum]
+  obtain ⟨σ, hσ⟩ := schubert_uniqueness granny_knot (prime_decomposition granny_knot)
+    [trefoil, trefoil] (prime_decomposition_prime granny_knot) hprimes
+    (prime_decomposition_reconstructs granny_knot) hfold
+  have hlen : (prime_decomposition granny_knot).length = 2 :=
     Fin.equiv_iff_eq.mp ⟨σ⟩
   have hget : ∀ j : Fin [trefoil, trefoil].length, [trefoil, trefoil].get j = trefoil := by
     intro j
     fin_cases j <;> rfl
-  have hall : ∀ x ∈ prime_decomposition square_knot, x = trefoil := by
+  have hall : ∀ x ∈ prime_decomposition granny_knot, x = trefoil := by
     intro x hx
     obtain ⟨i, rfl⟩ := List.mem_iff_get.mp hx
     exact (hσ i).trans (hget (σ i))
   exact (List.eq_replicate_iff.mpr ⟨hlen, hall⟩).trans rfl
 
-/-- Ejemplo 2: El nudo grammy (granny knot) -/
+/-- Ejemplo 2: El nudo cuadrado (square knot): la suma conexa de un trébol con su imagen
+    especular, `trefoil # mirror trefoil`. (Antes se llamaba `granny_knot`; ver el ejemplo 1.) -/
 axiom mirror : Knot → Knot
 
-noncomputable def granny_knot : Knot := trefoil # mirror trefoil
+noncomputable def square_knot : Knot := trefoil # mirror trefoil
 
+/-- El nudo de la abuela y el nudo cuadrado son distintos. (El enunciado no cambia con el
+    intercambio de nombres: es simétrico en esta forma.) -/
 theorem granny_distinct_from_square :
     ¬(granny_knot ≅ square_knot) := by
   sorry

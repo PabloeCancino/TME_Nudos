@@ -45,7 +45,7 @@ Ordenados por gravedad. Cada uno tiene su detalle en la sección 4.
 5. **`reidemeister_equivalent` estaba definido con `sorry` en su cuerpo**, y `Knot` (el cociente de `Schubert`) se construía sobre él. Corregido con una relación inductiva. (4.7)
 6. **Tres operaciones distintas se llamaban `mirror`**: rotación (ρ), reflexión de posiciones (σ) e intercambio over/under (τ). Aclarado y renombrado τ a `swap`. (4.10)
 7. **`Basic.lean` (T4.1) decía "estructura diédrica" pero demostraba una estructura abeliana.** Comentario corregido. (4.10)
-8. **Enunciados dudosos o falsos de `Schubert`** (nudos tóricos, complementos, nombres intercambiados de los nudos cuadrado y de la abuela…): **clasificados, no corregidos**. (4.4)
+8. **Enunciados dudosos o falsos de `Schubert`** (nudos tóricos, complementos, nombres intercambiados de los nudos cuadrado y de la abuela…): **clasificados**; los nombres se corrigieron después (4.14), el resto no. (4.4)
 
 **Qué está comprobado en Lean y qué no.** Comprobado en Lean: la inconsistencia de `R1_inverse` (4.5, 4.6), los tamaños de estabilizadores y órbitas de K3 (4.9), el contraejemplo de `IME` bajo la reflexión y el experimento de `IME2` (4.10, 4.11). **No comprobadas en Lean** (valoración matemática del auditor, conviene revisarla): que T(1,q) sea el nudo trivial, el pegado de complementos a lo largo de un anillo, los nombres del nudo cuadrado y de la abuela, y la normalización del polinomio de Alexander.
 
@@ -187,10 +187,11 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
   - `schubert_existence_axiom` (nuevo): todo nudo tiene una factorización prima (Schubert 1949).
   - `schubert_uniqueness` pasa de teorema con `sorry` a axioma (Schubert 1949), con la misma firma.
   - `prime_decomposition` se define con `Classical.choose` sobre la existencia. `prime_decomposition_prime` y `prime_decomposition_reconstructs` dejan de ser axiomas y pasan a ser teoremas; la primera queda más fuerte (sin la disyunción con el nudo trivial).
-- **Demostrados**: `schubert_existence`, `schubert_unique_factorization`, `factorization_problem`, y en cadena `complexity_additive`, `composite_characterization`, `example_has_two_prime_factors`, `square_knot_composite`, `square_knot_decomposition`. Lemas nuevos: `foldl_perm`, `unknot_sum`, `foldl_shift`, `foldl_append`, `decomposition_length_eq`, `decomposition_length_add`, `decomposition_nil_iff`.
+- **Demostrados**: `schubert_existence`, `schubert_unique_factorization`, `factorization_problem`, y en cadena `complexity_additive`, `composite_characterization`, `example_has_two_prime_factors`, `granny_knot_composite`, `granny_knot_decomposition` (antes `square_knot_*`). Lemas nuevos: `foldl_perm`, `unknot_sum`, `foldl_shift`, `foldl_append`, `decomposition_length_eq`, `decomposition_length_add`, `decomposition_nil_iff`.
 - **Conteo**: `sorry` de `Schubert` 26 → 16 (10 cerrados); axiomas de `Schubert` 21 → 21 (entran 2, salen 2); total del proyecto 23 `sorry` y 47 axiomas.
 - **Detalle técnico**: para pasar de "equivalencia `Fin l₁.length ≃ Fin l₂.length` con elementos iguales" a "igualdad de multiconjuntos" se usó `Fin.univ_val_map`, `List.ofFn_get` y `Multiset.map_univ_val_equiv`. La invariancia de la suma conexa iterada por permutación usa `List.Perm.foldl_eq` con la instancia `RightCommutative` derivada de la asociatividad y la conmutatividad.
-- **Nota sobre los nombres del nudo cuadrado y de la abuela**: los dos teoremas `square_knot_*` valen con cualquiera de los dos nombres, así que se demostraron sin tocar los nombres; el intercambio de nombres sigue pendiente de su aprobación.
+- **Nombres del nudo cuadrado y del nudo de la abuela (corregidos con la aprobación del autor):** `granny_knot := trefoil # trefoil` y `square_knot := trefoil # mirror trefoil` (antes al revés). Los dos teoremas ya demostrados hablaban de trébol # trébol, así que pasaron a `granny_knot_composite` y `granny_knot_decomposition`. No se crearon versiones para `square_knot`: exigirían que la imagen especular del trébol sea prima, y `mirror` es un axioma sin propiedades (no se agregó ningún axioma). `granny_distinct_from_square` conserva su enunciado. Un reemplazo automático dejó mal el comentario explicativo (decía "antes se llamaba `granny_knot`" en ambos sitios); se detectó al releer el código y se corrigió.
+- **Verificación de dependencias de los teoremas cerrados** (`Tests/auditoria_20260929/05_...`): `#print axioms` mostraba `sorryAx` sin decir de dónde. Un primer rastreo devolvió una lista vacía porque no recorría los constructores de los tipos inductivos (la relación de Reidemeister vive ahí); con ese hueco corregido, en los 13 teoremas cerrados las únicas constantes con `sorry` son `apply_R1`, `apply_R2` y `apply_R3`. Ningún `sorry` propio de `Schubert` se filtra, y no aparece ningún axioma inesperado.
 - **Limitación**: los dos axiomas son verdaderos para nudos reales, pero aquí `Knot` es un cociente de diagramas con `apply_R*` aún sin definir, así que su consistencia con el resto del sistema no está verificada.
 - Verificación: compilación completa de los 34 módulos, 0 errores, 0 alertas distintas de `declaration uses sorry`.
 
@@ -210,7 +211,7 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
    - `schubert_complement_sum`: compara tipos con igualdad, y el complemento de K₁#K₂ se pega a lo largo de un anillo, no por suma conexa.
    - `schubert_companion_theorem` y `schubert_is_JSJ_special_case`: tienen `sorry` dentro del propio enunciado.
    - `alexander_multiplicative`: el polinomio de Alexander está definido salvo unidades ±tᵏ.
-   - `square_knot` y `granny_knot`: **nombres intercambiados** (`square_knot := trefoil # trefoil` debería ser el nudo de la abuela). Los teoremas `square_knot_*` ya están demostrados; solo falta corregir los nombres.
+   - ~~`square_knot` y `granny_knot`~~ Corregidos (ver 4.14).
 3. **Etapa 1 a 5 del mapa de ruta:** dar definiciones concretas a `apply_R1/R2/R3` (elimina la dependencia indirecta de `sorryAx`), corchete de Kauffman, conexión con `Bridge`, y demostrar consistencia exhibiendo un modelo.
 4. `Experiment_K4.lean` sigue llamando `mirror` a τ (`k4_neq_mirror`, `user_k4_mirror_pairs`).
 5. `TMENudos.lean` solo importa 5 de los 34 módulos.
@@ -244,6 +245,7 @@ Todo desde la raíz del proyecto (`TME_Nudos`):
 | Compilación completa (34 módulos) | `lake build TMENudos` y luego los módulos restantes por nombre, por ejemplo `lake build TMENudos.KN_Examples` |
 | Experimento de `IME2` (n=3 y n=4) | `lake env lean Procesos/Tests/auditoria_20260929/03_experimento_IME2_n3_n4.lean` |
 | `mirrorTrefoil = swap trefoilKnot` | `lake env lean Procesos/Tests/auditoria_20260929/04_mirrorTrefoil_es_swap_trefoilKnot.lean` |
+| Rastreo de `sorry` en los teoremas cerrados de `Schubert` | `lake env lean Procesos/Tests/auditoria_20260929/05_rastreo_de_sorry_en_teoremas_cerrados.lean` |
 | Pruebas históricas de inconsistencia | `01_...` y `02_...` **ya no compilan**; es lo esperado y prueba que la contradicción quedó bloqueada. Sirven de documentación del razonamiento. |
 
 Para volver a ver el estado: `git log --oneline master..auditoria-2026-09-29` lista los commits de esta sesión, y `git diff master --stat` el alcance total.
