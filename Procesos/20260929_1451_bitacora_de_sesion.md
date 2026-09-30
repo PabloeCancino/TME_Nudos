@@ -461,6 +461,7 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
 ## 5. Pendiente y dónde retomar
 
 ### 5.1 Decisiones del autor
+> **Estado (2026-09-30):** los puntos 1 y 2 y la integración de la Opción 1 ya están decididos y aplicados (4.28 a 4.30); el punto 3 se resolvió con las palabras de Gauss con signos. Las rutas realmente abiertas hoy están en la sección 5.6.
 1. **Quiralidad en K3:** con la acción actual de D₆, el trébol y su imagen especular están en la misma órbita. ¿Es lo pretendido? Si no, hay que cambiar la acción o las definiciones.
 2. **"Realizable" en K3:** ¿debe incluir a `specialClass`? Hoy sí.
 3. **Etapa 1 del mapa de ruta:** representación del diagrama (código de Gauss extendido frente a PD) y si `KnotConfig` se reemplaza o se conserva como capa.
@@ -488,6 +489,35 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
 - `Procesos/codigo LEAN/*_TEST.lean` y `__correcciones_*.lean` contienen copias antiguas con `K.mirror` y otras convenciones. No se tocaron.
 - Sueltos en la raíz que probablemente sobran: `build_error.log`, `temp_mirror_theorems.txt`, `lean-toolchain.backup`.
 - Hay dos desarrollos paralelos de la misma teoría (`KN_*` y `TCN_*`) más `KN_General`, que además define `OrderedPairN` con su propio `mirror`/`swap`. Conviene decidir cuál es el canónico.
+
+### 5.6 Mapa de rutas abiertas y cómo ver el conflicto o el éxito de antemano (2026-09-30)
+
+**Convención de riesgo.** *Conflicto lógico*: la ruta puede volver inconsistente el sistema de axiomas. *Conflicto de sentido*: es consistente pero deja la teoría vacía o distinta de lo que se quería. *Coste*: solo esfuerzo o cascada de cambios.
+
+| Ruta | Opciones | Riesgo principal | Señal temprana (sonda) |
+|---|---|---|---|
+| **R1. `rational_to_diagram` de `Bridge`** | (a) dejar el axioma; (b) darlo en la capa paralela (`Diag`); (c) cambiar `Diagram` de `Reidemeister` a `GDiag` | (c) **conflicto lógico y de sentido alto**: `Knot` pasaría a ser el cociente de nudos virtuales y los axiomas de suma conexa y factorización única podrían dejar de valer; el modelo de consistencia (`Knot` = multiconjuntos) dejaría de aplicarse. (a) y (b): ninguno | Para (c): intentar probar `connected_sum_comm` en el cociente concreto; si no hay forma de plantear el modelo, no seguir |
+| **R2. De `jones2` axiomático a un `Knot` clásico** (Opción 2) | mapas planares + movimientos clásicos + suma conexa bien definida | No hay contradicción matemática (la teoría clásica cumple los axiomas); el riesgo es de coste. Si sale, los 4 axiomas de `jones2` pasan a teoremas | Probar primero que R1-R3 clásicos conservan la paridad de Gauss (decidible en n pequeño) |
+| **R3. Migrar `Basic` y `TCN` al signo como dato** | (a) in situ; (b) solo `TCN` (K3); (c) dejar la capa aditiva `Modular_Signo` | Coste en cascada (conteos: 120 configuraciones pasan a 960, cambian teoremas de `TCN_05` a `TCN_08`, `Basic.Isotopic`, `CrossingPairIsomorphism`). Riesgo lógico bajo | Contar con `grep` cuántos teoremas y módulos dependen de las definiciones que cambian |
+| **R4. Clase B de `Schubert`** (7 `sorry`) | (i) reformular los enunciados falsos; (ii) dejarlos; (iii) axiomatizar los verdaderos y profundos con cita | (iii) puede introducir inconsistencia con el modelo (p. ej. axiomas sobre `bridge_number` o `knot_genus`, que en el modelo son constantes) | Extender el modelo de consistencia con el axioma propuesto **antes** de añadirlo (así se hizo con `jones2`) |
+| **R5. `sorryAx` de `apply_R*`** | (a) dejarlo; (b) rellenar con las definiciones del modelo; (c) resolverlo con R2 | (b) **conflicto de sentido**: quita el `sorryAx`, pero `Knot` pasa a ser `Multiset ℚ` sin ceros y `trefoil_is_prime` etc. serían teoremas sobre objetos de juguete. (a): los teoremas de `Knot` heredan `sorryAx` (hoy solo vía `apply_R*`, verificado) | Rastreo de dependencias (ya hecho: solo `apply_R1/2/3`) |
+| **R6. Estructura** | orden de fusión de ramas; ampliar `TMENudos.lean`; cuál de `KN_*` y `TCN_*` es canónico; renombrar la σ de `KN_02` | Coste; riesgo lógico nulo | — |
+
+**Lectura del semáforo.** Lo de más riesgo es todo lo que mezcle el cociente virtual con los axiomas de suma conexa de `Schubert` (R1c) y lo que vacía la teoría (R5b). Lo de mayor valor a largo plazo es R2. Lo más barato y seguro: R4(i), R1(b) y R6.
+
+**Sondas que ya se usaron en este trabajo, y qué ve y qué no ve cada una:**
+| Sonda | Ejemplo aquí | Ve | Es ciega a |
+|---|---|---|---|
+| Intentar derivar `False` | `R1_inverse` (n = 0 y n = 1) | contradicciones por casos extremos, cardinalidad, resta natural | contradicciones que no aparezcan en casos pequeños |
+| Modelo de consistencia | 38 axiomas (11 + 25 + 2) | contradicción lógica entre axiomas | que el modelo sea trivial o de juguete (aquí lo es: `Knot` = multiconjuntos) |
+| Cálculo sobre testigos concretos | Jones de K3, paridad de Gauss, quandles | errores de modelado (pérdida de quiralidad, órbita no planar) | lo que el invariante elegido no distingue |
+| Rastreo de dependencias | `sorryAx` solo vía `apply_R*` | axiomas o `sorry` inesperados en una cadena | — |
+| Doble formulación independiente | prueba numérica de R3 frente a la geometría | definiciones mal copiadas o mal orientadas | errores compartidos por ambas |
+| Enunciado sobre caso pequeño antes de demostrar | `gap_mirror` (n = 2) | enunciados falsos | — |
+
+**Sonda de hoy (`Tests/auditoria_20260929/13_sonda_suma_conexa_virtual.lean`) y su lección.** Se insertó un trébol en todas las posiciones y puntos de partida de un diagrama no planar (y de uno planar, como control): el Jones da el mismo valor siempre (324769/67108864 = 79/1024 · 4111/65536). **Esto NO refuta ni confirma que la suma conexa virtual dependa del pegado**: el corchete es multiplicativo para cualquier pegado, así que el Jones es incapaz de verlo. Un resultado nulo con una sonda insensible no prueba nada; para ver esa dependencia haría falta un invariante más fino (de la teoría de nudos virtuales) o comparar clases con una relación más fuerte. El riesgo sigue apoyándose solo en la literatura.
+
+**Lista de comprobación antes de decidir una ruta:** (1) ¿qué axiomas y definiciones toca? (2) ¿se puede extender el modelo de consistencia con el cambio? (3) ¿hay un contraejemplo pequeño por fuerza bruta? (4) ¿qué depende de lo que cambia (`grep`, conteos)? (5) ¿la sonda que voy a usar es sensible a lo que temo?
 
 ## 6. Lecciones para la próxima sesión
 
