@@ -1,6 +1,7 @@
 -- TCN_08_Realizabilidad_EJEMPLO_COMPLETO.lean
 -- Ejemplo: Cómo se ve el teorema principal completamente probado
 -- (Corregido en la auditoría 2026-09-29: dos órbitas de tamaños 12 y 2, total 14.)
+-- Revisión Opción 1 (paridad de Gauss): sólo la órbita del trébol es realizable, total 2.
 
 import TMENudos.TCN_05_Orbitas
 import TMENudos.TCN_06_Representantes
@@ -14,10 +15,22 @@ completamente probado sin `sorry` statements.
 
 ## Estrategia de Prueba
 
-1. Definir `realizableConfigs` como unión de órbitas
-2. Usar que las órbitas son disjuntas
-3. Aplicar fórmula de cardinalidad de unión disjunta
-4. Sustituir cardinalidades conocidas (12 + 2 = 14)
+1. Definir `realizableConfigs` como la órbita del trébol
+2. Sustituir la cardinalidad conocida (`orbit_trefoilKnot_card`: 2)
+
+## Cambios respecto a la versión anterior (antes → después)
+
+Motivo: la paridad de Gauss (necesaria para planaridad) NO la cumple ninguna de las 12
+configuraciones de `Orb(specialClass)`; sólo el trébol (2 configuraciones) es un diagrama
+de nudo clásico (ver `TCN_08_Realizabilidad` y `TMENudos/Etapa1_Modular.lean`).
+
+- `realizableConfigs`: `orbit specialClass ∪ orbit trefoilKnot` → `orbit trefoilKnot`.
+- `total_realizable_configs`: `= 14` → `= 2`.
+- `realizable_fraction`: `= 7/60` → `= 1/60`.
+- `isRealizable` aquí es la forma simplificada `K ∈ orbit trefoilKnot`; en `TCN_08` se define
+  como `(¬hasR1 ∧ ¬hasR2) ∧ gaussEven` y se prueba equivalente a esta.
+
+Nota: este archivo es aislado (no importa TCN_08 porque redefine los mismos nombres).
 
 -/
 
@@ -33,50 +46,44 @@ Ya disponibles en los módulos importados:
 
 /-! ## Definición de Realizabilidad -/
 
-/-- Versión didáctica de `isRealizable` (aislada del módulo TCN_08 para el ejemplo). -/
+/-- Versión didáctica de `isRealizable` (aislada del módulo TCN_08 para el ejemplo):
+    pertenencia a la órbita del trébol (equivalente a la definición de TCN_08).
+    Antes: `K ∈ orbit specialClass ∨ K ∈ orbit trefoilKnot`. -/
 def isRealizable (K : K3Config) : Prop :=
-  K ∈ orbit specialClass ∨ K ∈ orbit trefoilKnot
+  K ∈ orbit trefoilKnot
 
-/-- Versión didáctica de `realizableConfigs`. -/
+/-- Versión didáctica de `realizableConfigs`.
+    Antes: `orbit specialClass ∪ orbit trefoilKnot`. -/
 def realizableConfigs : Finset K3Config :=
-  orbit specialClass ∪ orbit trefoilKnot
+  orbit trefoilKnot
 
 /-! ## Teorema Principal (VERSIÓN COMPLETA SIN SORRY) -/
 
 /-- **TEOREMA: Cardinalidad de Configuraciones Realizables**
 
-    El número total de configuraciones K₃ realizables es exactamente 14.
+    El número total de configuraciones K₃ realizables es exactamente 2 (antes: 14).
 
     **Demostración completa:**
     ```
-    |realizableConfigs| = |orbit specialClass ∪ orbit trefoilKnot|
-                        = |orbit specialClass| + |orbit trefoilKnot|  (disjuntas)
-                        = 12 + 2
-                        = 14
+    |realizableConfigs| = |orbit trefoilKnot| = 2
     ```
 -/
 theorem total_realizable_configs :
-    realizableConfigs.card = 14 := by
-  -- Expandir definición de realizableConfigs
+    realizableConfigs.card = 2 := by
   unfold realizableConfigs
-  -- Aplicar fórmula de cardinalidad de unión disjunta
-  rw [Finset.card_union_of_disjoint]
-  -- Caso 1: Suma de cardinalidades (12 + 2 = 14)
-  · rw [orbit_specialClass_card, orbit_trefoilKnot_card]
-  -- Caso 2: Probar que las órbitas son disjuntas
-  · exact Finset.disjoint_iff_inter_eq_empty.mpr orbits_disjoint_special_trefoil
+  exact orbit_trefoilKnot_card
 
 /-! ## Teoremas Derivados -/
 
-/-- Fracción de configuraciones realizables: 14/120 = 7/60 -/
+/-- Fracción de configuraciones realizables: 2/120 = 1/60 (antes 14/120 = 7/60) -/
 theorem realizable_fraction :
-    (realizableConfigs.card : ℚ) / totalConfigs = 7 / 60 := by
+    (realizableConfigs.card : ℚ) / totalConfigs = 1 / 60 := by
   rw [total_realizable_configs]
   unfold totalConfigs
   norm_num
 
-/-- El conjunto de realizables tiene exactamente 14 elementos -/
-example : realizableConfigs.card = 14 := total_realizable_configs
+/-- El conjunto de realizables tiene exactamente 2 elementos -/
+example : realizableConfigs.card = 2 := total_realizable_configs
 
 end KnotTheory
 
@@ -84,90 +91,31 @@ end KnotTheory
 ## Análisis de la Prueba
 
 ### Dependencias
-1. `orbit_specialClass_card` (TCN_06)
-2. `orbit_trefoilKnot_card` (TCN_06)
-3. `orbits_disjoint_special_trefoil` (TCN_06)
+1. `orbit_trefoilKnot_card` (TCN_06)
 
 ### Tácticas Usadas
 - `unfold`: Expandir definiciones
-- `rw`: Reescribir con igualdades
-- `norm_num`: Aritmética automática
 - `exact`: Aplicar teorema exacto
-
-### Complejidad de la Prueba
-- **Líneas de código:** 6 (muy concisa)
-- **Tácticas:** 4
-- **Lemmas auxiliares:** 3
-- **Sorry statements:** 0 ✅
+- `rw`, `norm_num`: reescritura y aritmética (fracción)
 
 ### Por Qué Funciona
 
-La prueba es constructiva y directa:
-1. Definimos realizableConfigs como unión de dos conjuntos
-2. Usamos que la unión es disjunta (teorema auxiliar)
-3. Aplicamos la fórmula |A ∪ B| = |A| + |B| cuando A ∩ B = ∅
-4. Sustituimos valores conocidos |A| = 12, |B| = 2
-5. Calculamos 12 + 2 = 14 con `norm_num`
+`realizableConfigs` es una sola órbita, así que su cardinalidad es la de la órbita del trébol
+(2, por órbita-estabilizador con |Stab| = 6). Antes era la unión disjunta de dos órbitas
+(12 + 2 = 14); la de `specialClass` se excluyó por violar la paridad de Gauss.
 
 **No hay magia, no hay axiomas ocultos, todo es verificable.**
 
-### Generalización a K_n
+### Lecciones para Otros Teoremas (versión actual de TCN_08)
 
-Para K_n, la estructura sería idéntica:
-```lean
-theorem total_realizable_configs_kn (n : ℕ) :
-    realizableConfigs_n.card = (número de configuraciones irreducibles para K_n) := by
-  -- Misma estructura de prueba
-  unfold realizableConfigs_n
-  rw [Finset.card_union_of_disjoint]
-  · -- Sumar cardinalidades de cada órbita
-    sorry
-  · -- Probar disjunción de órbitas
-    sorry
-```
+**`non_realizable_count`:** 120 - 2 = 118 (`omega` con la partición
+`finset_card_partition`; antes 120 - 14 = 106).
 
-La dificultad está en:
-1. Clasificar todas las órbitas irreducibles para K_n
-2. Calcular la cardinalidad de cada órbita
-3. Probar que son disjuntas
-
-Para K₃, estos problemas están resueltos (2 órbitas de 12 y 2 configuraciones, disjuntas).
-
-### Lecciones para Otros Teoremas
-
-Este patrón de prueba se aplica a otros teoremas de TCN_08:
-
-**Teorema:** `non_realizable_count`
-```lean
-theorem non_realizable_count :
-    (Finset.univ.filter (¬isRealizable ·)).card = 106 := by
-  -- Estrategia: Total - Realizables = 120 - 14 = 106
-  have h1 : Finset.univ.card = 120 := card_k3_config
-  have h2 : realizableConfigs.card = 14 := total_realizable_configs
-  -- Usar que univ = realizables ∪ no_realizables (partición)
-  omega  -- Resuelve aritméticamente
-```
-
-**Teorema:** `realizable_orbit_card_cases`
-```lean
-theorem realizable_orbit_card_cases (K : K3Config) :
-    isRealizable K → (orbit K).card = 12 ∨ (orbit K).card = 2 := by
-  intro h
-  -- Estrategia: Si K está en una órbita, su órbita ES esa órbita
-  cases h with
-  | inl h_special =>
-    have : orbit K = orbit specialClass := orbit_eq_of_mem h_special
-    rw [this]
-    exact Or.inl orbit_specialClass_card
-  | inr h_trefoil =>
-    have : orbit K = orbit trefoilKnot := orbit_eq_of_mem h_trefoil
-    rw [this]
-    exact Or.inr orbit_trefoilKnot_card
-```
+**`realizable_orbit_card_eq_two`:** si K es realizable, `orbit K = orbit trefoilKnot`
+(`orbit_eq_of_mem`), y su cardinalidad es 2 (antes: 12 ∨ 2).
 
 ### Estado de Verificación
 
-Este teorema está **100% completo**: ✅ no usa `sorry` ni axiomas, y todas sus
-dependencias (TCN_05, TCN_06) están demostradas.
+Este archivo no usa `sorry` ni axiomas; sus dependencias (TCN_05, TCN_06) están demostradas.
 
 -/

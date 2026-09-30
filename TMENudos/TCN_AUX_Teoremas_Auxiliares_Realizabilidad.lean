@@ -245,7 +245,12 @@ end KnotTheory
 - ✅ Teoremas 1-10 demostrados (sin sorry propios)
 - 🎯 Una vez completados, eliminan TODOS los sorry de TCN_08
 
-## Próximo Paso
-Usar estos teoremas para crear la versión corregida de TCN_08_Realizabilidad.lean
+## Nota (revisión Opción 1, paridad de Gauss)
+Ninguno de estos enunciados cambia: son sobre órbitas, R1/R2 y particiones de `Finset`,
+independientes de la definición de «realizable».  Se usan en `TCN_08_Realizabilidad`,
+donde `isRealizable` pasó de «sin R1 ni R2» (14 configuraciones) a «sin R1 ni R2 y
+`gaussEven`» (2 configuraciones, la órbita del trébol).  `trefoil_not_in_special_orbit`
+sigue siendo cierto y ahora expresa que el representante realizable no está en la órbita
+de `specialClass`, que es no realizable.
 
 -/
