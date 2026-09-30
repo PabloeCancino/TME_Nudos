@@ -24,7 +24,7 @@ Nada se ha subido a ningún remoto ni se ha integrado en `master`. Para retomar:
 ### Qué se logró en la etapa 1 (todo verificado con compilación desde cero, sin `sorry`, sin axiomas nuevos)
 | Pieza | Archivo | Líneas | Resultado principal |
 |---|---|---|---|
-| Spike de palabras de Gauss con signos | `Etapa1_GaussWord.lean` | ~330 | ⟨3₁⟩ = A⁻⁷ - A⁻³ - A⁵ y su espejo, en cualquier cuerpo; `jones_granny_ne_square` en A = 2 |
+| Spike de palabras de Gauss con signos | `Etapa1_GaussWord.lean` | 240 | ⟨3₁⟩ = A⁻⁷ - A⁻³ - A⁵ y su espejo, en cualquier cuerpo; `jones_granny_ne_square` en A = 2 |
 | Invariancia bajo R1 | `Etapa1_Invariancia.lean` | 1210 | `bracket_map`, `bracket_r1`, `bracket_r1_free` |
 | Invariancia bajo R2 | `Etapa1_R2.lean` | 1060 | `bracket_r2` (8 combinaciones válidas de orientación, orden y signo) |
 | Puente abstracto ↔ computable | `Etapa1_Puente.lean` | 701 | `bracket_ofWord`, para toda palabra bien formada |
@@ -37,7 +37,7 @@ Nada se ha subido a ningún remoto ni se ha integrado en `master`. Para retomar:
 - La tabla de patrones válidos sale de `Procesos/Tests/auditoria_20260929/08_geometria_r3.py` (tres rectas en posición general, productos cruzados): **48 de los 64 pares (orden, signos)** son R3 geométricos, y la condición `validR3` excluye exactamente los otros 16 (alturas cíclicas). Que la cuenta coincida es una comprobación de consistencia, no una prueba de que `validR3` y el script describan el mismo conjunto.
 
 **Lo que falta, con el estado exacto:**
-1. **Un `sorry`** en `check_all` (línea 258): la comprobación finita de que, para cada uno de los 64 casos, el procedimiento booleano `CheckEq`/`CheckCirc` devuelve `true`. Es una enumeración decidible; se intentó cerrarla por `decide` y puede exigir partir en casos, subir `maxRecDepth` o reformular la comprobación. No se probó aquí ninguna estrategia hasta el final.
+1. **Un `sorry`** en `check_all` (línea 258): la comprobación finita de que, para cada uno de los 64 casos, el procedimiento booleano `CheckEq`/`CheckCirc` devuelve `true`. Es una enumeración decidible de casos finitos; no consta qué estrategia se probó (puede exigir partir en casos, subir `maxRecDepth` o reformular la comprobación).
 2. **Un error de compilación** en `r3_lazos` (línea 1024, columna 74: `unsolved goals`, sobre un `Nat.card` de componentes tras el `simp`). El agente iba por ahí cuando se lo detuvo.
 3. Todo lo demás del archivo compila hasta ese punto, pero al no compilar entero **no hay garantía** de que el resto sea correcto ni de que los enunciados sean los que se pretendían.
 4. No consta que se haya hecho la comprobación numérica previa con `Word.bracket` (como en R2) ni el control negativo; el script de geometría sí está. Conviene hacerlas antes de dar R3 por bueno.
@@ -320,7 +320,7 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
 - **Qué permite.** Los valores concretos calculados con `decide` sobre listas se trasladan al diagrama abstracto donde se demuestra la invariancia.
 
 ### 4.21 Suspensión durante R3
-- El autor pidió suspender la sesión. El agente de R3 llevaba unos 60 minutos y fue **detenido a mano**; su archivo (`Etapa1_R3.lean`, 1072 líneas) y el script de geometría (`08_geometria_r3.py`) se commitean tal como estaban, marcados como trabajo en curso y no verificado.
+- El autor pidió suspender la sesión. El agente de R3 llevaba más de 50 minutos y fue **detenido a mano**; su archivo (`Etapa1_R3.lean`, 1072 líneas) y el script de geometría (`08_geometria_r3.py`) se commitean tal como estaban, marcados como trabajo en curso y no verificado.
 - Detalle del estado y de cómo retomar: ver la sección 0 de este documento.
 - El agente de R3 no llegó a entregar informe final, así que todo lo dicho sobre él sale de leer el archivo y de compilarlo: 1 `sorry` (`check_all`, línea 258) y 1 error (`r3_lazos`, línea 1024).
 
