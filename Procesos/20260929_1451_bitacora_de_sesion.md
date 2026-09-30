@@ -422,6 +422,18 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
 - **Detalle práctico:** `Schubert.lean` no importa `Mathlib.Tactic.Linarith` ni la extensión de `norm_num` para divisiones; si se adopta la Opción 1 allí, habrá que añadir esos imports (sin ellos `norm_num` no decide la desigualdad de racionales).
 - **Alcance y límites:** la consistencia relativa no valida que la especificación describa nudos reales. La conexión entre el `Knot` abstracto y el módulo concreto (`Etapa1_Nudos.lean`), que demuestra las mismas propiedades para los diagramas concretos, seguiría siendo axiomática. Este resultado NO decide entre las opciones 1, 2 y 3: solo elimina el riesgo de inconsistencia de la 1.
 
+### 4.28 Decisiones del autor y primera integración en la build: la Opción 1 en `Schubert.lean`
+- **Decisiones del autor (2026-09-30), todas las recomendadas:** (1) integración por la **Opción 1** (axioma `jones2` en la capa abstracta); (2) adoptar el **signo del cruce como dato** en la teoría modular; (3) **excluir la órbita de 12 de "realizable"**; (4) sustituir `rational_to_diagram` de `Bridge` por una definición concreta "después de fijar el signo".
+- **Conflicto detectado en (4) y cómo se resolvió.** Con la Opción 1, `Knot` sigue siendo el abstracto y el `Diagram` de `Bridge` sigue siendo el del modelo antiguo de `Reidemeister.lean` (cuyas posiciones viven en `Fin n`, no en `ZMod (2n)`). Definir `rational_to_diagram` de forma concreta exigiría cambiar `Diagram` a `GDiag`, justo lo que la Opción 1 evita. **El axioma de `Bridge` NO se cierra**; en su lugar se da la función concreta en la capa paralela (fuera de la build). Esto queda pendiente de una nueva decisión del autor.
+- **Rama:** `integracion-opcion1` (sale de `etapa1-spike-gauss`), para separar los cambios de la build principal.
+- **Cambio en `Schubert.lean`** (primer cambio de la etapa 1 que entra en la build):
+  - Cuatro axiomas nuevos: `jones2 : Knot → ℚ`, `jones2_connected_sum` (multiplicativo), `jones2_trefoil = 4111/65536` y `jones2_mirror_trefoil = -61424`. No se añadió `jones2_unknot` porque la demostración no lo usa.
+  - **`granny_distinct_from_square` deja de ser `sorry`** y se demuestra: si fueran iguales, `jones2` de ambos coincidiría, pero valen `(4111/65536)²` y `4111/65536 · (-61424)`. Se añadieron los imports `Mathlib.Tactic.Linarith` y `Mathlib.Tactic.NormNum` (sin ellos `norm_num` no decide la desigualdad de racionales).
+  - Comentarios que explican la justificación y **qué queda axiomático: la conexión entre el `Knot` abstracto y el módulo concreto** de la rama de la etapa 1.
+- **Cifras de `Schubert`:** `sorry` en el código 16 → **15**; axiomas 21 → **25**. Proyecto: axiomas 47 → **51**; `sorry` 23 → **22** (a falta de lo que cambien las tareas en curso).
+- **Modelo de consistencia actualizado** (`Tests/auditoria_20260929/11_modelo_jones2.lean`, ahora el **modelo vigente**; `06_modelo_de_consistencia.lean` queda como registro histórico de la versión de 34 axiomas). Verificado por mí contra el `Schubert` ya modificado: compila con 0 errores y sin `sorryAx`; el recuento de axiomas reales es 11 (Reidemeister) + 25 (Schubert) + 2 (Bridge) = **38**; y el volcado de tipos de **70 objetos** del modelo es idéntico al de los originales (`06e_tipos_originales.lean`, ampliado con los cuatro nombres nuevos), sin ningún "NOT FOUND". Es decir, **los 38 axiomas del sistema real son consistentes entre sí** (consistencia relativa a Lean y Mathlib).
+- **Build:** los 34 módulos siguen compilando tras el cambio (verificación final al cerrar los tres bloques de trabajo).
+
 ## 5. Pendiente y dónde retomar
 
 ### 5.1 Decisiones del autor

@@ -23,7 +23,8 @@ def typeNames : List String := [
   "schubert_existence_axiom", "schubert_uniqueness", "knot_genus", "bridge_number",
   "knot_complement", "knot_group", "manifold_connected_sum", "knot_primality_in_NP", "mirror",
   "alexander_polynomial", "ThreeManifold", "JSJ_decomposition",
-  "rational_to_diagram", "rational_to_knot", "rational_equivalence_preserves_isotopy"]
+  "rational_to_diagram", "rational_to_knot", "rational_equivalence_preserves_isotopy",
+  "jones2", "jones2_connected_sum", "jones2_trefoil", "jones2_mirror_trefoil"]
 
 def valueNames : List String :=
   ["Knot", "knot_isotopic", "unknot", "is_prime", "diagram_equiv", "DiagramSetoid"]

@@ -4,6 +4,8 @@ import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Data.Nat.GCD.Prime
 import Mathlib.Topology.Basic
 import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormNum
 import TMENudos.Reidemeister
 
 /-!
@@ -595,11 +597,47 @@ axiom mirror : Knot → Knot
 
 noncomputable def square_knot : Knot := trefoil # mirror trefoil
 
+/-!
+### Invariante de Jones en la capa abstracta (Opción 1 del diseño de integración)
+
+Para distinguir el nudo de la abuela del nudo cuadrado hace falta un invariante que perciba la
+quiralidad. Se añade a la capa abstracta un invariante `jones2 : Knot → ℚ` (el polinomio de Jones
+evaluado en A = 2) con su especificación mínima: multiplicativo bajo la suma conexa y con los
+valores clásicos en el trébol derecho (t + t³ - t⁴ con t = 1/16) y en su imagen especular.
+
+Estos cuatro axiomas son:
+* verdaderos para nudos reales;
+* consistentes con el resto de los axiomas: el modelo
+  `Procesos/Tests/auditoria_20260929/11_modelo_jones2.lean` los satisface sin `sorryAx`;
+* justificados por el trabajo de la rama de la etapa 1 (`Etapa1_Nudos.lean`), que demuestra las
+  mismas propiedades para diagramas de Gauss concretos (teoremas `jones_ofWord_trefoil`,
+  `jones_ofWord_swap_trefoil`, `jones_granny_ne_square`). **La conexión entre este `Knot` abstracto
+  y ese módulo concreto es lo que queda axiomático.**
+-/
+
+/-- Polinomio de Jones evaluado en A = 2. -/
+axiom jones2 : Knot → ℚ
+
+/-- El Jones es multiplicativo bajo la suma conexa. -/
+axiom jones2_connected_sum (K₁ K₂ : Knot) : jones2 (K₁ # K₂) = jones2 K₁ * jones2 K₂
+
+/-- Valor en el trébol (derecho): t + t³ - t⁴ con t = A⁻⁴ = 1/16. -/
+axiom jones2_trefoil : jones2 trefoil = 4111 / 65536
+
+/-- Valor en la imagen especular del trébol (el trébol izquierdo). -/
+axiom jones2_mirror_trefoil : jones2 (mirror trefoil) = -61424
+
 /-- El nudo de la abuela y el nudo cuadrado son distintos. (El enunciado no cambia con el
-    intercambio de nombres: es simétrico en esta forma.) -/
+    intercambio de nombres: es simétrico en esta forma.) Se deduce de la multiplicatividad del Jones
+    y de sus valores en el trébol y su espejo. -/
 theorem granny_distinct_from_square :
     ¬(granny_knot ≅ square_knot) := by
-  sorry
+  intro h
+  have h' : granny_knot = square_knot := h
+  unfold granny_knot square_knot at h'
+  have := congrArg jones2 h'
+  rw [jones2_connected_sum, jones2_connected_sum, jones2_trefoil, jones2_mirror_trefoil] at this
+  linarith
 
 /-- Ejemplo 3: Suma de nudos primos diferentes -/
 noncomputable def example_composite : Knot := trefoil # figure_eight

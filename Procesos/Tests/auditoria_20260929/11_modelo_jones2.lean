@@ -1,4 +1,4 @@
-/- MODELO EXTENDIDO (2026-09-30). Copia de 06_modelo_de_consistencia.lean con una extensión al final del namespace Model: el axioma jones2 de la Opción 1 (ver Procesos/20260929_2247_diseno_integracion_knot.md) y la derivación de granny != square a partir de su especificación. Comprueba que la Opción 1 es CONSISTENTE con los 34 axiomas anteriores. -/
+/- MODELO VIGENTE (2026-09-30). Sustituye a 06_modelo_de_consistencia.lean (34 axiomas, que queda como registro histórico). Copia de aquel con una extensión al final del namespace Model: los axiomas jones2, jones2_connected_sum, jones2_trefoil y jones2_mirror_trefoil que la Opción 1 añadió a Schubert.lean (ver Procesos/20260929_2247_diseno_integracion_knot.md), y la derivación de granny_distinct_from_square a partir de ellos. Cubre los 38 axiomas actuales de Reidemeister (11), Schubert (25) y Bridge (2); su fidelidad se comprueba comparando el volcado de tipos de esta sección final con el de 06e_tipos_originales.lean. -/
 /- MODELO DE CONSISTENCIA RELATIVA (2026-09-29).
 Interpretación concreta (namespace `Model`) de los 34 axiomas de Reidemeister.lean (11), Schubert.lean (21) y
 Bridge.lean (2), en la que todos valen como teoremas (o son definiciones del tipo declarado). Solo depende de
@@ -877,7 +877,8 @@ def typeNames : List String := [
   "schubert_existence_axiom", "schubert_uniqueness", "knot_genus", "bridge_number",
   "knot_complement", "knot_group", "manifold_connected_sum", "knot_primality_in_NP", "mirror",
   "alexander_polynomial", "ThreeManifold", "JSJ_decomposition",
-  "rational_to_diagram", "rational_to_knot", "rational_equivalence_preserves_isotopy"]
+  "rational_to_diagram", "rational_to_knot", "rational_equivalence_preserves_isotopy",
+  "jones2", "jones2_connected_sum", "jones2_trefoil", "jones2_mirror_trefoil"]
 
 def valueNames : List String :=
   ["Knot", "knot_isotopic", "unknot", "is_prime", "diagram_equiv", "DiagramSetoid"]
