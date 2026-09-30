@@ -233,6 +233,22 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
 - **Hallazgo de diseño.** No hace falta demostrar la multiplicatividad del corchete en general para este teorema: basta la invariancia y evaluar dos palabras concretas. La multiplicatividad solo se necesita para que la suma conexa esté bien definida sobre `Knot`.
 - **Limitaciones.** El spike no demuestra ninguna propiedad general del corchete (ni invariancia ni multiplicatividad); las de rotación y suma conexa son instancias en A = 2. No se exige realizabilidad plana. La representación con etiquetas naturales y listas es cómoda para calcular, pero las demostraciones de invariancia sobre el conteo de componentes conexas (hito M4) siguen siendo el riesgo principal. La distinción de Jones se hizo evaluando en un solo punto, lo que basta para mostrar que los polinomios son distintos.
 
+### 4.18 M4, primera prueba de viabilidad: invariancia del corchete bajo R1 (rama `etapa1-spike-gauss`)
+- **Decisión de orden.** El riesgo real del plan es el hito M4 (invariancia), no M2 (movimientos sobre listas). Se atacó primero el caso más simple de M4, el rizo (R1), en una representación pensada para demostrar, antes de invertir en movimientos que quizá hubiera que rehacer.
+- **Representación abstracta** (`TMENudos/Etapa1_Invariancia.lean`, 1210 líneas, no importado por `TMENudos.lean`): `GDiag ι` es una estructura sobre identificadores de letras con sucesor cíclico `next`, la pareja `partner` (el otro paso por el mismo cruce), las marcas `ovr` y `sign`, y el número `free` de circunferencias sin cruces. Las aristas se nombran por su letra inicial; los cruces son las letras superiores. Insertar cruces solo añade identificadores (`ι ⊕ Bool`), sin renumerar posiciones como en las listas, y el punto de partida deja de existir (la rotación es gratuita). No se exige un solo ciclo, así que admite enlaces. La lista del spike queda como presentación concreta para calcular.
+- **Corchete:** suma sobre estados de `A^{#A} B^{#B} d^{lazos-1}`, con los lazos como componentes conexas de un grafo sobre las aristas más las circunferencias libres. Mismas convenciones que el spike (la suavización es orientada cuando `σ x = sign x`).
+- **Demostrado sin `sorry`, con axiomas solo `propext`, `Classical.choice` y `Quot.sound`** (verificado con una compilación desde cero de 28 s y sin alertas de linter):
+  - `bracket_map`: el corchete es invariante por isomorfismo (renombrar los identificadores).
+  - `bracket_r1`: insertar un rizo en una arista existente multiplica el corchete por `-A³` (signo positivo) o `-A⁻³` (negativo). Necesita `[Nonempty ι]` por la resta natural de `d^(lazos-1)`.
+  - `bracket_r1_free`: lo mismo sobre una circunferencia libre.
+  - `bracket_emptyCircle` (el círculo vale 1) y `bracket_kink` (el rizo aislado vale `-A³` o `-A⁻³`), que coincide con lo calculado en el spike.
+- **Dónde estuvo la dificultad.** No en la matemática del rizo, sino en la contabilidad de tipos: los lemas de conteo de componentes (`card_cc_eq`, `card_cc_succ` para un vértice aislado, `card_cc_sum` para uniones disjuntas), la equivalencia de estados con `(estados) × Bool` y la descomposición de los cruces. Unas 20 iteraciones de compilación; lo que lo hizo manejable fue aislar lemas puros sobre relaciones (`PureR1`).
+- **Estimación del agente para lo que falta** (no verificada por mí; es una extrapolación): R2 unas 3 a 5 veces el trabajo de R1 (1500 a 2500 líneas: 4 letras nuevas, 4 estados que se reducen a 2 términos con `d`); R3 unas 3 a 4 veces R2, con el riesgo de exhibir un isomorfismo no trivial entre los dos lados del movimiento y emparejar 8 estados con 8. Conclusión del agente: **M4 es viable con esta técnica.**
+- **Limitaciones.**
+  - El corchete abstracto es no computable (`Nat.card` sobre componentes conexas), así que no hay `#eval` ni `decide` sobre él. Falta el puente con el corchete computable del spike (entregable 5, no intentado): hay que probar que los lazos abstractos coinciden con la unión-búsqueda del spike, o calcular directamente las componentes de los diagramas concretos.
+  - Solo está R1. Faltan R2, R3, y la relación con la suma conexa y con `Knot` (hitos M2 y M3).
+  - La estimación para R2 y R3 es del agente y puede quedarse corta: el trabajo de R3 con `next` no trivial no se ha medido.
+
 ## 5. Pendiente y dónde retomar
 
 ### 5.1 Decisiones del autor
