@@ -219,6 +219,20 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
 - **Resultado:** **ninguno** distingue el trébol de su espejo. La vía de coloraciones simples no sirve a órdenes pequeños; haría falta un quandle mayor o un invariante de cociclo, que ya no es barato. Corolario: el corchete de Kauffman (o el polinomio de Jones) sigue siendo el camino.
 - **Límites.** Solo se exploró hasta orden 6; no se descarta que exista un quandle mayor. No se verificó el script contra una lista de quandles de la literatura, solo que los conteos de tablas etiquetadas tienen la forma esperada (1, 5, 36, 404, 6658).
 
+### 4.17 Spike M1: palabras de Gauss con signos y corchete de Kauffman (rama `etapa1-spike-gauss`)
+- **Decisiones del autor.** Representación: palabra de Gauss con signos. Primer paso: spike de viabilidad en rama aparte, sin tocar la build.
+- **Archivo:** `TMENudos/Etapa1_GaussWord.lean` (no importado por `TMENudos.lean`). Una palabra es una lista de letras `(etiqueta, over, signo)`. El corchete es una suma sobre 2ⁿ estados; los lazos de cada estado se cuentan como componentes conexas de un grafo sobre las 2n aristas, con una etiquetación por relajación sobre listas (computable y apta para `decide`). Incluye `swap` (imagen especular), `concat` (suma conexa), `writhe` y `jones`.
+- **Convención de suavización** (verificada con el rizo): la suavización A es la orientada en un cruce positivo y la no orientada en uno negativo. ⟨rizo positivo⟩ = -A³ y ⟨rizo negativo⟩ = -A⁻³, ambos demostrados en A = 2.
+- **Demostrado sin `sorry`, con axiomas solo `propext`, `Classical.choice` y `Quot.sound`:**
+  - `wf_trefoil`, `wf_swap_trefoil` (buena formación).
+  - `terms_trefoil`, `terms_swap_trefoil` (los 8 estados con sus lazos, por `decide`).
+  - `bracket_trefoil`: **⟨3₁⟩ = A⁻⁷ - A⁻³ - A⁵ en cualquier cuerpo**, y `bracket_swap_trefoil`: ⟨3₁*⟩ = A⁷ - A³ - A⁻⁵. Coinciden con los valores clásicos; con la normalización del writhe da V(3₁) = t + t³ - t⁴.
+  - Casos de cordura en A = 2: invariancia por rotación de las 6 rotaciones del trébol, y multiplicatividad ⟨K₁#K₂⟩ = ⟨K₁⟩⟨K₂⟩ para trébol # trébol y trébol # espejo.
+  - **`jones_granny_ne_square`**: el Jones evaluado en A = 2 del nudo de la abuela (trébol # trébol) es distinto del del nudo cuadrado (trébol # espejo). Se demuestra con `decide +kernel` en unos 15 s.
+- **Qué falta para cerrar `granny_distinct_from_square`.** Este teorema por sí solo NO lo cierra. Falta: (1) que los movimientos R1-R3 y la rotación existan sobre palabras y que `Knot` se construya sobre ellas (hitos M2 y M3); (2) demostrar que el corchete/Jones es invariante bajo esos movimientos (hito M4, el núcleo y lo más difícil); (3) definir `trefoil`, `mirror` y `connected_sum` en `Knot` a partir de `concat` (M3). Con eso, la desigualdad de arriba se traslada al cociente.
+- **Hallazgo de diseño.** No hace falta demostrar la multiplicatividad del corchete en general para este teorema: basta la invariancia y evaluar dos palabras concretas. La multiplicatividad solo se necesita para que la suma conexa esté bien definida sobre `Knot`.
+- **Limitaciones.** El spike no demuestra ninguna propiedad general del corchete (ni invariancia ni multiplicatividad); las de rotación y suma conexa son instancias en A = 2. No se exige realizabilidad plana. La representación con etiquetas naturales y listas es cómoda para calcular, pero las demostraciones de invariancia sobre el conteo de componentes conexas (hito M4) siguen siendo el riesgo principal. La distinción de Jones se hizo evaluando en un solo punto, lo que basta para mostrar que los polinomios son distintos.
+
 ## 5. Pendiente y dónde retomar
 
 ### 5.1 Decisiones del autor
@@ -272,6 +286,7 @@ Todo desde la raíz del proyecto (`TME_Nudos`):
 | Rastreo de `sorry` en los teoremas cerrados de `Schubert` | `lake env lean Procesos/Tests/auditoria_20260929/05_rastreo_de_sorry_en_teoremas_cerrados.lean` |
 | Modelo de consistencia de los 34 axiomas | `lake env lean Procesos/Tests/auditoria_20260929/06_modelo_de_consistencia.lean` (unos 21 s); `06e_tipos_originales.lean` vuelca los tipos de los originales para compararlos |
 | Búsqueda de quandles que distingan el trébol de su espejo | `python Procesos/Tests/auditoria_20260929/07_quandles_trebol_vs_espejo.py 6` (unos 30 s) |
+| Spike M1 (corchete de Kauffman y Jones sobre palabras de Gauss) | rama `etapa1-spike-gauss`: `lake env lean TMENudos/Etapa1_GaussWord.lean` (unos 18 s) |
 | Pruebas históricas de inconsistencia | `01_...` y `02_...` **ya no compilan**; es lo esperado y prueba que la contradicción quedó bloqueada. Sirven de documentación del razonamiento. |
 
 Para volver a ver el estado: `git log --oneline master..auditoria-2026-09-29` lista los commits de esta sesión, y `git diff master --stat` el alcance total.
