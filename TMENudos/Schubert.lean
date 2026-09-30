@@ -299,17 +299,23 @@ noncomputable def satellite_pattern (K P : Knot) (h : is_satellite K P) : Knot :
 /--
 **TEOREMA DEL COMPAÑERO (Schubert, 1953)**
 
-Si K es un nudo satélite con compañero P, entonces:
-1. El género de K es mayor o igual que el género de P
-2. Existe una factorización canónica K = pattern(P)
-
-**Formulación**: Un nudo satélite "hereda" complejidad de su compañero.
+Si K es un nudo satélite con compañero P, entonces el género de K es mayor o igual que el de P
+(un nudo satélite "hereda" complejidad de su compañero). La segunda afirmación que figuraba aquí
+("existe una factorización canónica K = pattern(P)") estaba mal formada y se eliminó; ver el teorema
+`schubert_companion_theorem` más abajo.
 -/
 axiom knot_genus : Knot → ℕ
 
+/-- **Teorema del compañero, parte del género** (Schubert 1953): un nudo satélite tiene género mayor
+    o igual que el de su compañero.
+
+    CAMBIO DE ENUNCIADO (clase B, reformulación): antes el enunciado tenía una segunda parte mal
+    formada, `∃ pattern, K ≅ sorry` (un `sorry` dentro del propio enunciado, que no dice nada). Se
+    conserva solo la primera parte, que es un enunciado bien formado y verdadero. Sigue con `sorry`
+    porque `is_satellite` y `knot_genus` no tienen contenido en este marco (clase C: falta la
+    teoría). El nombre se mantiene. -/
 theorem schubert_companion_theorem (K P : Knot) (h : is_satellite K P) :
-    knot_genus K ≥ knot_genus P ∧
-    ∃ (pattern : Knot), K ≅ sorry := by  -- Construcción del satélite
+    knot_genus K ≥ knot_genus P := by
   sorry
 
 /-!
@@ -324,12 +330,19 @@ noncomputable def torus_knot (p q : ℕ) : Knot := sorry
 /--
 **TEOREMA DE SCHUBERT SOBRE NUDOS TÓRICOS (1949)**
 
-1. T(p,q) es primo si y solo si gcd(p,q) = 1
+1. T(p,q) es primo si y solo si gcd(p,q) = 1, para p, q ≥ 2 (este teorema)
 2. T(p,q) ≅ T(q,p)
-3. T(p,q) ≅ T(-p,-q) (nudo espejo)
+3. T(p,q) ≅ T(-p,-q) (el mismo nudo con la orientación invertida; en la convención estándar la
+   imagen especular es T(p,-q). Antes este punto decía "nudo espejo")
 4. El género de T(p,q) es (p-1)(q-1)/2
+
+CAMBIO DE ENUNCIADO (clase B, reformulación) en el punto 1: antes no había hipótesis sobre `p` y
+`q`, y el enunciado era **falso**: `T(1,q)` es el nudo trivial (que por definición no es primo) y
+`Nat.gcd 1 q = 1`. Lo mismo ocurre con `p = 0` (`T(0,1)`). El enunciado correcto exige `2 ≤ p` y
+`2 ≤ q`. Sigue con `sorry` porque `torus_knot` no tiene contenido en este marco (clase C: falta la
+teoría).
 -/
-theorem schubert_torus_knot_primality (p q : ℕ) :
+theorem schubert_torus_knot_primality (p q : ℕ) (hp : 2 ≤ p) (hq : 2 ≤ q) :
     is_prime (torus_knot p q) ↔ Nat.gcd p q = 1 := by
   sorry
 
@@ -388,21 +401,21 @@ axiom knot_complement : Knot → Type  -- Should be a 3-manifold
 /-- El grupo fundamental del complemento -/
 axiom knot_group : Knot → Type  -- Should be a Group
 
-/--
-**TEOREMA DE SCHUBERT SOBRE COMPLEMENTOS**
-
-Si K₁ # K₂ = K, entonces el complemento de K es la suma conexa
-de los complementos de K₁ y K₂.
-
-Esto establece una correspondencia entre la suma de nudos y
-la suma conexa de 3-variedades.
--/
+/-- Suma conexa de 3-variedades (sin uso actualmente: ver la nota siguiente). -/
 axiom manifold_connected_sum : Type → Type → Type
 
-theorem schubert_complement_sum (K₁ K₂ : Knot) :
-    knot_complement (K₁ # K₂) =
-    manifold_connected_sum (knot_complement K₁) (knot_complement K₂) := by
-  sorry
+/-
+**ELIMINADO: `schubert_complement_sum`** (clase B, enunciado falso).
+
+Afirmaba `knot_complement (K₁ # K₂) = manifold_connected_sum (knot_complement K₁)
+(knot_complement K₂)`, una igualdad de TIPOS que además es matemáticamente incorrecta: el
+complemento de `K₁ # K₂` no es la suma conexa de los complementos, sino que se obtiene
+**pegando** los complementos de `K₁` y `K₂` a lo largo de un anillo meridiano. Una reformulación
+verdadera exigiría
+una noción de "pegado a lo largo de un anillo" y de homeomorfismo entre 3-variedades que este marco
+no tiene (`knot_complement` es solo un `Type`). Nada dependía del teorema. El axioma
+`manifold_connected_sum` queda sin uso.
+-/
 
 /-!
 ## 6. APLICACIONES DE LOS TEOREMAS DE SCHUBERT
@@ -496,9 +509,18 @@ de los polinomios de los sumandos.
 -/
 axiom alexander_polynomial : Knot → Polynomial ℤ
 
+/-- **Multiplicatividad del polinomio de Alexander, salvo unidades.**
+
+    CAMBIO DE ENUNCIADO (clase B, reformulación): antes se afirmaba la **igualdad** literal en
+    `Polynomial ℤ`. El polinomio de Alexander solo está definido salvo unidades `± tᵏ` del anillo de
+    polinomios de Laurent, así que la igualdad literal depende del representante elegido. El
+    enunciado correcto es la igualdad salvo `± tᵃ` y `tᵇ` (con `a, b` naturales, para no salir de
+    `Polynomial ℤ`). Sigue con `sorry` porque `alexander_polynomial` no tiene contenido en este
+    marco (clase C: falta la teoría). -/
 theorem alexander_multiplicative (K₁ K₂ : Knot) :
-    alexander_polynomial (K₁ # K₂) =
-    alexander_polynomial K₁ * alexander_polynomial K₂ := by
+    ∃ (ε : ℤˣ) (a b : ℕ),
+      Polynomial.C (ε : ℤ) * Polynomial.X ^ a * alexander_polynomial (K₁ # K₂) =
+        Polynomial.X ^ b * (alexander_polynomial K₁ * alexander_polynomial K₂) := by
   sorry
 
 /-!
@@ -513,14 +535,15 @@ axiom ThreeManifold : Type
 
 axiom JSJ_decomposition : ThreeManifold → List ThreeManifold
 
-/-- El teorema de Schubert es un caso especial de JSJ para
-    complementos de nudos -/
-theorem schubert_is_JSJ_special_case (K : Knot) :
-    ∃ (decomp : List Knot),
-      prime_decomposition K = decomp ∧
-      sorry  -- Relación con JSJ
-  := by
-  sorry
+/-
+**ELIMINADO: `schubert_is_JSJ_special_case`** (clase B, enunciado mal formado).
+
+Su enunciado contenía un `sorry` dentro de la propia proposición (`... ∧ sorry`), es decir, no
+afirmaba nada. Una versión bien formada ("la descomposición prima de `K` se corresponde con la
+descomposición JSJ de su complemento") necesita un vínculo entre `Knot` y `ThreeManifold` que este
+marco no tiene: `knot_complement` devuelve un `Type`, no un `ThreeManifold`. Nada dependía del
+teorema. Los axiomas `ThreeManifold` y `JSJ_decomposition` quedan sin uso.
+-/
 
 /-!
 ## 9. COMPLEJIDAD COMPUTACIONAL
@@ -534,10 +557,11 @@ noncomputable def factorization_problem (K : Knot) :
     {primes : List Knot // ∀ P ∈ primes, is_prime P} :=
   ⟨prime_decomposition K, prime_decomposition_prime K⟩
 
-/-- **Resultado de Complejidad (Agol-Hass-Thurston, 2002)**
+/-- **Decidibilidad de la primalidad.**
 
-El problema de determinar si un nudo es primo está en NP.
--/
+Existe una función que decide si un nudo es primo. El nombre del axioma y su comentario anterior
+hablaban de "NP" (Agol–Hass–Thurston, 2002), pero el enunciado solo afirma **decidibilidad**: no
+dice nada de complejidad. Se corrige el comentario; el enunciado y el nombre no cambian. -/
 axiom knot_primality_in_NP :
     ∃ (verifier : Knot → Bool),
       ∀ K : Knot, verifier K = true ↔ is_prime K

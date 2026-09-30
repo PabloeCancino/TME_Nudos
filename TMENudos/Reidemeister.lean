@@ -388,19 +388,39 @@ theorem knot_equivalence_decidable :
 /--
 **Corolario 3: Minimalidad de Cruces**
 
-Un diagrama es minimal (tiene el menor número de cruces posible para
-ese nudo) si y solo si no admite movimientos R1 o R2 que reduzcan
-el número de cruces.
+Un diagrama es minimal si tiene el menor número de cruces posible entre los diagramas del mismo
+nudo.
+
+CAMBIO DE ENUNCIADO (clase B, reformulación): antes este corolario afirmaba
+`minimal_characterization : is_minimal K ↔ (∀ move, ¬move.add_twist → False) ∧ (...)`. Era
+**falso**: el lado derecho es siempre `False` (basta tomar un movimiento con `add_twist = false`),
+y el diagrama vacío es minimal. Además, aun corregido, la equivalencia "minimal ⇔ no admite R1 ni R2
+reductores" es falsa en teoría de nudos (un diagrama sin R1 ni R2 reductores puede no ser minimal:
+hacen falta secuencias con R3). Se sustituye por las dos implicaciones verdaderas y demostrables:
+un diagrama obtenido al **agregar** un giro (R1) o dos cruces (R2) **no es minimal**.
 -/
 def is_minimal {n : ℕ} (K : KnotConfig n) : Prop :=
   ∀ (m : ℕ) (K' : KnotConfig m),
     topologically_equivalent K K' → m ≥ n
 
-theorem minimal_characterization {n : ℕ} (K : KnotConfig n) :
-    is_minimal K ↔
-    (∀ (move : R1Move), ¬move.add_twist → False) ∧
-    (∀ (move : R2Move), ¬move.add_crossings → False) := by
-  sorry
+/-- Un diagrama al que se le agregó un giro (R1) no es minimal: el original es equivalente y tiene
+    un cruce menos. -/
+theorem not_minimal_of_add_twist {n : ℕ} (K : KnotConfig n) (move : R1Move)
+    (h : move.add_twist = true) : ¬is_minimal (apply_R1 K move) := by
+  intro hmin
+  have hT : topologically_equivalent (apply_R1 K move) K :=
+    topo_equiv_symm (R1_preserves_isotopy K move h)
+  have := hmin n K hT
+  simp [h] at this
+
+/-- Un diagrama al que se le agregaron dos cruces (R2) no es minimal. -/
+theorem not_minimal_of_add_crossings {n : ℕ} (K : KnotConfig n) (move : R2Move)
+    (h : move.add_crossings = true) : ¬is_minimal (apply_R2 K move) := by
+  intro hmin
+  have hT : topologically_equivalent (apply_R2 K move) K :=
+    topo_equiv_symm (R2_preserves_isotopy K move h)
+  have := hmin n K hT
+  simp [h] at this
 
 -- /-! ## Extensiones del Teorema de Reidemeister -/
 

@@ -10,6 +10,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 ## 000. CIERRE DE SESIÓN (2026-09-30) — LEER PRIMERO
 
+> **ACTUALIZACIÓN (sesión de retorno, rama `clase-b-y-capa-paralela`, sale de `integracion-opcion1`):** el autor pidió empezar por lo barato y seguro. Hecho: reformulación de los enunciados falsos de la clase B (sección 4.31). **Cifras actuales:** build de los 34 módulos más la raíz con 0 errores y 0 alertas; `sorry` en el código **17** (`Schubert` 11, `Reidemeister` 4, `KN_00_Combinatoria` 1, `KN_Instance_K3` 1); axiomas **51** (sin cambio). Las cifras del cuadro de abajo corresponden al cierre anterior.
+
 **Sesión cerrada por el autor** (se va a la universidad). Todo el trabajo está commiteado: el árbol de trabajo está **limpio** en la rama `integracion-opcion1`, y la build se verificó al cerrar.
 
 ### Estado verificado al cierre
@@ -509,6 +511,22 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
 - **Enunciados cambiados (antes → después):** `isRealizable`: `K ∈ Orb(special) ∨ K ∈ Orb(trefoil)` → `(¬R1 ∧ ¬R2) ∧ gaussEven`; `realizableConfigs`: 14 → 2 elementos; `total_realizable_configs`: 14 → **2**; `realizable_fraction`: 7/60 → **1/60**; `non_realizable_count`: 106 → **118** (106 reducibles + 12 irreducibles no planas, con `irreducible_not_realizable_count = 12`); `irreducible_dichotomy`: era una tautología → `isRealizable K ∨ K ∈ Orb(specialClass)`; `k3_realizability_characterization`, `realizable_iff_representative`, `realizable_by_transformation`, `not_realizable_criterion` y `irreducible_realizable_iff` reformulados. `irreducible_is_realizable` (ya falso) se elimina; lo sustituyen `irreducible_of_realizable` (realizable ⇒ irreducible) e `irreducible_realizable_iff_not_special`.
 - **Se conserva** la clasificación de `TCN_07` (14 irreducibles en 2 órbitas, de 12 y 2); ahora solo una de las dos clases es realizable.
 - **Para que el autor revise (del informe del agente):** (1) `chordsInterlace` exige extremos distintos, porque sin eso el criterio con `.val` no es invariante por rotación cuando dos cuerdas comparten un extremo (en K₃ las cuerdas distintas nunca lo comparten); (2) se definió `isRealizable` como conjunción y se probó su equivalencia con la órbita del trébol, en lugar de definirlo directamente como pertenencia a la órbita; (3) la paridad de Gauss es solo condición necesaria: en K₃ coincide exactamente con el trébol, pero la definición sola no prueba planaridad; (4) `irreducible_dichotomy` y `realizable_orbit_card_cases` conservan el nombre pero cambió su contenido (el segundo es ahora más débil de lo que se cumple); se pueden renombrar; (5) el diff de `TCN_08_Realizabilidad` es grande porque se reescribió buena parte del módulo.
+
+### 4.31 Clase B: reformulación de los enunciados falsos (rama `clase-b-y-capa-paralela`)
+- **Decisión del autor:** empezar por lo barato y seguro (reformular los enunciados falsos de la clase B).
+- **Resultado:** build de los 34 módulos más la raíz, 0 errores y 0 alertas (3 327 trabajos). `sorry` en el código 22 → **17** (`Schubert` 15 → 11, `Reidemeister` 5 → 4); axiomas sin cambio (51). Cada cambio lleva un comentario "antes → después" en el propio código.
+- **Cambios (antes → después):**
+  | Enunciado | Antes | Después |
+  |---|---|---|
+  | `minimal_characterization` (`Reidemeister`) | `is_minimal K ↔ (todo movimiento con `¬add_twist` → False) ∧ (…)`: **falso** (el lado derecho es siempre `False`; el diagrama vacío es minimal). Incluso corregido, "minimal ⇔ sin R1 ni R2 reductores" es falso en teoría de nudos. | Sustituido por dos implicaciones **verdaderas y demostradas**: `not_minimal_of_add_twist` y `not_minimal_of_add_crossings` (un diagrama al que se le agregó un giro, o dos cruces, no es minimal). `sorry` −1. |
+  | `schubert_torus_knot_primality` | sin hipótesis: **falso** (`T(1,q)` es el nudo trivial y `gcd 1 q = 1`; igual con `p = 0`) | con `2 ≤ p` y `2 ≤ q`. Sigue con `sorry` (clase C: `torus_knot` no tiene contenido). Además se corrige en el comentario que `T(-p,-q)` es el mismo nudo con la orientación invertida y la imagen especular es `T(p,-q)`. |
+  | `schubert_companion_theorem` | `genus K ≥ genus P ∧ ∃ pattern, K ≅ sorry`: parte segunda **mal formada** (`sorry` dentro del enunciado) | solo `genus K ≥ genus P`. Sigue con `sorry` (clase C). `sorry` −1 (dos fichas pasan a una). |
+  | `alexander_multiplicative` | igualdad literal en `Polynomial ℤ`, dependiente del representante | `∃ (ε : ℤˣ) (a b : ℕ), C ε * X^a * Δ(K₁#K₂) = X^b * (Δ K₁ * Δ K₂)` (igualdad salvo unidades ±tᵏ). Sigue con `sorry` (clase C). |
+  | `schubert_complement_sum` | igualdad de **tipos** y matemáticamente incorrecta (el complemento de `K₁#K₂` se obtiene pegando los complementos a lo largo de un anillo, no por suma conexa) | **eliminado**: una versión verdadera necesita nociones de 3-variedad y pegado que el marco no tiene. Nada depend00eda de él. `sorry` −1. El axioma `manifold_connected_sum` queda sin uso. |
+  | `schubert_is_JSJ_special_case` | enunciado con `sorry` dentro de la proposición | **eliminado**: necesita un vínculo `Knot` → `ThreeManifold` que no existe. Nada dependía de él. `sorry` −2. Los axiomas `ThreeManifold` y `JSJ_decomposition` quedan sin uso. |
+  | `knot_primality_in_NP` (comentario) | decía "está en NP" | el enunciado solo afirma **decidibilidad**; se corrige el comentario, sin cambiar enunciado ni nombre |
+- **Alcance y límites:** ninguna reformulación añade axiomas, y las dos eliminaciones no dejan referencias (comprobado por la compilación completa). Los dos axiomas que quedan sin uso (`manifold_connected_sum`, y `ThreeManifold` con `JSJ_decomposition`) siguen en el modelo de consistencia sin cambios.
+- **Qué sigue en clase C tras esto:** `schubert_torus_knot_primality`, `schubert_companion_theorem` y `alexander_multiplicative` ya son enunciados verdaderos, pero dependen de definiciones sin contenido (`torus_knot`, `is_satellite`, `knot_genus`, `alexander_polynomial`).
 
 ## 5. Pendiente y dónde retomar
 
