@@ -70,7 +70,7 @@ Estas son fallas de contenido matemático. La auditoría inicial no modificó en
 
 **Verificación.** Las dos derivaciones de `False` dejaron de compilar. Ningún otro módulo usaba estos axiomas.
 
-**Advertencia.** No se ha demostrado que el sistema sea consistente. Mientras `apply_R1`, `apply_R2` y `apply_R3` sean `sorry`, sus axiomas no tienen un modelo verificado en Lean. El argumento es que las versiones corregidas admiten un modelo (agregar un cruce es inyectivo y quitarlo es su inversa por la izquierda), pero no está formalizado.
+**Consistencia.** Verificada por un modelo (`Procesos/Tests/auditoria_20260929/06_modelo_de_consistencia.lean`). Se exhibe en Lean una interpretación de `Reidemeister`, `Schubert` y `Bridge` en la que los 34 axiomas (11 + 21 + 2) valen como teoremas demostrados, cuyo `#print axioms` es solo `propext`, `Classical.choice` y `Quot.sound`. Es consistencia relativa a Lean+Mathlib; ver los límites en la bitácora, sección 4.15. Las versiones corregidas de `R1_inverse` y `R2_inverse` admiten un modelo, como se argumentaba (agregar un cruce es inyectivo y quitarlo es su inversa por la izquierda); antes esa afirmación no estaba formalizada.
 
 ### 3.2 Enunciados falsos en TCN_06 (corregido en la etapa 0)
 Con las definiciones actuales, los tamaños reales son: `specialClass` estabilizador 1 y órbita 12; `trefoilKnot` 6 y 2; `mirrorTrefoil` 6 y 2. `mirrorTrefoil = r³ • trefoilKnot` (y `= swap trefoilKnot`, comprobado con `decide`), de modo que las dos órbitas del trébol coinciden.
@@ -134,7 +134,7 @@ Se aplicó el principio del mapa de ruta (los teoremas profundos ya establecidos
 - Axiomas de `Schubert`: 21 antes y después (entran 2, salen 2). El total del proyecto sigue en 47.
 - Dependencias: `#print axioms` de los teoremas cerrados muestra solo los axiomas citados y los de la suma conexa (más el `sorryAx` indirecto de `apply_R*`).
 - **Verificación de dependencias.** Además de `#print axioms`, se rastreó qué constantes de la cadena de dependencias de cada teorema cerrado contienen `sorry` directamente (incluidos los constructores de tipos inductivos): en los 13 teoremas son solo `apply_R1`, `apply_R2` y `apply_R3`. Ningún `sorry` propio de `Schubert` (`is_satellite`, `torus_knot`, …) se filtra. Prueba archivada en `Procesos/Tests/auditoria_20260929/05_rastreo_de_sorry_en_teoremas_cerrados.lean`.
-- **Limitación:** estos axiomas son verdaderos para nudos reales, pero como en este proyecto `Knot` es un cociente de diagramas con `apply_R*` aún sin definir, su consistencia con el resto del sistema no está verificada.
+- **Consistencia:** los dos axiomas son verdaderos para nudos reales y, además, su consistencia con el resto de los axiomas de `Reidemeister`, `Schubert` y `Bridge` está verificada por un modelo (bitácora, sección 4.15). Límite: el modelo es degenerado en lo geométrico (los "nudos" del modelo son multiconjuntos de racionales no nulos), así que prueba que no hay contradicción entre los axiomas, no que describan nudos reales.
 
 ### B. Enunciado dudoso o falso (8)
 - `minimal_characterization` (`Reidemeister.lean:403`): falso; el lado derecho es siempre `False`, y el diagrama vacío es mínimo.

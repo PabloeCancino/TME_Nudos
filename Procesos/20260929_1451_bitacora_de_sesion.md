@@ -17,7 +17,7 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 | Alertas de linter (excluyendo `sorry`) | 104 solo en `Basic.lean`, más las de otros módulos | **0** |
 | `sorry` en el código (23 al cierre del saneamiento de `Schubert`; 33 al cierre de la etapa 0) | No medido en todo el proyecto al empezar; solo `Reidemeister` 12 y `Schubert` 27. Los agentes reportaron además `sorry` en `CrossingPairIsomorphism` (13), `KN_00_Combinatoria`, `KN_03`, `KN_Examples` (5), `TCN_05` y `TCN_06` a `TCN_08` | **23** (`Schubert` 16, `Reidemeister` 5, `KN_00_Combinatoria` 1, `KN_Instance_K3` 1) |
 | Axiomas | No medido al empezar. 49 tras la auditoría inicial, que ya había convertido `iso_preserves_r1` en teorema y quitado 3 axiomas duplicados de `TCN_08_EJEMPLO` | **47** |
-| Contradicciones demostradas | 1 (`R1_inverse`, y `R2_inverse` igual) | **0 conocidas** (sin modelo formalizado) |
+| Contradicciones demostradas | 1 (`R1_inverse`, y `R2_inverse` igual) | **0 conocidas**; consistencia de los 34 axiomas de `Reidemeister`, `Schubert` y `Bridge` verificada por un modelo (4.15) |
 
 Commits de la sesión:
 
@@ -107,7 +107,7 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
 - **Diagnóstico de fondo:** "eliminar y luego agregar" no puede ser la identidad para todo diagrama, porque eliminar pierde información. Solo es válida la dirección **agregar y luego eliminar**.
 - **Corrección final (commit `df86e7b`):** los axiomas llevan la hipótesis `move.add_twist = true` (R1) y `move.add_crossings = true` (R2), con comentarios que explican el porqué. `reidemeister_inverse` se reformuló con las mismas hipótesis (era falso para `n = 0`) y quedó demostrado.
 - **Verificación:** las dos derivaciones de `False` dejaron de compilar (es lo esperado). Ningún otro módulo usaba estos axiomas.
-- **Limitación:** no se ha demostrado consistencia. Mientras `apply_R1/R2/R3` sean `sorry`, los axiomas no tienen modelo verificado. El argumento informal (agregar un cruce es inyectivo, quitarlo es su inversa por la izquierda) no está formalizado.
+- **Consistencia:** en este punto de la sesión solo había un argumento informal (agregar un cruce es inyectivo, quitarlo es su inversa por la izquierda). Más tarde se formalizó con un modelo completo (4.15).
 
 ### 4.7 `reidemeister_equivalent` como relación inductiva
 - **Problema:** `def reidemeister_equivalent K₁ K₂ := ∃ seq, sorry`. Su cuerpo era `sorry`, y `DiagramSetoid` (y por tanto `Knot`) se construía sobre `reidemeister_refl/symm/trans`, que eran `sorry`.
@@ -192,8 +192,26 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
 - **Detalle técnico**: para pasar de "equivalencia `Fin l₁.length ≃ Fin l₂.length` con elementos iguales" a "igualdad de multiconjuntos" se usó `Fin.univ_val_map`, `List.ofFn_get` y `Multiset.map_univ_val_equiv`. La invariancia de la suma conexa iterada por permutación usa `List.Perm.foldl_eq` con la instancia `RightCommutative` derivada de la asociatividad y la conmutatividad.
 - **Nombres del nudo cuadrado y del nudo de la abuela (corregidos con la aprobación del autor):** `granny_knot := trefoil # trefoil` y `square_knot := trefoil # mirror trefoil` (antes al revés). Los dos teoremas ya demostrados hablaban de trébol # trébol, así que pasaron a `granny_knot_composite` y `granny_knot_decomposition`. No se crearon versiones para `square_knot`: exigirían que la imagen especular del trébol sea prima, y `mirror` es un axioma sin propiedades (no se agregó ningún axioma). `granny_distinct_from_square` conserva su enunciado. Un reemplazo automático dejó mal el comentario explicativo (decía "antes se llamaba `granny_knot`" en ambos sitios); se detectó al releer el código y se corrigió.
 - **Verificación de dependencias de los teoremas cerrados** (`Tests/auditoria_20260929/05_...`): `#print axioms` mostraba `sorryAx` sin decir de dónde. Un primer rastreo devolvió una lista vacía porque no recorría los constructores de los tipos inductivos (la relación de Reidemeister vive ahí); con ese hueco corregido, en los 13 teoremas cerrados las únicas constantes con `sorry` son `apply_R1`, `apply_R2` y `apply_R3`. Ningún `sorry` propio de `Schubert` se filtra, y no aparece ningún axioma inesperado.
-- **Limitación**: los dos axiomas son verdaderos para nudos reales, pero aquí `Knot` es un cociente de diagramas con `apply_R*` aún sin definir, así que su consistencia con el resto del sistema no está verificada.
+- **Consistencia**: los dos axiomas son verdaderos para nudos reales; su consistencia con el resto del sistema se verificó después con un modelo (4.15).
 - Verificación: compilación completa de los 34 módulos, 0 errores, 0 alertas distintas de `declaration uses sorry`.
+
+### 4.15 Consistencia de los axiomas de `Reidemeister`, `Schubert` y `Bridge`: un modelo
+- **Qué se quería saber.** Si los dos axiomas nuevos de `Schubert` (existencia y unicidad) son consistentes con el resto del sistema mientras `apply_R1/R2/R3` sigan sin definición concreta. `#print axioms` no puede responderlo; la única prueba real es exhibir un **modelo**.
+- **Por qué hubo que copiar las definiciones.** En el sistema real `apply_R*` son constantes definidas con `sorry` y `Knot` depende de ellas, así que no se pueden reemplazar en el sitio. El modelo reproduce las definiciones no axiomáticas (`Crossing`, `KnotConfig`, los movimientos, la relación inductiva, `Diagram`, `DiagramSetoid`, `Knot`, `unknot`, `is_prime`…) con `apply_R*` definidas concretamente, y enuncia cada axioma con el texto original, demostrado como teorema.
+- **Diseño del modelo.**
+  - Invariante `inv K`: el multiconjunto de las razones no nulas de los cruces.
+  - R1 y R2 (agregar) añaden cruces de razón 0; quitar retira el último cruce retrayendo las posiciones. Solo se exige la dirección "agregar y luego quitar", que se cumple exactamente.
+  - R3 es una involución dentro de la fibra de `inv`, construida con una enumeración sobreyectiva de la fibra.
+  - Teorema clave: `reidemeister_equivalent K₁ K₂ ↔ inv K₁ = inv K₂`. Así `Knot` se identifica con los multiconjuntos de racionales no nulos: `#` es la suma, `unknot` es 0, los primos son los multiconjuntos de un solo elemento (`is_prime K ↔ card = 1`), y la existencia y unicidad de la factorización salen de ahí.
+  - `topologically_equivalent := reidemeister_equivalent`; `trefoil`, `figure_eight` y `cinquefoil` son `{1}`, `{2}` y `{3}`; `mirror` niega las razones; las demás constantes (`knot_genus`, `bridge_number`, `alexander_polynomial`, tipos de complementos, etc.) son triviales.
+- **Resultado.** Compila en unos 21 s sin errores. Los 34 axiomas (11 de `Reidemeister`, 21 de `Schubert`, 2 de `Bridge`) tienen su teorema o definición en el modelo, y el `#print axioms` de todos es solo `propext`, `Classical.choice` y `Quot.sound` (o ningún axioma), sin `sorryAx`. Incluye comprobaciones de no trivialidad: `trefoil ≠ unknot`, `trefoil ≠ figure_eight`, `trefoil # trefoil ≠ trefoil`, `mirror trefoil ≠ trefoil` y dos diagramas de un cruce con razones 1 y 2 no son equivalentes.
+- **Verificación independiente (no basada en el informe del agente).** Compilé el archivo yo mismo (0 errores; el único "sorry" del texto está en un comentario; sin `axiom`, `native_decide` ni `unsafe`; los `set_option` son solo de impresión). Comprobé que los 34 nombres de axiomas tienen declaración e `#print axioms` en el modelo. Volqué los tipos de 66 objetos y los valores de `Knot`, `knot_isotopic`, `unknot`, `is_prime`, `diagram_equiv` y `DiagramSetoid`, tanto del modelo como de los archivos originales (`06e_tipos_originales.lean`, que además cuenta los axiomas: 11, 21 y 2): el `diff` es vacío. La única normalización del volcado es quitar prefijos de espacio de nombres.
+- **Qué implica y qué no.**
+  - Implica: no se puede deducir una contradicción de esos 34 axiomas (consistencia relativa a Lean y Mathlib). Como en el sistema real `apply_R*` son `sorry`, que es un axioma inconsistente por sí mismo, la lectura correcta es que los `sorry` son marcadores de posición que **sí admiten** una definición concreta compatible con todos los axiomas.
+  - No implica que el sistema describa nudos reales: el modelo es degenerado en lo geométrico (los nudos del modelo son multiconjuntos de racionales no nulos, sin posiciones).
+  - No cubre los axiomas de otros archivos (`Basic`, `KN_00_Combinatoria`, `KN_01`, `TCN_01`, `TCN_08_UniformityCriterion`), que hablan de otros tipos.
+  - No cubre los teoremas con `sorry`: en el modelo algunos podrían ser falsos. Por eso `mirror` no es la identidad en el modelo, para que `granny_distinct_from_square` no quede refutado, aunque no se demuestra.
+  - Habrá que rehacerlo cuando `apply_R*` tengan definición concreta (etapas 1 a 3 del mapa de ruta).
 
 ## 5. Pendiente y dónde retomar
 
@@ -246,6 +264,7 @@ Todo desde la raíz del proyecto (`TME_Nudos`):
 | Experimento de `IME2` (n=3 y n=4) | `lake env lean Procesos/Tests/auditoria_20260929/03_experimento_IME2_n3_n4.lean` |
 | `mirrorTrefoil = swap trefoilKnot` | `lake env lean Procesos/Tests/auditoria_20260929/04_mirrorTrefoil_es_swap_trefoilKnot.lean` |
 | Rastreo de `sorry` en los teoremas cerrados de `Schubert` | `lake env lean Procesos/Tests/auditoria_20260929/05_rastreo_de_sorry_en_teoremas_cerrados.lean` |
+| Modelo de consistencia de los 34 axiomas | `lake env lean Procesos/Tests/auditoria_20260929/06_modelo_de_consistencia.lean` (unos 21 s); `06e_tipos_originales.lean` vuelca los tipos de los originales para compararlos |
 | Pruebas históricas de inconsistencia | `01_...` y `02_...` **ya no compilan**; es lo esperado y prueba que la contradicción quedó bloqueada. Sirven de documentación del razonamiento. |
 
 Para volver a ver el estado: `git log --oneline master..auditoria-2026-09-29` lista los commits de esta sesión, y `git diff master --stat` el alcance total.
