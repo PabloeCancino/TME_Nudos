@@ -330,6 +330,18 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
 - **Plan:** (1) cerrar R3 (`Etapa1_R3.lean`); (2) writhe y Jones invariante sobre `GDiag` (`Etapa1_Jones.lean`); (3) prototipo de `Knot` virtual concreto y el teorema autocontenido `granny ≠ square` en él; (4) documento de diseño de la integración.
 - **Hallazgo de diseño (importante):** los movimientos abstractos sobre `GDiag` generan nudos **virtuales**, no clásicos. La desigualdad demostrada en el cociente virtual implica la clásica (los movimientos clásicos son un caso particular), pero **no se puede redefinir `Schubert.Knot` como ese cociente**: según la literatura (no verificada aquí) la suma conexa virtual no está bien definida y la factorización prima no es única, lo que haría falsos varios axiomas de `Schubert`. Detalle, opciones y recomendación en `Procesos/20260929_2247_diseno_integracion_knot.md`. **Requiere decisión del autor.**
 
+### 4.23 Writhe y polinomio de Jones invariante sobre `GDiag` (R1 y R2)
+- **Archivo:** `TMENudos/Etapa1_Jones.lean` (194 líneas, importa `Etapa1_R2`, `Etapa1_Puente` y `Etapa1_GaussWord`, no importa `Etapa1_R3`, no forma parte de la build). Verificado por mí: compilación desde cero de 65 s, sin `sorry`, `native_decide` ni axiomas nuevos, `#print axioms` solo `propext`, `Classical.choice` y `Quot.sound`.
+- **Definiciones:** `GDiag.writhe D = ∑ x : D.Cross, (if D.sign x then 1 else -1)` y `GDiag.jones A D = (-(A^3))^(-D.writhe) * D.bracket A`.
+- **Demostrado:**
+  - `writhe_map`, `writhe_r1` (`+ (if s then 1 else -1)`), `writhe_r1F`, `writhe_r2` (sin cambio: los dos cruces nuevos tienen signos `s` y `¬s` y se cancelan).
+  - **Invariancia del Jones:** `jones_map` (sin hipótesis sobre `A`), `jones_r1` (con `[Nonempty ι]`), `jones_r1F` (con `1 ≤ D.free`), `jones_r2`. El caso R1 es el interesante: el factor `-A^{±3}` de `bracket_r1` se cancela con el cambio de writhe; el lema algebraico es `jones_kink_factor`.
+  - `jones_of_bracket`: patrón genérico para los movimientos que no cambian el writhe (sirve tal cual para R3).
+  - **Puente con el spike:** `writhe_ofWord` y `jones_ofWord : (ofWord w hw).jones A = Word.jones A w`.
+  - **Trébol:** `jones_ofWord_trefoil = A⁻⁴ + A⁻¹² - A⁻¹⁶` (es decir, t + t³ - t⁴ con t = A⁻⁴) y `jones_ofWord_swap_trefoil = A⁴ + A¹² - A¹⁶`, ambos en cualquier cuerpo con `A ≠ 0`. Comprobado por mí en A = 2: 1/16 + 1/4096 - 1/65536 = 4111/65536 y 16 + 4096 - 65536 = -61424, que coinciden con los valores del spike.
+- **Dificultad.** R1 fue fácil una vez aislado el lema algebraico. Lo más incómodo fue `writhe_ofWordP`: pasar de la suma sobre la lista filtrada al subtipo `Cross` (`sum_filter_map`, `Finset.sum_subtype`).
+- **Para añadir R3:** probar `writhe_tri` (las dos caras tienen el mismo writhe, como en `writhe_r2`) y deducir `jones_tri` con `jones_of_bracket`. Conviene hacerlo en un archivo posterior que importe `Etapa1_R3` y `Etapa1_Jones`.
+
 ## 5. Pendiente y dónde retomar
 
 ### 5.1 Decisiones del autor
