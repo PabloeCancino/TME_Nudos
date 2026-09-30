@@ -25,7 +25,10 @@ open TMENudos
 
 /-! ## 1. Cruce con signo (n general) -/
 
-/-- Cruce con signo explicito: `pos = true` significa positivo. -/
+/-- Cruce con signo explicito: `pos = true` significa positivo.
+    -- ETAPA 4: redundante con `Basic.RationalCrossing` (que ya lleva el campo `pos`). Por ahora
+    se conserva tal cual: aquí `cross.pos` y `pos` son dos signos independientes; los teoremas de
+    esta capa solo usan el campo `SignedCrossing.pos`. -/
 @[ext]
 structure SignedCrossing (n : ℕ) where
   cross : RationalCrossing n
@@ -40,9 +43,11 @@ def swapS {n : ℕ} (c : SignedCrossing n) : SignedCrossing n :=
 def rotateS {n : ℕ} (k : ℝ[n]) (c : SignedCrossing n) : SignedCrossing n :=
   ⟨rotate_crossing k c.cross, c.pos⟩
 
-/-- Signo derivado de `Basic` como caso particular: `σ := (crossing_sign c = 1)`. -/
+/-- Signo derivado de las POSICIONES como caso particular: `σ := (zmod_sign (u - o) = 1)`.
+    MIGRACIÓN: antes → después: antes `decide (crossing_sign c = 1)` (con `crossing_sign` derivado);
+    ahora `crossing_sign` lee el campo `pos`, así que se usa `zmod_sign` explícitamente. -/
 def ofDerived {n : ℕ} (c : RationalCrossing n) : SignedCrossing n :=
-  ⟨c, decide (crossing_sign c = 1)⟩
+  ⟨c, decide (zmod_sign (c.under_pos - c.over_pos) = 1)⟩
 
 theorem swapS_involutive {n : ℕ} (c : SignedCrossing n) : swapS (swapS c) = c := by
   cases c with
@@ -75,14 +80,11 @@ private theorem sign_cases {n : ℕ} (x : ℝ[n]) : zmod_sign x = 1 ∨ zmod_sig
 theorem ofDerived_swap_iff {n : ℕ} [NeZero n] (c : RationalCrossing n) :
     ofDerived (swap_crossing c) = swapS (ofDerived c) ↔ (modular_ratio c).val ≠ n := by
   have hd : modular_ratio c ≠ 0 := ratio_nonzero c
-  have e1 : crossing_sign (swap_crossing c) = zmod_sign (-(modular_ratio c)) := by
-    simp [crossing_sign, swap_crossing, modular_ratio]
-  have hc : crossing_sign c = zmod_sign (modular_ratio c) := rfl
+  have e1 : c.over_pos - c.under_pos = -(modular_ratio c) := by simp [modular_ratio]
+  have hc : c.under_pos - c.over_pos = modular_ratio c := rfl
   have key := sign_neg_ne (modular_ratio c) hd
-  simp only [ofDerived, swapS, swap_crossing, SignedCrossing.mk.injEq, true_and]
-  have e2 : (RationalCrossing.mk c.under_pos c.over_pos (Ne.symm c.distinct)) =
-      swap_crossing c := rfl
-  simp only [e2, e1, hc]
+  simp only [ofDerived, swapS, swap_crossing, SignedCrossing.mk.injEq, true_and,
+    e1, hc]
   rw [← key]
   rcases sign_cases (modular_ratio c) with h | h <;>
     rcases sign_cases (-(modular_ratio c)) with h' | h' <;> simp [h, h']
@@ -99,8 +101,8 @@ theorem ofDerived_swap_of_not_antipodal {n : ℕ} [NeZero n] (c : RationalCrossi
   (ofDerived_swap_iff c).mpr h
 
 /-- Ejemplo concreto en n = 3: la pareja (0,3) es antipodal y pierde la quiralidad. -/
-example : ofDerived (swap_crossing (⟨(0 : ℝ[3]), 3, by decide⟩ : RationalCrossing 3)) ≠
-    swapS (ofDerived (⟨(0 : ℝ[3]), 3, by decide⟩ : RationalCrossing 3)) := by decide +kernel
+example : ofDerived (swap_crossing (⟨(0 : ℝ[3]), 3, by decide, true⟩ : RationalCrossing 3)) ≠
+    swapS (ofDerived (⟨(0 : ℝ[3]), 3, by decide, true⟩ : RationalCrossing 3)) := by decide +kernel
 
 /-! ## 2. Configuraciones firmadas K3 -/
 

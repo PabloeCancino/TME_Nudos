@@ -6,7 +6,14 @@ import TMENudos.Basic
 import TMENudos.TCN_01_Fundamentos
 
 /-!
-# Isomorfismo Fundamental: RationalCrossing 3 ≃ OrderedPair
+# Isomorfismo Fundamental: RationalCrossing 3 ≃ OrderedPair × Bool
+
+MIGRACIÓN (signo como dato, Etapa 1): antes → después
+- antes: `crossing_to_pair : RationalCrossing 3 ≃ OrderedPair` (30 cruces = 30 pares).
+- después: `RationalCrossing 3` lleva el signo `pos : Bool` y `OrderedPair` de TCN todavía NO
+  (su migración es la Etapa 2). Mientras tanto el isomorfismo es por un factor `Bool`:
+  `RationalCrossing 3 ≃ OrderedPair × Bool` (60 cruces firmados = 30 pares × 2 signos).
+  En la Etapa 2 (cuando `OrderedPair` gane `pos`) volverá a ser un isomorfismo directo.
 
 Este módulo establece el **isomorfismo explícito** entre dos representaciones
 del mismo objeto matemático en la Teoría Modular Estructural (TME):
@@ -16,7 +23,7 @@ del mismo objeto matemático en la Teoría Modular Estructural (TME):
    - `under_pos`: posición "abajo" del cruce en el nudo
    - Contexto: Teoría clásica de nudos, geometría 3D
 
-2. **OrderedPair**: Perspectiva algebraica (TCN_01_Fundamentos.lean)
+2. **OrderedPair** (× signo): Perspectiva algebraica (TCN_01_Fundamentos.lean)
    - `fst`: "entrada" del par en el recorrido modular
    - `snd`: "salida" del par en el recorrido modular
    - Contexto: Teoría combinatoria K₃, álgebra modular
@@ -42,14 +49,14 @@ El isomorfismo preserva:
 ```lean
 -- Convertir de topológico a algebraico
 def c : RationalCrossing 3 := ...
-def p : OrderedPair := c⟦⟧ᵃ
+def p : OrderedPair × Bool := c⟦⟧ᵃ   -- (par sin signo, signo)
 
 -- Convertir de algebraico a topológico
-def p : OrderedPair := ...
+def p : OrderedPair × Bool := ...
 def c : RationalCrossing 3 := p⟦⟧ᵗ
 
 -- Transferir teoremas
-theorem algebraic_property : ∀ p : OrderedPair, P p := by ...
+theorem algebraic_property : ∀ p : OrderedPair × Bool, P p := by ...
 theorem topological_property : ∀ c : RationalCrossing 3, P c :=
   transfer_to_crossing algebraic_property
 ```
@@ -86,18 +93,18 @@ open KnotTheory RationalCrossing OrderedPair K3Config
 
     Este isomorfismo es la formalización matemática del principio TME:
     "La topología de nudos K₃ es isomorfa a la combinatoria modular en Z/6Z" -/
-def crossing_to_pair : RationalCrossing 3 ≃ OrderedPair where
-  toFun c := ⟨c.over_pos, c.under_pos, c.distinct⟩
-  invFun p := ⟨p.fst, p.snd, p.distinct⟩
+def crossing_to_pair : RationalCrossing 3 ≃ OrderedPair × Bool where
+  toFun c := (⟨c.over_pos, c.under_pos, c.distinct⟩, c.pos)
+  invFun p := ⟨p.1.fst, p.1.snd, p.1.distinct, p.2⟩
   left_inv c := by
     cases c
     rfl
   right_inv p := by
-    cases p
+    rcases p with ⟨⟨_, _, _⟩, _⟩
     rfl
 
 /-- Isomorfismo inverso: algebraico → topológico -/
-def pair_to_crossing : OrderedPair ≃ RationalCrossing 3 :=
+def pair_to_crossing : OrderedPair × Bool ≃ RationalCrossing 3 :=
   crossing_to_pair.symm
 
 /-! ## Notación Conveniente -/
@@ -116,19 +123,27 @@ notation:max p "⟦⟧ᵗ" => pair_to_crossing p
 
 /-- El isomorfismo preserva el primer elemento -/
 theorem iso_preserves_first (c : RationalCrossing 3) :
-  (c⟦⟧ᵃ).fst = c.over_pos := rfl
+  (c⟦⟧ᵃ).1.fst = c.over_pos := rfl
 
 /-- El isomorfismo preserva el segundo elemento -/
 theorem iso_preserves_second (c : RationalCrossing 3) :
-  (c⟦⟧ᵃ).snd = c.under_pos := rfl
+  (c⟦⟧ᵃ).1.snd = c.under_pos := rfl
+
+/-- El isomorfismo preserva el signo (factor `Bool`). -/
+theorem iso_preserves_sign (c : RationalCrossing 3) :
+  (c⟦⟧ᵃ).2 = c.pos := rfl
 
 /-- El isomorfismo preserva el primer elemento (dirección inversa) -/
-theorem iso_inv_preserves_first (p : OrderedPair) :
-  (p⟦⟧ᵗ).over_pos = p.fst := rfl
+theorem iso_inv_preserves_first (p : OrderedPair × Bool) :
+  (p⟦⟧ᵗ).over_pos = p.1.fst := rfl
 
 /-- El isomorfismo preserves el segundo elemento (dirección inversa) -/
-theorem iso_inv_preserves_second (p : OrderedPair) :
-  (p⟦⟧ᵗ).under_pos = p.snd := rfl
+theorem iso_inv_preserves_second (p : OrderedPair × Bool) :
+  (p⟦⟧ᵗ).under_pos = p.1.snd := rfl
+
+/-- El isomorfismo inverso preserva el signo (dirección inversa). -/
+theorem iso_inv_preserves_sign (p : OrderedPair × Bool) :
+  (p⟦⟧ᵗ).pos = p.2 := rfl
 
 /-- La conversión es involutiva: ida y vuelta da el original -/
 theorem iso_roundtrip_crossing (c : RationalCrossing 3) :
@@ -136,7 +151,7 @@ theorem iso_roundtrip_crossing (c : RationalCrossing 3) :
   simp [crossing_to_pair, pair_to_crossing]
 
 /-- La conversión es involutiva: vuelta e ida da el original -/
-theorem iso_roundtrip_pair (p : OrderedPair) :
+theorem iso_roundtrip_pair (p : OrderedPair × Bool) :
   (p⟦⟧ᵗ)⟦⟧ᵃ = p := by
   simp [crossing_to_pair, pair_to_crossing]
 
@@ -153,12 +168,12 @@ theorem iso_roundtrip_pair (p : OrderedPair) :
     Este teorema establece que ambos conceptos son idénticos. -/
 theorem iso_preserves_displacement (c : RationalCrossing 3) :
   (c.under_pos : ZMod 6) - (c.over_pos : ZMod 6) =
-  ((c⟦⟧ᵃ).snd : ZMod 6) - ((c⟦⟧ᵃ).fst : ZMod 6) := by
+  ((c⟦⟧ᵃ).1.snd : ZMod 6) - ((c⟦⟧ᵃ).1.fst : ZMod 6) := by
   rfl
 
 /-- El desplazamiento modular es el mismo visto desde ambas perspectivas -/
 theorem displacement_commutes (c : RationalCrossing 3) :
-  modular_ratio c = (c⟦⟧ᵃ).snd - (c⟦⟧ᵃ).fst := by
+  modular_ratio c = (c⟦⟧ᵃ).1.snd - (c⟦⟧ᵃ).1.fst := by
   unfold modular_ratio
   rfl
 
@@ -171,12 +186,12 @@ theorem displacement_commutes (c : RationalCrossing 3) :
 
     Uso típico:
     ```lean
-    theorem pair_theorem : ∀ p : OrderedPair, P p := by ...
+    theorem pair_theorem : ∀ p : OrderedPair × Bool, P p := by ...
     theorem crossing_theorem : ∀ c : RationalCrossing 3, P c :=
       transfer_to_crossing pair_theorem
     ``` -/
 theorem transfer_to_crossing {P : RationalCrossing 3 → Prop}
-    (h : ∀ p : OrderedPair, P (p⟦⟧ᵗ)) :
+    (h : ∀ p : OrderedPair × Bool, P (p⟦⟧ᵗ)) :
   ∀ c : RationalCrossing 3, P c := by
   intro c
   have : P ((c⟦⟧ᵃ)⟦⟧ᵗ) := h (c⟦⟧ᵃ)
@@ -190,12 +205,12 @@ theorem transfer_to_crossing {P : RationalCrossing 3 → Prop}
     Uso típico:
     ```lean
     theorem crossing_theorem : ∀ c : RationalCrossing 3, P c := by ...
-    theorem pair_theorem : ∀ p : OrderedPair, P p :=
+    theorem pair_theorem : ∀ p : OrderedPair × Bool, P p :=
       transfer_to_pair crossing_theorem
     ``` -/
-theorem transfer_to_pair {P : OrderedPair → Prop}
+theorem transfer_to_pair {P : OrderedPair × Bool → Prop}
     (h : ∀ c : RationalCrossing 3, P (c⟦⟧ᵃ)) :
-  ∀ p : OrderedPair, P p := by
+  ∀ p : OrderedPair × Bool, P p := by
   intro p
   have : P ((p⟦⟧ᵗ)⟦⟧ᵃ) := h (p⟦⟧ᵗ)
   simpa [iso_roundtrip_pair] using this
@@ -206,7 +221,7 @@ theorem transfer_to_pair {P : OrderedPair → Prop}
     entonces resultados sobre R en un lado implican
     resultados en el otro lado. -/
 theorem transfer_relation {R : RationalCrossing 3 → RationalCrossing 3 → Prop}
-    {S : OrderedPair → OrderedPair → Prop}
+    {S : OrderedPair × Bool → OrderedPair × Bool → Prop}
     (h_equiv : ∀ c₁ c₂, R c₁ c₂ ↔ S (c₁⟦⟧ᵃ) (c₂⟦⟧ᵃ))
     (h_algebraic : ∀ p₁ p₂, S p₁ p₂) :
   ∀ c₁ c₂, R c₁ c₂ := by
@@ -226,7 +241,7 @@ theorem crossing_eq_iff_pair_eq (c₁ c₂ : RationalCrossing 3) :
     exact crossing_to_pair.injective h
 
 /-- Igualdad en pares implica igualdad en cruces -/
-theorem pair_eq_iff_crossing_eq (p₁ p₂ : OrderedPair) :
+theorem pair_eq_iff_crossing_eq (p₁ p₂ : OrderedPair × Bool) :
   p₁ = p₂ ↔ (p₁⟦⟧ᵗ) = (p₂⟦⟧ᵗ) := by
   constructor
   · intro h
@@ -236,39 +251,49 @@ theorem pair_eq_iff_crossing_eq (p₁ p₂ : OrderedPair) :
 
 /-- La distintitud es invariante bajo el isomorfismo -/
 theorem iso_preserves_distinct (c : RationalCrossing 3) :
-  c.over_pos ≠ c.under_pos ↔ (c⟦⟧ᵃ).fst ≠ (c⟦⟧ᵃ).snd := by
+  c.over_pos ≠ c.under_pos ↔ (c⟦⟧ᵃ).1.fst ≠ (c⟦⟧ᵃ).1.snd := by
   constructor <;> intro h
   · exact h
   · exact h
 
 /-! ## Compatibilidad con Operaciones -/
 
-/-- El isomorfismo conmuta con la operación de reversa
+/-- El isomorfismo conmuta con la operación de reversa / imagen especular.
 
-    Si definimos `reverse` para RationalCrossing como
-    intercambiar `over_pos` y `under_pos`, entonces:
-
-    reverse_crossing(c)⟦⟧ᵃ = reverse_pair(c⟦⟧ᵃ) -/
+    MIGRACIÓN: antes → después
+    - antes: `reverse_crossing(c)⟦⟧ᵃ = reverse_pair(c⟦⟧ᵃ)` con `reverse_crossing` = intercambiar
+      over/under (sin tocar signo, que no existía como dato).
+    - después: `swap_crossing` intercambia over/under y NIEGA el signo; en el lado algebraico,
+      `OrderedPair.reverse` sobre el par y `!` sobre el factor `Bool`:
+      `(swap_crossing c)⟦⟧ᵃ = ((c⟦⟧ᵃ).1.reverse, !(c⟦⟧ᵃ).2)`. -/
 theorem iso_commutes_with_reverse (c : RationalCrossing 3) :
-  let c_rev : RationalCrossing 3 := ⟨c.under_pos, c.over_pos, c.distinct.symm⟩
-  (c_rev⟦⟧ᵃ) = (c⟦⟧ᵃ).reverse := by
-  simp [OrderedPair.reverse]
-  rfl
+  ((swap_crossing c)⟦⟧ᵃ) = ((c⟦⟧ᵃ).1.reverse, !(c⟦⟧ᵃ).2) := by
+  simp [OrderedPair.reverse, swap_crossing, crossing_to_pair]
 
 /-! ## Transferencia de Cardinalidades -/
 
 /-- Los espacios tienen la misma cardinalidad (finita) -/
 theorem spaces_have_same_cardinality :
-  Fintype.card (RationalCrossing 3) = Fintype.card OrderedPair := by
+  Fintype.card (RationalCrossing 3) = Fintype.card (OrderedPair × Bool) := by
   exact Fintype.card_eq.mpr ⟨crossing_to_pair⟩
 
-/-- Enumeración explícita: hay 30 cruces = 30 pares -/
-theorem card_both_eq_30 :
-  Fintype.card (RationalCrossing 3) = 30 ∧
+/-- Enumeración explícita.
+
+    MIGRACIÓN (cifra): antes → después
+    - antes: `card_both_eq_30`: 30 cruces (sin signo) = 30 pares.
+    - después: 60 cruces firmados = 60 = 30 pares × 2 signos (las cardinalidades se duplican).
+      Además se conserva `card OrderedPair = 30` (TCN todavía sin signo). -/
+theorem card_both_eq_60 :
+  Fintype.card (RationalCrossing 3) = 60 ∧
+  Fintype.card (OrderedPair × Bool) = 60 ∧
   Fintype.card OrderedPair = 30 := by
-  have h1 : Fintype.card (RationalCrossing 3) = 30 := by
-    decide +kernel
-  exact ⟨h1, spaces_have_same_cardinality.symm.trans h1⟩
+  have h1 : Fintype.card (RationalCrossing 3) = 60 := by
+    rw [rationalCrossing_card]
+  have h3 : Fintype.card OrderedPair = 30 := by
+    have h := spaces_have_same_cardinality
+    rw [Fintype.card_prod, Fintype.card_bool, h1] at h
+    omega
+  exact ⟨h1, spaces_have_same_cardinality.symm.trans h1, h3⟩
 
 /-! ## Invariancia de Configuraciones K₃ -/
 
@@ -277,9 +302,9 @@ theorem card_both_eq_30 :
     Este teorema establece que una K3Config puede interpretarse
     indistintamente en cualquiera de las dos perspectivas. -/
 theorem k3config_invariant_under_iso (K : K3Config) :
-  ∀ p ∈ K.pairs, ∃ c : RationalCrossing 3, c⟦⟧ᵃ = p := by
+  ∀ p ∈ K.pairs, ∃ c : RationalCrossing 3, (c⟦⟧ᵃ).1 = p := by
   intro p hp
-  use p⟦⟧ᵗ
+  use (p, true)⟦⟧ᵗ
   simp [iso_roundtrip_pair]
 
 /-! ## Preservación de Movimientos Reidemeister -/
@@ -287,7 +312,7 @@ theorem k3config_invariant_under_iso (K : K3Config) :
 section ReidemeisterPreservation
 
 variable (has_r1_crossing : RationalCrossing 3 → Prop)
-variable (has_r1_pair : OrderedPair → Prop)
+variable (has_r1_pair : OrderedPair × Bool → Prop)
 
 /-- Si definimos R1 consistentemente en ambos lados,
     el isomorfismo debe preservarlo
@@ -311,7 +336,7 @@ end ReidemeisterPreservation
 theorem iso_is_functorial
     {α β : Type*}
     (f : α → RationalCrossing 3)
-    (g : OrderedPair → β) :
+    (g : OrderedPair × Bool → β) :
   (fun x => g ((f x)⟦⟧ᵃ)) = g ∘ crossing_to_pair ∘ f := by
   rfl
 
@@ -324,7 +349,7 @@ theorem iso_is_functorial
 theorem universal_transfer_principle
     (P : RationalCrossing 3 → Prop) :
   (∀ c : RationalCrossing 3, P c) ↔
-  (∀ p : OrderedPair, P (p⟦⟧ᵗ)) := by
+  (∀ p : OrderedPair × Bool, P (p⟦⟧ᵗ)) := by
   constructor
   · intro h p
     exact h (p⟦⟧ᵗ)
@@ -337,7 +362,7 @@ theorem universal_transfer_principle
 section Examples
 
 /-- Ejemplo 1: Transferir un teorema simple -/
-example (h : ∀ p : OrderedPair, p.fst ≠ p.snd) :
+example (h : ∀ p : OrderedPair × Bool, p.1.fst ≠ p.1.snd) :
   ∀ c : RationalCrossing 3, c.over_pos ≠ c.under_pos := by
   intro c
   have := h (c⟦⟧ᵃ)
@@ -448,10 +473,10 @@ end ConsistencyTests
 Para extender este patrón a K₄ (4 cruces):
 
 ```lean
-def crossing_to_pair_k4 : RationalCrossing 4 ≃ OrderedPair_K4 where
+def crossing_to_pair_k4 : RationalCrossing 4 ≃ OrderedPair_K4 × Bool where
   -- Similar estructura, pero con ZMod 8
-  toFun c := ⟨c.over_pos, c.under_pos, c.distinct⟩
-  invFun p := ⟨p.fst, p.snd, p.distinct⟩
+  toFun c := (⟨c.over_pos, c.under_pos, c.distinct⟩, c.pos)
+  invFun p := ⟨p.1.fst, p.1.snd, p.1.distinct, p.2⟩
   left_inv _ := rfl
   right_inv _ := rfl
 ```
@@ -480,8 +505,9 @@ end TMENudos
 /-!
 ## Resumen del Módulo
 
-Este módulo establece que `RationalCrossing 3` y `OrderedPair` son
-**el mismo objeto matemático** visto desde dos perspectivas:
+Este módulo establece que `RationalCrossing 3` y `OrderedPair × Bool` son
+**el mismo objeto matemático** visto desde dos perspectivas (mientras `OrderedPair` de TCN
+no lleve signo, el signo es el factor `Bool`; en la Etapa 2 será un isomorfismo directo):
 
 1. **Topológica** (RationalCrossing): Cruces de nudos en 3D
 2. **Algebraica** (OrderedPair): Pares modulares en Z/6Z

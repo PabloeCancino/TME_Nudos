@@ -24,9 +24,15 @@ open TMENudos.Gauss TMENudos.Gauss.Word
 
 /-! ## 1. Conversion `RationalConfiguration n → Word` (general) -/
 
-/-- Signo derivado como `Bool` (`true` si `crossing_sign = 1`), igual que `Basic.crossing_sign`. -/
+/-- Signo derivado de las POSICIONES como `Bool` (`true` si `zmod_sign (u - o) = 1`).
+
+    MIGRACIÓN (signo como dato): antes era `decide (crossing_sign c = 1)`, y `crossing_sign` era
+    derivado; ahora `crossing_sign` lee el campo `pos`, así que aquí se escribe explícitamente la
+    fórmula derivada (el comportamiento antiguo), para que esta capa de exploración conserve su
+    enunciado: el signo derivado pierde la quiralidad. Para leer el campo `pos` ver
+    `RationalConfiguration.toWordData`. -/
 def derivedPos {n : ℕ} (c : TMENudos.RationalCrossing n) : Bool :=
-  decide (TMENudos.crossing_sign c = 1)
+  decide (TMENudos.zmod_sign (c.under_pos - c.over_pos) = 1)
 
 /-- Palabra de Gauss de longitud `2n` de una configuracion racional: en la posicion `p` esta el
     cruce `i` (primero que la contiene), `over` si `p` es su posicion superior, `pos` = signo
@@ -38,6 +44,19 @@ def _root_.TMENudos.RationalConfiguration.toWord {n : ℕ} (K : TMENudos.Rationa
     match (List.finRange n).find? (fun i =>
         decide ((K.crossings i).over_pos = x ∨ (K.crossings i).under_pos = x)) with
     | some i => ⟨i.val, decide ((K.crossings i).over_pos = x), derivedPos (K.crossings i)⟩
+    | none => ⟨0, true, true⟩
+
+/-- Palabra de Gauss de una configuración racional leyendo el signo DATO (`pos`) de cada cruce.
+    (Nuevo en la migración del signo como dato; `toWord` de arriba conserva el signo derivado de
+    las posiciones.) Para cruces construidos con `withDerivedSign` coinciden
+    (`trefoilRC_wordData`). -/
+def _root_.TMENudos.RationalConfiguration.toWordData {n : ℕ}
+    (K : TMENudos.RationalConfiguration n) : Word :=
+  (List.range (2 * n)).map fun p =>
+    let x : ZMod (2 * n) := (p : ZMod (2 * n))
+    match (List.finRange n).find? (fun i =>
+        decide ((K.crossings i).over_pos = x ∨ (K.crossings i).under_pos = x)) with
+    | some i => ⟨i.val, decide ((K.crossings i).over_pos = x), (K.crossings i).pos⟩
     | none => ⟨0, true, true⟩
 
 /-! ## 2. Conversion `K3Config → Word` -/
@@ -373,11 +392,28 @@ theorem parity_rotation_flips :
 open TMENudos in
 /-- Trebol como `RationalConfiguration 3`. -/
 def trefoilRC : RationalConfiguration 3 where
-  crossings := ![⟨0, 3, by decide⟩, ⟨4, 1, by decide⟩, ⟨2, 5, by decide⟩]
+  crossings := ![RationalCrossing.withDerivedSign 0 3 (by decide),
+    RationalCrossing.withDerivedSign 4 1 (by decide),
+    RationalCrossing.withDerivedSign 2 5 (by decide)]
   coverage := by decide
 
 open TMENudos in
 theorem trefoilRC_word : trefoilRC.toWord = K3Config.toWord trefoilKnot := by decide +kernel
+
+open TMENudos in
+/-- Con `withDerivedSign`, leer el signo dato coincide con el signo derivado. -/
+theorem trefoilRC_wordData : trefoilRC.toWordData = trefoilRC.toWord := by decide +kernel
+
+open TMENudos in
+/-- Con el signo como dato, la imagen especular (`swap_knot`, que niega el signo) SÍ cambia el
+    Jones: da el del trébol izquierdo (-61424), a diferencia de `swap_knot_trefoilRC_jones`. -/
+theorem swap_knot_trefoilRC_jones_data :
+    jones (2 : ℚ) (swap_knot trefoilRC).toWordData = -61424 := by
+  decide +kernel
+
+open TMENudos in
+theorem swap_knot_trefoilRC_wordData_eq_swap :
+    (swap_knot trefoilRC).toWordData = swap trefoilRC.toWordData := by decide +kernel
 
 open TMENudos in
 theorem trefoilRC_wf : Word.wf trefoilRC.toWord = true := by decide +kernel
@@ -400,5 +436,8 @@ theorem swap_knot_trefoilRC_word_ne : (swap_knot trefoilRC).toWord ≠ swap tref
 #print axioms signed_swap_trefoil_jones
 #print axioms zmod_sign_antipodal
 #print axioms swap_knot_trefoilRC_word_ne
+#print axioms trefoilRC_wordData
+#print axioms swap_knot_trefoilRC_jones_data
+#print axioms swap_knot_trefoilRC_wordData_eq_swap
 
 end TMENudos.Modular

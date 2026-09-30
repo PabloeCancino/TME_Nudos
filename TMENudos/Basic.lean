@@ -154,15 +154,31 @@ Para cada n existe un conjunto de cruces C = {c₁, ..., cₙ}, y para cada cᵢ
 -/
 
 /--
-Estructura de un cruce racional.
-Cada cruce tiene una posición "over" y una posición "under" en el espacio de recorrido Z_{2n}.
+Estructura de un cruce racional **firmado**.
+Cada cruce tiene una posición "over" y una posición "under" en el espacio de recorrido Z_{2n},
+y un signo `pos` (`true` = positivo) que es un DATO del cruce.
+
+MIGRACIÓN (signo como dato, Etapa 1): antes → después
+- antes: `RationalCrossing` tenía 3 campos (`over_pos`, `under_pos`, `distinct`) y el signo se
+  derivaba de las posiciones (`crossing_sign c = zmod_sign (u - o)`).
+- después: gana `pos : Bool` como ÚLTIMO campo, sin valor por defecto; `crossing_sign` lo lee.
+  Hay el doble de cruces: `2 * (2n)(2n-1)` (ver `rationalCrossing_card`).
 -/
 @[ext]
 structure RationalCrossing (n : ℕ) where
   over_pos : ℝ[n]
   under_pos : ℝ[n]
   distinct : over_pos ≠ under_pos
+  pos : Bool
 deriving DecidableEq
+
+/-- Equivalencia entre cruces firmados y (par de posiciones distintas) × signo. -/
+def RationalCrossing.equivSubtypeBool (n : ℕ) :
+    RationalCrossing n ≃ { c : ℝ[n] × ℝ[n] // c.1 ≠ c.2 } × Bool where
+  toFun c := (⟨(c.over_pos, c.under_pos), c.distinct⟩, c.pos)
+  invFun p := ⟨p.1.val.1, p.1.val.2, p.1.property, p.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 instance (n : ℕ) [NeZero n] : Fintype (RationalCrossing n) :=
   let pred : ℝ[n] × ℝ[n] → Prop := fun c => c.1 ≠ c.2
@@ -171,15 +187,31 @@ instance (n : ℕ) [NeZero n] : Fintype (RationalCrossing n) :=
   have : Fintype (ℝ[n] × ℝ[n]) :=
     @instFintypeProd _ _ (@ZMod.fintype (2*n) h_ne) (@ZMod.fintype (2*n) h_ne)
   have : Fintype { c : ℝ[n] × ℝ[n] // pred c } := Subtype.fintype pred
-  Fintype.ofEquiv { c : ℝ[n] × ℝ[n] // pred c }
-    { toFun := fun c => ⟨c.val.1, c.val.2, c.property⟩
-      invFun := fun c => ⟨(c.over_pos, c.under_pos), c.distinct⟩
-      left_inv := fun _ => rfl
-      right_inv := fun _ => rfl }
+  Fintype.ofEquiv ({ c : ℝ[n] × ℝ[n] // pred c } × Bool) (RationalCrossing.equivSubtypeBool n).symm
+
+/-- Cardinalidad de los cruces firmados: `2 * (2n * (2n - 1))`
+    (antes, sin signo, `2n * (2n - 1)`). -/
+theorem rationalCrossing_card (n : ℕ) [NeZero n] :
+    Fintype.card (RationalCrossing n) = 2 * (2 * n * (2 * n - 1)) := by
+  have h_ne : NeZero (2*n) := ⟨by have := NeZero.ne n; omega⟩
+  have h1 : Fintype.card (RationalCrossing n) =
+      Fintype.card ({ c : ℝ[n] × ℝ[n] // c.1 ≠ c.2 } × Bool) :=
+    Fintype.card_congr (RationalCrossing.equivSubtypeBool n)
+  have h2 : Fintype.card { c : ℝ[n] × ℝ[n] // c.1 ≠ c.2 } = 2 * n * (2 * n - 1) := by
+    rw [Fintype.card_subtype]
+    have hf : (Finset.univ.filter (fun c : ℝ[n] × ℝ[n] => c.1 ≠ c.2)) =
+        (Finset.univ : Finset ℝ[n]).offDiag := by
+      ext c; simp [Finset.mem_offDiag]
+    rw [hf, Finset.offDiag_card, Finset.card_univ, traversal_space_card]
+    cases n with
+    | zero => exact absurd rfl (NeZero.ne 0)
+    | succ m => simp [Nat.mul_sub]
+  rw [h1, Fintype.card_prod, h2, Fintype.card_bool, mul_comm]
 
 /-- Representación textual de un cruce -/
 instance (n : ℕ) : Repr (RationalCrossing n) where
-  reprPrec c _ := "(" ++ repr c.over_pos ++ ", " ++ repr c.under_pos ++ ")"
+  reprPrec c _ := "(" ++ repr c.over_pos ++ ", " ++ repr c.under_pos ++ ", " ++
+    (if c.pos then "+" else "-") ++ ")"
 
 /-!
 ## Razón Modular [o,u]
@@ -202,13 +234,19 @@ def modular_ratio {n : ℕ} (c : RationalCrossing n) : ℝ[n] :=
 def ratio_val {n : ℕ} (c : RationalCrossing n) : ℕ :=
   (modular_ratio c).val
 
-/-- La razón modular junto con la posición over determina únicamente el cruce.
+/-- La razón modular junto con la posición over Y EL SIGNO determina únicamente el cruce.
     Esto refleja que cada posición (clase de equivalencia) es única en la estructura modular,
-    y la razón [o,u] caracteriza completamente la relación entre las dos clases. -/
+    y la razón [o,u] caracteriza completamente la relación entre las dos clases.
+
+    MIGRACIÓN: antes → después
+    - antes: `over_pos = ∧ modular_ratio = → c₁ = c₂`.
+    - después: el signo es un dato independiente de las posiciones, así que hay que añadir la
+      hipótesis `c₁.pos = c₂.pos` (sin ella el enunciado es falso: basta cambiar el signo). -/
 theorem ratio_injective {n : ℕ} (c₁ c₂ : RationalCrossing n) :
-  c₁.over_pos = c₂.over_pos → modular_ratio c₁ = modular_ratio c₂ → c₁ = c₂ := by
-  intro h_over h_ratio
-  apply RationalCrossing.ext h_over
+  c₁.over_pos = c₂.over_pos → modular_ratio c₁ = modular_ratio c₂ → c₁.pos = c₂.pos →
+    c₁ = c₂ := by
+  intro h_over h_ratio h_pos
+  apply RationalCrossing.ext h_over _ h_pos
   unfold modular_ratio at h_ratio
   -- De c₁.under_pos - c₁.over_pos = c₂.under_pos - c₂.over_pos
   -- y c₁.over_pos = c₂.over_pos, se sigue c₁.under_pos = c₂.under_pos
@@ -225,7 +263,7 @@ theorem ratio_nonzero {n : ℕ} [NeZero n] (c : RationalCrossing n) :
   exact c.distinct this.symm
 
 /-- Ejemplo: cálculo de razón modular -/
-example : ratio_val ⟨(3 : ℝ[5]), (7 : ℝ[5]), by decide⟩ = 4 := by
+example : ratio_val ⟨(3 : ℝ[5]), (7 : ℝ[5]), by decide, true⟩ = 4 := by
   unfold ratio_val modular_ratio
   rfl
 
@@ -410,9 +448,31 @@ Fórmula: σᵢ = sgn((uᵢ - oᵢ) mod 2n).
 def zmod_sign {n : ℕ} (x : ℝ[n]) : Int :=
   if x.val > 0 ∧ x.val ≤ n then 1 else -1
 
-/-- El signo de un cruce racional -/
+/-- El signo de un cruce racional, leído del campo `pos` (DATO del cruce).
+
+    MIGRACIÓN: antes → después
+    - antes: `crossing_sign c = zmod_sign (c.under_pos - c.over_pos)` (derivado de las posiciones;
+      no podía distinguir el trébol de su imagen especular en los cruces antipodales).
+    - después: `crossing_sign c = if c.pos then 1 else -1`. El signo antiguo es el caso
+      particular `withDerivedSign` (ver `crossing_sign_withDerivedSign`). -/
 def crossing_sign {n : ℕ} (c : RationalCrossing n) : Int :=
-  zmod_sign (c.under_pos - c.over_pos)
+  if c.pos then 1 else -1
+
+/-- Cruce con el signo DERIVADO de las posiciones (el comportamiento antiguo de `Basic`,
+    como caso particular): `pos := decide (zmod_sign (u - o) = 1)`. -/
+def RationalCrossing.withDerivedSign {n : ℕ} (o u : ℝ[n]) (h : o ≠ u) : RationalCrossing n :=
+  ⟨o, u, h, decide (zmod_sign (u - o) = 1)⟩
+
+/-- Con `withDerivedSign`, `crossing_sign` recupera exactamente la definición antigua. -/
+theorem crossing_sign_withDerivedSign {n : ℕ} (o u : ℝ[n]) (h : o ≠ u) :
+    crossing_sign (RationalCrossing.withDerivedSign o u h) = zmod_sign (u - o) := by
+  unfold crossing_sign RationalCrossing.withDerivedSign zmod_sign
+  by_cases hc : (u - o).val > 0 ∧ (u - o).val ≤ n <;> simp [hc]
+
+/-- El signo de un cruce es siempre ±1. -/
+theorem crossing_sign_eq_one_or_neg_one {n : ℕ} (c : RationalCrossing n) :
+    crossing_sign c = 1 ∨ crossing_sign c = -1 := by
+  unfold crossing_sign; split <;> simp
 
 /-!
 ## Axioma de Enroscamiento (Dimensión 3)
@@ -428,6 +488,12 @@ La medida global de este enroscamiento es el **Writhe** (w).
 /--
 Writhe (w): La suma de los signos de todos los cruces.
 Representa el enroscamiento total del nudo en el espacio.
+
+MIGRACIÓN: antes → después
+- antes: cada sumando era el signo DERIVADO de las posiciones (`zmod_sign (u - o)`).
+- después: cada sumando es el signo DATO del cruce (`crossing_sign c`, leído de `c.pos`). La
+  definición no cambia de texto; sí su significado. Para un cruce construido con `withDerivedSign`
+  se recupera el valor antiguo (`crossing_sign_withDerivedSign`).
 -/
 def writhe {n : ℕ} (K : RationalConfiguration n) : Int :=
   ((List.range n).map (fun i =>
@@ -482,11 +548,23 @@ def interlacing_matrix {n : ℕ} (K : RationalConfiguration n) (i j : Fin n) : �
 K* := {(u₁, o₁), ..., (uₙ, oₙ)}.
 -/
 
-/-- swap (τ) sobre un cruce: intercambia over/under -/
+/-- swap (τ) sobre un cruce: intercambia over/under y NIEGA el signo.
+
+    MIGRACIÓN: antes → después
+    - antes: solo intercambiaba over/under (el signo derivado cambiaba o no según la pareja,
+      y en las antipodales no cambiaba).
+    - después: intercambia over/under y `pos := !c.pos` (imagen especular). -/
 def swap_crossing {n : ℕ} (c : RationalCrossing n) : RationalCrossing n :=
   { over_pos := c.under_pos,
     under_pos := c.over_pos,
-    distinct := Ne.symm c.distinct }
+    distinct := Ne.symm c.distinct,
+    pos := !c.pos }
+
+/-- `swap_crossing` niega el signo. -/
+theorem crossing_sign_swap {n : ℕ} (c : RationalCrossing n) :
+    crossing_sign (swap_crossing c) = - crossing_sign c := by
+  unfold crossing_sign swap_crossing
+  cases c.pos <;> simp
 
 /-- swap (τ) sobre una configuración (imagen especular real) -/
 def swap_knot {n : ℕ} (K : RationalConfiguration n) : RationalConfiguration n :=
@@ -512,14 +590,19 @@ def rotation_equiv {n : ℕ} (k : ℝ[n]) : ℝ[n] ≃ ℝ[n] where
   left_inv x := by simp
   right_inv x := by simp
 
-/-- Rotación de un cruce por k unidades -/
+/-- Rotación de un cruce por k unidades. CONSERVA el signo (`pos := c.pos`). -/
 def rotate_crossing {n : ℕ} (k : ℝ[n]) (c : RationalCrossing n) : RationalCrossing n :=
   { over_pos := c.over_pos + k,
     under_pos := c.under_pos + k,
     distinct := by
       intro h
       have : c.over_pos = c.under_pos := add_right_cancel h
-      exact c.distinct this }
+      exact c.distinct this,
+    pos := c.pos }
+
+/-- `rotate_crossing` conserva el signo. -/
+theorem crossing_sign_rotate {n : ℕ} (k : ℝ[n]) (c : RationalCrossing n) :
+    crossing_sign (rotate_crossing k c) = crossing_sign c := rfl
 
 /-- Rotación de una configuración por k unidades -/
 def rotate_knot {n : ℕ} (k : ℝ[n]) (K : RationalConfiguration n) : RationalConfiguration n :=
@@ -573,6 +656,8 @@ theorem rotate_zero {n : ℕ} (K : RationalConfiguration n) :
     simp [rotate_knot, rotate_crossing]
   · -- under_pos
     simp [rotate_knot, rotate_crossing]
+  · -- pos (se conserva)
+    simp [rotate_knot, rotate_crossing]
 
 /-- Composición de rotaciones (equivarianza): rotar por k₁ y luego por k₂ es equivalente
     a rotar por k₁+k₂. Esta propiedad garantiza que las rotaciones forman un grupo
@@ -588,6 +673,8 @@ theorem rotation_composition {n : ℕ} (K : RationalConfiguration n) (k₁ k₂ 
     unfold rotate_knot rotate_crossing
     simp
     ring
+  · -- pos (se conserva)
+    simp [rotate_knot, rotate_crossing]
 
 /-- Rotación inversa: rotar por k y luego por -k regresa a la configuración original -/
 theorem rotation_inverse {n : ℕ} (K : RationalConfiguration n) (k : ℝ[n]) :
@@ -648,6 +735,12 @@ def is_R1_candidate {n : ℕ} (K : RationalConfiguration n) (i : Fin n) : Prop :
 /-!
 ### 3.3. Movida R2 racional
 Par (cₐ, c_b) es tipo R2 si Ady(oₐ, o_b), Ady(uₐ, u_b), a ⋈ b, y aislamiento local.
+
+MIGRACIÓN (regla 4, signo como dato): antes → después
+- antes: sin condición de signo.
+- después: se añade que los dos cruces tengan signos OPUESTOS (`ca.pos ≠ cb.pos`), que es lo que
+  se demostró en `Etapa1_R2`. R1 admite cualquier signo y R3 se deja como estaba. Nada ajeno
+  dependía de `is_R2_candidate` (solo `is_R2_transition` e `Isotopic.R2_reduction`, aquí).
 -/
 
 def is_R2_candidate {n : ℕ} (K : RationalConfiguration n) (a b : Fin n) : Prop :=
@@ -656,7 +749,9 @@ def is_R2_candidate {n : ℕ} (K : RationalConfiguration n) (a b : Fin n) : Prop
   a ≠ b ∧
   is_adjacent ca.over_pos cb.over_pos ∧
   is_adjacent ca.under_pos cb.under_pos ∧
-  are_interlaced ca cb
+  are_interlaced ca cb ∧
+  -- Regla 4 (signo como dato): los dos cruces tienen signos opuestos
+  ca.pos ≠ cb.pos
   -- Nota: La condición de "aislamiento local" se satisface automáticamente en el modelo discreto
   -- si asumimos adyacencia estricta (distancia 1), ya que no hay espacio para otros cruces entre
   -- ellos.
@@ -809,12 +904,48 @@ theorem dihedral_structure_commutes {n : ℕ} [NeZero n] (K : RationalConfigurat
   inversion (progression (inversion K)) = progression K := by
   simp [inversion, progression, swap_knot, rotate_knot, swap_crossing, rotate_crossing]
 
+/-- La imagen especular niega el writhe (signo como dato).
+    Antes: `swap` NO cambiaba el signo derivado de los cruces antipodales, y el enunciado
+    `writhe (swap_knot K) = - writhe K` era falso en general (p. ej. el trébol). -/
+theorem writhe_swap_knot {n : ℕ} (K : RationalConfiguration n) :
+    writhe (swap_knot K) = - writhe K := by
+  unfold writhe
+  have aux : ∀ (l : List ℕ) (f g : ℕ → Int), (∀ x ∈ l, f x = - g x) →
+      (l.map f).sum = - (l.map g).sum := by
+    intro l f g h
+    induction l with
+    | nil => simp
+    | cons a t ih =>
+      simp only [List.map_cons, List.sum_cons]
+      rw [h a (by simp), ih (fun x hx => h x (by simp [hx]))]
+      ring
+  apply aux
+  intro i _
+  by_cases h : i < n
+  · simp [h, swap_knot, crossing_sign_swap]
+  · simp [h]
+
+/-- La rotación conserva el writhe (la rotación conserva cada signo). -/
+theorem writhe_rotate_knot {n : ℕ} (k : ℝ[n]) (K : RationalConfiguration n) :
+    writhe (rotate_knot k K) = writhe K := by
+  unfold writhe
+  apply congrArg
+  apply List.map_congr_left
+  intro i _
+  by_cases h : i < n
+  · simp [h, rotate_knot, crossing_sign_rotate]
+  · simp [h]
+
 /-!
 ## Teorema T2 — Antisimetría de la matriz firmada
 S(K)ᵀ = -S(K)
 -/
 
-/-- Matriz firmada S(K) -/
+/-- Matriz firmada S(K).
+
+    MIGRACIÓN: antes → después. El texto no cambia; los signos `si`, `sj` son ahora el signo dato
+    de cada cruce. La antisimetría (abajo) solo usa que `si * sj` es conmutativo, así que sigue
+    valiendo sin hipótesis sobre cómo se obtuvo el signo. -/
 def signed_matrix {n : ℕ} (K : RationalConfiguration n) (i j : Fin n) : Int :=
   if i = j then 0
   else
@@ -1188,11 +1319,17 @@ def is_irreducible {n : ℕ} (K : RationalConfiguration n) : Prop :=
 
 /-- Helper to convert configuration to list of pairs for ordering.
     Usa (over_pos, razón_modular) en lugar de (over_pos, under_pos).
-    Esto facilita la prueba de inyectividad gracias a ratio_injective. -/
+    Esto facilita la prueba de inyectividad gracias a ratio_injective.
+
+    MIGRACIÓN: antes → después
+    - antes: segunda componente = `ratio_val`.
+    - después: segunda componente = `2 * ratio_val + (pos).toNat`, para que el signo (dato) entre en
+      la lista y `to_list` siga siendo inyectiva (orden: primero por razón, luego por signo). -/
 def to_list {n : ℕ} (K : RationalConfiguration n) : List (ℕ × ℕ) :=
   (List.range n).attach.map (fun ⟨i, hi⟩ =>
     let idx : Fin n := ⟨i, by simp only [List.mem_range] at hi; exact hi⟩
-    ((K.crossings idx).over_pos.val, ratio_val (K.crossings idx)))
+    ((K.crossings idx).over_pos.val,
+      2 * ratio_val (K.crossings idx) + (K.crossings idx).pos.toNat))
 
 lemma to_list_injective {n : ℕ} : Function.Injective (@to_list n) := by
   intro K1 K2 h
@@ -1216,12 +1353,18 @@ lemma to_list_injective {n : ℕ} : Function.Injective (@to_list n) := by
     -- h_get es una igualdad de pares: (over1, ratio1) = (over2, ratio2)
     rcases h_get with ⟨h_over, h_ratio⟩
     -- Usamos ratio_injective para concluir que los cruces son iguales
+    have h_sr : ∀ (x y : ℕ) (b b' : Bool), 2 * x + b.toNat = 2 * y + b'.toNat →
+        x = y ∧ b = b' := by
+      intro x y b b' h
+      cases b <;> cases b' <;> simp at h ⊢ <;> omega
+    obtain ⟨h_r, h_p⟩ := h_sr _ _ _ _ h_ratio
     apply ratio_injective
     · apply ZMod.val_injective
       exact h_over
-    · unfold ratio_val at h_ratio
+    · unfold ratio_val at h_r
       apply ZMod.val_injective
-      exact h_ratio
+      exact h_r
+    · exact h_p
 
 /-- Helper to convert configuration to flat list of numbers for ordering -/
 def to_flat_list {n : ℕ} (K : RationalConfiguration n) : List ℕ :=
@@ -1495,8 +1638,51 @@ theorem isotopic_irreducible_same_IME {n : ℕ} (K₁ K₂ : RationalConfigurati
     -- 3. IME es invariante bajo rotación
     exact (IME_rotation_invariant K₁ k).symm
 
-/-- Si dos configuraciones tienen el mismo IME, existe una rotación que las relaciona -/
-theorem same_IME_implies_rotation {n : ℕ} (K₁ K₂ : RationalConfiguration n) :
+/-- Núcleo: razones modulares iguales Y signos iguales, cruce a cruce, implican que una
+    configuración es rotación de la otra. -/
+theorem rotation_of_ratio_pos_eq {n : ℕ} [NeZero n] (K₁ K₂ : RationalConfiguration n)
+    (h_ratio : ∀ i : Fin n, ratio_val (K₁.crossings i) = ratio_val (K₂.crossings i))
+    (h_sgn : ∀ i : Fin n, (K₁.crossings i).pos = (K₂.crossings i).pos) :
+    ∃ (k : ℝ[n]), K₂ = rotate_knot k K₁ := by
+  -- Axioma de reconstrucción da el desplazamiento k
+  obtain ⟨k, h_over⟩ := reconstruct_from_first K₁ K₂ h_ratio
+  use k
+  apply RationalConfiguration.ext
+  funext i
+  show K₂.crossings i = (rotate_knot k K₁).crossings i
+  apply RationalCrossing.ext
+  · -- over_pos
+    rw [h_over i]
+    rfl
+  · -- under_pos
+    have h_u1 : (K₂.crossings i).under_pos - (K₂.crossings i).over_pos =
+      modular_ratio (K₂.crossings i) := rfl
+    rw [sub_eq_iff_eq_add] at h_u1
+    have h_u2 : ((rotate_knot k K₁).crossings i).under_pos -
+      ((rotate_knot k K₁).crossings i).over_pos =
+      modular_ratio ((rotate_knot k K₁).crossings i) := rfl
+    rw [sub_eq_iff_eq_add] at h_u2
+    have h_mod_ratio : modular_ratio (K₂.crossings i) =
+      modular_ratio ((rotate_knot k K₁).crossings i) := by
+      unfold ratio_val at h_ratio
+      apply ZMod.val_injective
+      rw [←h_ratio i]
+      rw [rotation_preserves_ratios]
+    rw [h_u1, h_u2, h_over i, h_mod_ratio]
+    rfl
+  · -- pos: la rotación conserva el signo
+    exact (h_sgn i).symm
+
+/-- Si dos configuraciones tienen el mismo IME Y los mismos signos, existe una rotación que las
+    relaciona.
+
+    MIGRACIÓN: antes → después
+    - antes: `IME K₁ = IME K₂ → ∃ k, K₂ = rotate_knot k K₁`.
+    - después: con el signo como dato, el IME (solo razones) ya no determina la configuración
+      salvo rotación (dos cruces con las mismas posiciones y signos opuestos tienen el mismo IME);
+      se añade la hipótesis de signos iguales cruce a cruce. -/
+theorem same_IME_implies_rotation {n : ℕ} (K₁ K₂ : RationalConfiguration n)
+  (h_sgn : ∀ i : Fin n, (K₁.crossings i).pos = (K₂.crossings i).pos) :
   IME K₁ = IME K₂ → ∃ (k : ℝ[n]), K₂ = rotate_knot k K₁ := by
   intro h_ime
   -- Caso n=0
@@ -1508,37 +1694,64 @@ theorem same_IME_implies_rotation {n : ℕ} (K₁ K₂ : RationalConfiguration n
     exact Fin.elim0 i
   -- Caso n>0
   · haveI : NeZero n := ⟨h_n⟩
-    -- 1. IME igual implica ratio_val igual
-    have h_ratio : ∀ i, ratio_val (K₁.crossings i) = ratio_val (K₂.crossings i) :=
-      IME_eq_implies_ratio_val_eq K₁ K₂ h_ime
-    -- 2. Axioma de reconstrucción da el desplazamiento k
-    obtain ⟨k, h_over⟩ := reconstruct_from_first K₁ K₂ h_ratio
-    use k
-    -- 3. Verificar que K₂ = rotate_knot k K₁
+    exact rotation_of_ratio_pos_eq K₁ K₂ (IME_eq_implies_ratio_val_eq K₁ K₂ h_ime) h_sgn
+
+/-- IME firmado (SIME): la secuencia de pares (razón modular, signo) de los cruces.
+    Es el invariante que sustituye al IME cuando el signo es un dato. -/
+def SIME {n : ℕ} (K : RationalConfiguration n) : List (ℕ × Bool) :=
+  (List.finRange n).map (fun i => (ratio_val (K.crossings i), (K.crossings i).pos))
+
+/-- El SIME es invariante bajo rotaciones (la rotación conserva razones y signos). -/
+theorem SIME_rotation_invariant {n : ℕ} [NeZero n] (K : RationalConfiguration n) (k : ℝ[n]) :
+    SIME (rotate_knot k K) = SIME K := by
+  unfold SIME
+  apply List.map_congr_left
+  intro i _
+  simp only [ratio_val, rotation_preserves_ratios]
+  rfl
+
+/-- SIME igual implica razones y signos iguales cruce a cruce. -/
+theorem SIME_eq_iff {n : ℕ} (K₁ K₂ : RationalConfiguration n) :
+    SIME K₁ = SIME K₂ ↔ ∀ i : Fin n,
+      ratio_val (K₁.crossings i) = ratio_val (K₂.crossings i) ∧
+      (K₁.crossings i).pos = (K₂.crossings i).pos := by
+  unfold SIME
+  rw [List.map_inj_left]
+  constructor
+  · intro h i
+    have := h i (List.mem_finRange i)
+    simpa [Prod.ext_iff] using this
+  · intro h i _
+    have := h i
+    simp [this.1, this.2]
+
+/-- Si dos configuraciones tienen el mismo SIME, una es rotación de la otra. -/
+theorem same_SIME_implies_rotation {n : ℕ} (K₁ K₂ : RationalConfiguration n) :
+  SIME K₁ = SIME K₂ → ∃ (k : ℝ[n]), K₂ = rotate_knot k K₁ := by
+  intro h
+  by_cases h_n : n = 0
+  · subst h_n
+    use 0
     apply RationalConfiguration.ext
     funext i
-    show K₂.crossings i = (rotate_knot k K₁).crossings i
-    apply RationalCrossing.ext
-    · -- over_pos
-      rw [h_over i]
-      rfl
-    · -- under_pos
-      -- 1. Relacionar under con over y ratio
-      have h_u1 : (K₂.crossings i).under_pos - (K₂.crossings i).over_pos =
-        modular_ratio (K₂.crossings i) := rfl
-      rw [sub_eq_iff_eq_add] at h_u1
-      have h_u2 : ((rotate_knot k K₁).crossings i).under_pos -
-        ((rotate_knot k K₁).crossings i).over_pos =
-        modular_ratio ((rotate_knot k K₁).crossings i) := rfl
-      rw [sub_eq_iff_eq_add] at h_u2
-      have h_mod_ratio : modular_ratio (K₂.crossings i) =
-        modular_ratio ((rotate_knot k K₁).crossings i) := by
-        unfold ratio_val at h_ratio
-        apply ZMod.val_injective
-        rw [←h_ratio i]
-        rw [rotation_preserves_ratios]
-      rw [h_u1, h_u2, h_over i, h_mod_ratio]
-      rfl
+    exact Fin.elim0 i
+  · haveI : NeZero n := ⟨h_n⟩
+    have h' := (SIME_eq_iff K₁ K₂).mp h
+    exact rotation_of_ratio_pos_eq K₁ K₂ (fun i => (h' i).1) (fun i => (h' i).2)
+
+/-- Irreducibles isotópicos tienen el mismo SIME (razones y signos): por el Axioma A7 son
+    rotaciones una de otra, y la rotación conserva razones y signos. -/
+theorem isotopic_irreducible_same_SIME {n : ℕ} (K₁ K₂ : RationalConfiguration n)
+  (h_irr1 : is_irreducible K₁) (h_irr2 : is_irreducible K₂) :
+  Isotopic ⟨n, K₁⟩ ⟨n, K₂⟩ → SIME K₁ = SIME K₂ := by
+  intro h_iso
+  by_cases hn : n = 0
+  · subst hn
+    rfl
+  · haveI : NeZero n := ⟨hn⟩
+    have h_min1 : n = min_degree K₁ := L5_irreducible_implies_minimal K₁ h_irr1
+    obtain ⟨k, rfl⟩ := minimal_isotopic_implies_rotation K₁ K₂ h_min1 h_iso
+    exact (SIME_rotation_invariant K₁ k).symm
 
 theorem rotation_implies_isotopic {n : ℕ} (K : RationalConfiguration n) (k : ℝ[n]) :
   Isotopic ⟨n, K⟩ ⟨n, rotate_knot k K⟩ := by
@@ -1547,21 +1760,26 @@ theorem rotation_implies_isotopic {n : ℕ} (K : RationalConfiguration n) (k : �
 /--
 Teorema de Completitud del IME (Versión Correcta):
 Dos nudos racionales irreducibles son isotópicos si y solo si tienen el mismo número de cruces
-y el mismo IME.
+y el mismo IME FIRMADO (`SIME`).
+
+MIGRACIÓN: antes → después
+- antes: `Isotopic ↔ n = m ∧ IME K₁ = IME K₂`.
+- después: `Isotopic ↔ n = m ∧ SIME K₁ = SIME K₂` (razones Y signos). Con el signo como dato, la
+  implicación `←` con solo el IME es falsa (mismas razones, signos distintos); la ida sigue
+  valiendo porque la rotación conserva el signo. El IME solo sigue siendo consecuencia
+  (`IME_complete_ime`).
 -/
 theorem IME_complete {n m : ℕ} (K₁ : RationalConfiguration n) (K₂ : RationalConfiguration m)
   (h_irr1 : is_irreducible K₁) (h_irr2 : is_irreducible K₂) :
-  Isotopic ⟨n, K₁⟩ ⟨m, K₂⟩ ↔ (n = m ∧ IME K₁ = IME K₂) := by
+  Isotopic ⟨n, K₁⟩ ⟨m, K₂⟩ ↔ (n = m ∧ SIME K₁ = SIME K₂) := by
   constructor
   · intro h_iso
     have h_nm : n = m := isotopic_irreducible_same_crossing_number K₁ K₂ h_irr1 h_irr2 h_iso
     subst h_nm
-    constructor
-    · rfl
-    · exact isotopic_irreducible_same_IME K₁ K₂ h_irr1 h_irr2 h_iso
+    exact ⟨rfl, isotopic_irreducible_same_SIME K₁ K₂ h_irr1 h_irr2 h_iso⟩
   · intro h
-    rcases h with ⟨rfl, h_IME⟩
-    obtain ⟨k, rfl⟩ := same_IME_implies_rotation K₁ K₂ h_IME
+    rcases h with ⟨rfl, h_SIME⟩
+    obtain ⟨k, rfl⟩ := same_SIME_implies_rotation K₁ K₂ h_SIME
     exact rotation_implies_isotopic K₁ k
 
 

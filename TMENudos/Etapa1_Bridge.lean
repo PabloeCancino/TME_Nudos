@@ -50,9 +50,10 @@ deriving DecidableEq
 
 namespace SignedRationalConfiguration
 
-/-- El signo derivado de `Basic.crossing_sign` como caso particular. -/
+/-- El signo derivado de las posiciones (`zmod_sign (u - o)`, el `crossing_sign` antiguo de `Basic`)
+    como caso particular. ETAPA 4: redundante con el campo `pos` de `Basic.RationalCrossing`. -/
 def ofDerived {n : ℕ} (cfg : RationalConfiguration n) : SignedRationalConfiguration n :=
-  ⟨cfg, fun i => decide (crossing_sign (cfg.crossings i) = 1)⟩
+  ⟨cfg, fun i => decide (zmod_sign ((cfg.crossings i).under_pos - (cfg.crossings i).over_pos) = 1)⟩
 
 /-- Imagen especular: `swap_knot` (intercambia over/under) y NIEGA cada signo. -/
 def mirror {n : ℕ} (rc : SignedRationalConfiguration n) : SignedRationalConfiguration n :=

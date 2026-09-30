@@ -52,7 +52,14 @@ Dos cruces forman un patrón R2 si:
 En configuraciones racionales, buscamos cruces con esta relación modular.
 -/
 
-/-- Verifica si dos cruces forman un patrón R2 -/
+/-- Verifica si dos cruces forman un patrón R2 (solo por POSICIONES).
+
+    MIGRACIÓN (regla 4, signo como dato) — DIFERIDO: la regla pide que los dos cruces de un R2
+    tengan signos opuestos. Aquí NO se añade `c1.pos != c2.pos` porque falsificaría
+    `K3_special_has_R2` y `isReducibleToTrivial K3_special` (los tres cruces de `K3_special`, con
+    signo derivado, son positivos, así que ningún par tiene signos opuestos). Esos enunciados son
+    una heurística posicional anterior al resultado de que la órbita de 12 no es plana; se
+    reformularán en la Etapa 3 junto con las órbitas y la realizabilidad. -/
 def formR2Pair {n : ℕ} (c1 c2 : RationalCrossing n) : Bool :=
   let o1 := c1.over_pos
   let u1 := c1.under_pos

@@ -37,12 +37,28 @@ namespace TMENudos.UniformityCriterion
 Asumimos acceso a las definiciones de Basic.txt
 -/
 
-/-- Configuración racional simplificada (replica de Basic.txt) -/
+/-- Cruce racional simplificado (réplica de `Basic`), ahora FIRMADO.
+
+    MIGRACIÓN (signo como dato, Etapa 1): antes → después
+    - antes: 3 campos (`over_pos`, `under_pos`, `distinct`).
+    - después: gana `pos : Bool` como último campo (como `Basic.RationalCrossing`). El criterio de
+      uniformidad depende solo de las razones modulares, así que no cambia. -/
 structure RationalCrossing (n : ℕ) where
   over_pos : ZMod (2 * n)
   under_pos : ZMod (2 * n)
   distinct : over_pos ≠ under_pos
+  pos : Bool
   deriving DecidableEq
+
+/-- Signo auxiliar (réplica de `Basic.zmod_sign`). -/
+def zmod_sign {n : ℕ} (x : ZMod (2 * n)) : Int :=
+  if x.val > 0 ∧ x.val ≤ n then 1 else -1
+
+/-- Cruce con el signo derivado de las posiciones (réplica de
+    `Basic.RationalCrossing.withDerivedSign`). -/
+def RationalCrossing.withDerivedSign {n : ℕ} (o u : ZMod (2 * n)) (h : o ≠ u) :
+    RationalCrossing n :=
+  ⟨o, u, h, decide (zmod_sign (u - o) = 1)⟩
 
 /-- Razón modular de un cruce -/
 def modular_ratio {n : ℕ} (c : RationalCrossing n) : ZMod (2 * n) :=
@@ -157,8 +173,8 @@ section K2_Tests
 def K2_1 : RationalConfiguration 2 := {
   crossings := fun i =>
     match i with
-    | ⟨0, _⟩ => ⟨1, 0, by decide⟩
-    | ⟨1, _⟩ => ⟨2, 3, by decide⟩
+    | ⟨0, _⟩ => .withDerivedSign 1 0 (by decide)
+    | ⟨1, _⟩ => .withDerivedSign 2 3 (by decide)
   coverage := by decide
 }
 
@@ -166,8 +182,8 @@ def K2_1 : RationalConfiguration 2 := {
 def K2_2 : RationalConfiguration 2 := {
   crossings := fun i =>
     match i with
-    | ⟨0, _⟩ => ⟨1, 3, by decide⟩
-    | ⟨1, _⟩ => ⟨2, 0, by decide⟩
+    | ⟨0, _⟩ => .withDerivedSign 1 3 (by decide)
+    | ⟨1, _⟩ => .withDerivedSign 2 0 (by decide)
   coverage := by decide
 }
 
@@ -193,8 +209,8 @@ example : IME K2_2 = [2, 2] := by
 example : ¬has_uniform_IME K2_1 := by
   unfold has_uniform_IME ratio_val modular_ratio K2_1
   intro ⟨r, hr⟩
-  have h0 := hr ⟨0, by decide⟩
-  have h1 := hr ⟨1, by decide⟩
+  have h0 : (0 - 1 : ZMod 4).val = r := hr ⟨0, by decide⟩
+  have h1 : (3 - 2 : ZMod 4).val = r := hr ⟨1, by decide⟩
   -- h0: (0 - 1 : ZMod 4).val = r
   -- h1: (3 - 2 : ZMod 4).val = r
   have eq0 : (0 - 1 : ZMod 4).val = 3 := by decide
@@ -243,9 +259,9 @@ section K3_Tests
 /-- specialClass: {(0,3), (1,4), (2,5)} -/
 def K3_special : RationalConfiguration 3 := {
   crossings := fun i =>
-    if h0 : i = 0 then ⟨0, 3, by decide⟩
-    else if h1 : i = 1 then ⟨1, 4, by decide⟩
-    else ⟨2, 5, by decide⟩
+    if h0 : i = 0 then .withDerivedSign 0 3 (by decide)
+    else if h1 : i = 1 then .withDerivedSign 1 4 (by decide)
+    else .withDerivedSign 2 5 (by decide)
   coverage := by decide
 }
 
@@ -323,7 +339,8 @@ Para K₃,special:
 def rotate_crossing {n : ℕ} (c : RationalCrossing n) (k : ℕ) : RationalCrossing n :=
   { over_pos := c.over_pos + k
     under_pos := c.under_pos + k
-    distinct := fun h => c.distinct (add_right_cancel h) }
+    distinct := fun h => c.distinct (add_right_cancel h)
+    pos := c.pos }
 
 /-- Una configuración es cerrada bajo rotación por k -/
 def closed_under_rotation {n : ℕ} (K : RationalConfiguration n) (k : ℕ) : Prop :=
