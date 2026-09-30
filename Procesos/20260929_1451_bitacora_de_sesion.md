@@ -324,6 +324,12 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
 - Detalle del estado y de cómo retomar: ver la sección 0 de este documento.
 - El agente de R3 no llegó a entregar informe final, así que todo lo dicho sobre él sale de leer el archivo y de compilarlo: 1 `sorry` (`check_all`, línea 258) y 1 error (`r3_lazos`, línea 1024).
 
+### 4.22 Reanudación nocturna (2026-09-29, 22:47)
+- **Encargo del autor:** retomar los procesos de esta bitácora con autogestión mientras duerme y aprovechar la noche.
+- **Regla que me fijé:** avanzar solo en archivos nuevos de la rama `etapa1-spike-gauss`, sin tocar la build principal ni `Reidemeister.lean`, `Schubert.lean` o `Bridge.lean` (el protocolo del mapa de ruta exige proponer el diseño antes de modificarlos y el autor no está para aprobarlo).
+- **Plan:** (1) cerrar R3 (`Etapa1_R3.lean`); (2) writhe y Jones invariante sobre `GDiag` (`Etapa1_Jones.lean`); (3) prototipo de `Knot` virtual concreto y el teorema autocontenido `granny ≠ square` en él; (4) documento de diseño de la integración.
+- **Hallazgo de diseño (importante):** los movimientos abstractos sobre `GDiag` generan nudos **virtuales**, no clásicos. La desigualdad demostrada en el cociente virtual implica la clásica (los movimientos clásicos son un caso particular), pero **no se puede redefinir `Schubert.Knot` como ese cociente**: según la literatura (no verificada aquí) la suma conexa virtual no está bien definida y la factorización prima no es única, lo que haría falsos varios axiomas de `Schubert`. Detalle, opciones y recomendación en `Procesos/20260929_2247_diseno_integracion_knot.md`. **Requiere decisión del autor.**
+
 ## 5. Pendiente y dónde retomar
 
 ### 5.1 Decisiones del autor
