@@ -249,6 +249,16 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
   - Solo está R1. Faltan R2, R3, y la relación con la suma conexa y con `Knot` (hitos M2 y M3).
   - La estimación para R2 y R3 es del agente y puede quedarse corta: el trabajo de R3 con `next` no trivial no se ha medido.
 
+### 4.19 M4, R2: invariancia del corchete bajo el movimiento de dos cruces
+- **Archivo:** `TMENudos/Etapa1_R2.lean` (1060 líneas, importa `Etapa1_Invariancia`, no forma parte de la build).
+- **Salvaguarda numérica antes de demostrar.** Como en el modelo abstracto los signos no están ligados a la geometría, se comprobó con la versión de listas del spike (en A = 2 y A = 3) qué combinaciones de (`ov`, `par`, `s`) dejan el corchete invariante. Resultado: **las 8 combinaciones son válidas**, con 0 fallos en todas las palabras probadas (todas las de 1 cruce con signos, 576 pares en las de 2 cruces, trébol y espejo, y 780 pares en 26 palabras de 3 cruces). **Control negativo:** con los dos cruces del mismo signo falla en todos los casos (8/8, 576/576, 60/60 y 780/780), lo que confirma que la prueba discrimina y que la regla de signos (s, ¬s) es la correcta.
+- **Demostrado sin `sorry`, con axiomas solo `propext`, `Classical.choice` y `Quot.sound`** (compilación desde cero de 38 s, 0 alertas de linter):
+  - `def r2 (D) (e f) (hef : e ≠ f) (ov par s : Bool) : GDiag (ι ⊕ (Bool × Bool))`: inserta dos cruces con una hebra en la arista `e` y la otra en la `f`.
+  - **`bracket_r2 : (r2 D e f hef ov par s).bracket A = D.bracket A`**, para todo `ov`, `par` y `s`, con `A ≠ 0`.
+- **Obstáculo técnico.** Un solo cruce no basta para el conteo de componentes: en el estado identidad, las aristas intermedias caen en la clase de la *otra* hebra. Se resolvió con una retracción por patrón y tres lemas genéricos nuevos (`card_cc_succ'`, `card_local_eq`, `card_local_circ`), y simetrizando sobre `ov` con `smooth_symm`. La identidad algebraica final se cierra con A·A⁻¹ = 1 y d = -A²-A⁻².
+- **Observación de alcance.** Estos movimientos se aplican a dos aristas cualesquiera, sin exigir que compartan una cara, es decir, son los movimientos de Reidemeister sobre diagramas de Gauss abstractos (los de la teoría de nudos virtuales). El corchete resulta invariante bajo ellos. Según la literatura (Goussarov–Polyak–Viro), dos diagramas clásicos equivalentes como virtuales lo son también como clásicos, así que esto no rompe nada; no lo he verificado yo.
+- **Estimación del agente para R3** (extrapolación suya): directo, de 1200 a 2000 líneas; derivado de R2 más un cálculo local, de 400 a 700. Recomienda la segunda vía, previo un paso 0 numérico.
+
 ## 5. Pendiente y dónde retomar
 
 ### 5.1 Decisiones del autor
