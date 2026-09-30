@@ -64,6 +64,10 @@ Solo en archivos nuevos de la rama `etapa1-spike-gauss`:
 
 Los puntos 1 a 3 de la sección 6 se cumplieron: R3 cerrado (`Etapa1_R3.lean`), Jones invariante bajo los tres movimientos (`Etapa1_Jones.lean`, `Etapa1_JonesR3.lean`) y prototipo de `Knot` virtual (`Etapa1_Nudos.lean`) con los teoremas `trefoilV_ne_unknotV`, `trefoilV_ne_mirror` y `granny_ne_square`, todos sin `sorry` y con axiomas estándar. El resultado del prototipo respalda la **Opción 1**: la parte matemática dura ya está demostrada, y lo que queda es decidir cómo conectarla con la capa abstracta de `Schubert.lean` (el axioma `jones_knot` y su especificación), sin redefinir `Knot`.
 
+## 6 ter. Actualización (2026-09-30): riesgo de inconsistencia de la Opción 1, descartado
+
+Se verificó que la Opción 1 (axioma `jones2` con su especificación) es **consistente** con los 34 axiomas: modelo extendido `Procesos/Tests/auditoria_20260929/11_modelo_jones2.lean` (sin `sorryAx`), y borrador `12_opcion1_sobre_schubert.lean` que compila contra el `Schubert` real y demuestra el enunciado exacto de `granny_distinct_from_square` a partir de la especificación. Detalle en la bitácora, sección 4.27. Queda por decidir la conexión con el módulo concreto, que sigue siendo axiomática en esta opción.
+
 ## 7. Decisiones que necesito de usted
 
 1. ¿Opción 1, 2 o 3? (Recomiendo la 1.)
