@@ -259,6 +259,17 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
 - **Observación de alcance.** Estos movimientos se aplican a dos aristas cualesquiera, sin exigir que compartan una cara, es decir, son los movimientos de Reidemeister sobre diagramas de Gauss abstractos (los de la teoría de nudos virtuales). El corchete resulta invariante bajo ellos. Según la literatura (Goussarov–Polyak–Viro), dos diagramas clásicos equivalentes como virtuales lo son también como clásicos, así que esto no rompe nada; no lo he verificado yo.
 - **Estimación del agente para R3** (extrapolación suya): directo, de 1200 a 2000 líneas; derivado de R2 más un cálculo local, de 400 a 700. Recomienda la segunda vía, previo un paso 0 numérico.
 
+### 4.20 El puente entre el corchete abstracto y el computable
+- **Problema.** La invariancia (R1, R2, y pronto R3) se demuestra sobre `GDiag`, cuyo corchete es no computable (`Nat.card` de componentes conexas); los valores concretos del trébol y de las sumas conexas se calculan con `decide` sobre `Word`. Hacía falta un puente.
+- **Archivo:** `TMENudos/Etapa1_Puente.lean` (701 líneas, importa `Etapa1_Invariancia` y `Etapa1_GaussWord`, no forma parte de la build). Compilación desde cero de 27 s, sin `sorry`, `native_decide` ni axiomas nuevos.
+- **Se logró la vía general, no el plan alternativo.**
+  - `ofWord (w : Word) (hw : Word.wf w = true) : GDiag (Fin w.length)`: sucesor cíclico `finRotate`, pareja calculada con `findIdx`, `free = 1` solo para la palabra vacía.
+  - **`bracket_ofWord : (ofWord w hw).bracket A = Word.bracket A w`**, para toda palabra bien formada y todo cuerpo. No exige `A ≠ 0`: ambos lados usan `A⁻¹` con la misma fórmula, así que el enunciado es más fuerte que el pedido.
+  - Corolarios: `bracket_ofWord_trefoil` (⟨3₁⟩ = A⁻⁷ - A⁻³ - A⁵) y `bracket_ofWord_swap_trefoil`, trasladados a `GDiag`; además `wf_concat_trefoil` y `wf_concat_trefoil_swap`.
+- **Estructura de la prueba.** (i) Corrección de la unión-búsqueda: el invariante `Inv m comp r` dice que dos posiciones tienen la misma etiqueta si y solo si están conectadas por la clausura equivalencia de las parejas aplicadas; con él, `Nat.card` de componentes es la longitud de `eraseDups`. (ii) Los estados abstractos se biyectan con `Fin n → Bool` alineados con `crossings w`. (iii) Las parejas de `pairsAt` coinciden con `smoothRel`. El caso `m = 0` va aparte.
+- **Dificultad.** Lo más laborioso fue la corrección de la unión-búsqueda; el resto fue fontanería de índices `Fin` y `getElem` dependientes.
+- **Qué permite.** Los valores concretos calculados con `decide` sobre listas se trasladan al diagrama abstracto donde se demuestra la invariancia.
+
 ## 5. Pendiente y dónde retomar
 
 ### 5.1 Decisiones del autor
