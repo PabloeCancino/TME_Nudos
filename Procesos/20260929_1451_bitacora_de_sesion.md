@@ -1,12 +1,64 @@
 # Bitácora de la sesión del 2026-09-29
 
-**Proyecto:** TMENudos (Lean 4 v4.29.0, Mathlib v4.29.0) · **Rama:** `auditoria-2026-09-29` (7 commits sobre `master` al escribir la bitácora, más el de su revisión; sin subir a ningún remoto)
+**Proyecto:** TMENudos (Lean 4 v4.29.0, Mathlib v4.29.0) · **Rama más completa al cierre:** `integracion-opcion1` (28 commits sobre `master`; sin subir a ningún remoto; ver la sección 000)
 **Documentos hermanos:**
 - `20260929_1340_reporte_de_auditoria.md`: reporte de auditoría (estado y clasificación de los `sorry`).
 - `20260929_1408_mapa_de_ruta.md`: mapa de ruta hacia un `Reidemeister.lean` estable.
 - `Tests/auditoria_20260929/`: las pruebas ejecutables de esta sesión.
 
 Este documento es el registro cronológico completo: qué se probó, qué se encontró, qué se cambió y por qué, y dónde retomar. Las secciones 1 a 3 sirven para orientarse; la 4 es el registro detallado; la 5 lista lo pendiente.
+
+## 000. CIERRE DE SESIÓN (2026-09-30) — LEER PRIMERO
+
+**Sesión cerrada por el autor** (se va a la universidad). Todo el trabajo está commiteado: el árbol de trabajo está **limpio** en la rama `integracion-opcion1`, y la build se verificó al cerrar.
+
+### Estado verificado al cierre
+| Comprobación | Resultado |
+|---|---|
+| Build de los 34 módulos más la raíz (`lake build TMENudos` y los módulos por nombre, sin los `Etapa1_*`) | **3 327 trabajos, 0 errores, 0 alertas** distintas de `declaration uses sorry` |
+| `sorry` en el código | **22** (`Schubert` 15, `Reidemeister` 5, `KN_00_Combinatoria` 1, `KN_Instance_K3` 1) |
+| Axiomas | **51** (`Schubert` 25, `Reidemeister` 11, `Basic` 5, `KN_01` 5, `Bridge` 2, y 1 en cada uno de `KN_00_Combinatoria`, `TCN_01` y `TCN_08_UniformityCriterion`) |
+| Modelo de consistencia (`Tests/auditoria_20260929/11_modelo_jones2.lean`) | Cubre los **38 axiomas** de `Reidemeister`, `Schubert` y `Bridge`; sin `sorryAx`; 70 objetos con tipos idénticos a los originales |
+| Archivos `Etapa1_*.lean` (fuera de la build) | 9, todos compilan sin `sorry` ni axiomas nuevos |
+
+### Dónde está cada cosa
+| Rama | Contenido | Último commit |
+|---|---|---|
+| `master` | **Sin cambios** | `f3c46bb` |
+| `auditoria-2026-09-29` | Auditoría, etapa 0, saneamiento de `Schubert`, modelo de consistencia, quandles | `8179aaa` |
+| `etapa1-spike-gauss` | Sale de la anterior: spike, R1, R2, R3, puente, Jones, prototipo de nudos virtuales, exploración modular | `d856bcc` |
+| **`integracion-opcion1`** (actual, la más completa) | Sale de la anterior: Opción 1 en `Schubert.lean`, `Modular_Signo`, "realizable" sin la órbita de 12, mapa de rutas | `c5d7416` |
+
+La historia es **lineal**: las tres ramas son antepasadas de `integracion-opcion1` y `master` es antepasado de todas, así que traer todo a `master` sería un avance rápido (54 archivos, 28 commits). **No se ha hecho ni se ha subido nada a ningún remoto**; es decisión del autor.
+
+### Lo conseguido en total (resumen)
+- **Compilación y linters:** de 8 módulos con errores (≈90) y cientos de alertas a 0 y 0.
+- **Inconsistencias eliminadas:** los axiomas `R1_inverse` y `R2_inverse` permitían demostrar `False`; corregidos y verificados con un modelo.
+- **Enunciados falsos corregidos** en `TCN_06` a `TCN_08` (conteos de órbitas) y en la teoría KN (`gap_mirror`, `IDE_mirror`, `IME_mirror`).
+- **Invariancia del corchete de Kauffman bajo R1, R2 y R3** sobre diagramas de Gauss con signos, y el Jones invariante; prototipo de nudos virtuales con `trefoil ≠ mirror` y `granny ≠ square`.
+- **`granny_distinct_from_square` demostrado en `Schubert.lean`** por la Opción 1 (4 axiomas de `jones2`, consistentes con los demás).
+- **Teoría modular:** el signo derivado explica la pérdida de quiralidad; capa aditiva con signo como dato (`Modular_Signo`); "realizable" en K3 excluye la órbita de 12, que no es planar.
+
+### Decisiones y trabajo pendiente
+Detalle en la sección **5.6** (mapa de rutas con su riesgo y su sonda) y en `20260929_2247_diseno_integracion_knot.md`. Lo que espera al autor:
+1. **Fusionar a `master`** (y cuándo), o seguir trabajando en la rama.
+2. **`rational_to_diagram` de `Bridge`:** sigue siendo axioma. Cerrarlo obliga a cambiar `Diagram` a `GDiag`, lo que choca con la Opción 1 (riesgo alto, ver R1 en 5.6). Recomendación: darlo solo en la capa paralela.
+3. **Migrar `Basic` y `TCN` al signo firmado** (R3): exige aprobación archivo por archivo y cambia conteos en cascada (120 → 960 configuraciones).
+4. **Clase B de `Schubert`** (7 `sorry`): reformular los enunciados falsos (coste bajo, seguro) o axiomatizar los profundos (previa extensión del modelo).
+5. **Meta larga:** un `Knot` clásico con planaridad (Opción 2), que convertiría los axiomas de `jones2` en teoremas.
+6. Estructura: cuál de `KN_*` y `TCN_*` es canónico; renombrar la σ de `KN_02`; ampliar `TMENudos.lean`.
+
+### Lo que NO se ha hecho (para no dar nada por supuesto)
+- La conexión entre el `Knot` abstracto de `Schubert` y el módulo concreto de la etapa 1 **sigue siendo axiomática** (los axiomas de `jones2`).
+- La consistencia demostrada es **relativa a Lean y Mathlib** y de un modelo **degenerado** en lo geométrico (`Knot` = multiconjuntos de racionales no nulos); no prueba que el sistema describa nudos reales.
+- El riesgo de que la suma conexa virtual no esté bien definida se apoya **solo en la literatura**; la sonda con el Jones (13) es ciega a él (sección 5.6).
+- Los valores del Jones están evaluados en A = 2 sobre ℚ; las formas simbólicas en A vienen de un script externo no demostrado, salvo las del trébol y su espejo, que sí están demostradas en cualquier cuerpo.
+
+### Cómo retomar
+1. `git checkout integracion-opcion1` (o `master` si se fusionó).
+2. `lake build TMENudos` y los módulos por nombre (ver la sección 7) para comprobar que todo sigue en 0 errores.
+3. Leer, por este orden: esta sección 000, la 5.6 y `20260929_2247_diseno_integracion_knot.md`.
+4. Decidir la ruta siguiente con la lista de comprobación de la sección 5.6 (qué toca, si se puede extender el modelo, si hay contraejemplo pequeño, qué depende de ello, y si la sonda es sensible a lo que se teme).
 
 ## 00. Resumen de la noche del 29 al 30 de septiembre (LEER PRIMERO)
 
