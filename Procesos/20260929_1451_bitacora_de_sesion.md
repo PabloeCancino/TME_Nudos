@@ -10,7 +10,7 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 ## 000. CIERRE DE SESIÓN (2026-09-30) — LEER PRIMERO
 
-> **ACTUALIZACIÓN (sesión de retorno, rama `clase-b-y-capa-paralela`, sale de `integracion-opcion1`):** el autor pidió empezar por lo barato y seguro. Hecho: reformulación de los enunciados falsos de la clase B (sección 4.31). **Cifras actuales:** build de los 34 módulos más la raíz con 0 errores y 0 alertas; `sorry` en el código **17** (`Schubert` 11, `Reidemeister` 4, `KN_00_Combinatoria` 1, `KN_Instance_K3` 1); axiomas **51** (sin cambio). Las cifras del cuadro de abajo corresponden al cierre anterior.
+> **ACTUALIZACIÓN (sesión de retorno, rama `clase-b-y-capa-paralela`, sale de `integracion-opcion1`):** el autor pidió empezar por lo barato y seguro. Hecho: reformulación de los enunciados falsos de la clase B (sección 4.31). **También hecho: la capa paralela de `rational_to_diagram` (sección 4.32).** **Cifras actuales:** build de los 34 módulos más la raíz con 0 errores y 0 alertas; `sorry` en el código **17** (`Schubert` 11, `Reidemeister` 4, `KN_00_Combinatoria` 1, `KN_Instance_K3` 1); axiomas **51** (sin cambio). Las cifras del cuadro de abajo corresponden al cierre anterior.
 
 **Sesión cerrada por el autor** (se va a la universidad). Todo el trabajo está commiteado: el árbol de trabajo está **limpio** en la rama `integracion-opcion1`, y la build se verificó al cerrar.
 
@@ -527,6 +527,21 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
   | `knot_primality_in_NP` (comentario) | decía "está en NP" | el enunciado solo afirma **decidibilidad**; se corrige el comentario, sin cambiar enunciado ni nombre |
 - **Alcance y límites:** ninguna reformulación añade axiomas, y las dos eliminaciones no dejan referencias (comprobado por la compilación completa). Los dos axiomas que quedan sin uso (`manifold_connected_sum`, y `ThreeManifold` con `JSJ_decomposition`) siguen en el modelo de consistencia sin cambios.
 - **Qué sigue en clase C tras esto:** `schubert_torus_knot_primality`, `schubert_companion_theorem` y `alexander_multiplicative` ya son enunciados verdaderos, pero dependen de definiciones sin contenido (`torus_knot`, `is_satellite`, `knot_genus`, `alexander_polynomial`).
+
+### 4.32 `rational_to_diagram` en la capa paralela: `Etapa1_Bridge.lean`
+- **Decisión del autor:** dar la función concreta solo en la capa paralela; **el axioma `rational_to_diagram` de `Bridge.lean` NO se cierra** (su codominio es el `Diagram` del modelo antiguo; cerrarlo exigiría pasar a `GDiag`, lo que choca con la Opción 1).
+- **Archivo:** `TMENudos/Etapa1_Bridge.lean` (329 líneas; importa `Basic`, `Modular_Signo`, `Etapa1_Puente`, `Etapa1_Jones`, `Etapa1_Modular`, `Etapa1_Nudos` y `Etapa1_GaussWord`; no importa `Reidemeister`, `Schubert` ni `Bridge`; fuera de la build). Verificado por mí: compilación desde cero de 29 s, sin `sorry`, `native_decide` ni axiomas nuevos; `#print axioms` de los teoremas principales, solo `propext`, `Classical.choice`, `Quot.sound`.
+- **Definiciones (generales en `n`, con `[NeZero n]`):**
+  - `SignedRationalConfiguration n` (una `RationalConfiguration n` más `sgn : Fin n → Bool`), con `ofDerived` (el signo derivado de `crossing_sign`) y `mirror` (aplica `swap_knot` y niega cada signo).
+  - `ofSigned rc : GDiag (ZMod (2*n))`: `next = +1`, `free = 0`, y `partner`, `ovr`, `sign` a partir del cruce que contiene cada posición (justificado con `coverage` y `all_positions_distinct`); los cuatro axiomas de `GDiag` están demostrados en general.
+  - `signedToDiag rc` (signo dato) y `rationalToDiag rc` (signo derivado): la función concreta de la capa paralela, con valores en el `Diag` de `Etapa1_Nudos`.
+- **Criterio de corrección** (`ofSigned_eq_map`, general): si en cada posición el diagrama coincide con el de una palabra de Gauss transportado por un isomorfismo, entonces `ofSigned rc = (ofWord w hw).map e`, de donde el Jones coincide con el de la palabra. La comprobación posición por posición se hace con `decide +kernel` sobre `Fin 6 ≃ ZMod 6`.
+- **Pruebas de que es la función correcta (solo n = 3, el trébol):**
+  - `jones_ofSigned_trefSRC = 4111/65536` (trébol firmado +,+,+) y `jones_ofSigned_mirrorSRC = -61424` (su espejo firmado: parejas intercambiadas y signos -,-,-).
+  - `signedToDiag_tref_ne_mirror`: con signo dato, las clases en `NudoV` del trébol y de su espejo son **distintas**.
+  - Con signo derivado: `ofDerived_trefoilRC : ofDerived trefoilRC = trefSRC`, `rationalToDiag_loses_chirality` (el Jones del trébol modular y el de su "espejo" `swap_knot` **coinciden**) y `rationalToDiag_mirror_ne_genuine_mirror` (ese valor es distinto del -61424 del espejo genuino). Es exactamente la pérdida de quiralidad explicada en 4.26, ahora vista a través de la función concreta.
+- **Limitaciones (del informe y leídas por mí):** las pruebas de corrección cubren solo el trébol; no hay teorema general `ofSigned (ofDerived rc) ≅ ofWord rc.toWord` (el método `ofSigned_eq_map` sirve para cualquier otra configuración con la misma comprobación). Con signo derivado solo se prueba que el Jones coincide, no que las clases en `NudoV` sean iguales. `ofSigned` no exige planaridad, así que las clases son de nudos virtuales (mismo alcance que `Etapa1_Nudos`). El archivo arrastra la importación de `TCN_06_Representantes` vía `Etapa1_Modular`.
+- **Qué queda de la decisión (4):** cerrar el axioma de `Bridge` sigue pendiente y depende de la ruta R1 (ver 5.6).
 
 ## 5. Pendiente y dónde retomar
 
