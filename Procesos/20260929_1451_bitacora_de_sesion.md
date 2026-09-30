@@ -8,7 +8,56 @@
 
 Este documento es el registro cronológico completo: qué se probó, qué se encontró, qué se cambió y por qué, y dónde retomar. Las secciones 1 a 3 sirven para orientarse; la 4 es el registro detallado; la 5 lista lo pendiente.
 
-## 1. Estado final en una tabla
+## 0. Punto de suspensión (leer primero)
+
+**Sesión suspendida el 2026-09-29 por decisión del autor.** El agente que trabajaba en R3 fue detenido a mano; el resto del trabajo estaba terminado y commiteado.
+
+### Dónde está todo
+| Rama | Contenido | Último commit |
+|---|---|---|
+| `master` | Sin cambios | `f3c46bb` |
+| `auditoria-2026-09-29` | Auditoría, correcciones, etapa 0, saneamiento de `Schubert`, modelo de consistencia, exploración de quandles | `8179aaa` |
+| **`etapa1-spike-gauss`** (rama actual) | Sale de la anterior. Etapa 1 hacia `granny_distinct_from_square`: spike, R1, R2, puente y R3 a medias | el commit de esta suspensión |
+
+Nada se ha subido a ningún remoto ni se ha integrado en `master`. Para retomar: `git checkout etapa1-spike-gauss`.
+
+### Qué se logró en la etapa 1 (todo verificado con compilación desde cero, sin `sorry`, sin axiomas nuevos)
+| Pieza | Archivo | Líneas | Resultado principal |
+|---|---|---|---|
+| Spike de palabras de Gauss con signos | `Etapa1_GaussWord.lean` | ~330 | ⟨3₁⟩ = A⁻⁷ - A⁻³ - A⁵ y su espejo, en cualquier cuerpo; `jones_granny_ne_square` en A = 2 |
+| Invariancia bajo R1 | `Etapa1_Invariancia.lean` | 1210 | `bracket_map`, `bracket_r1`, `bracket_r1_free` |
+| Invariancia bajo R2 | `Etapa1_R2.lean` | 1060 | `bracket_r2` (8 combinaciones válidas de orientación, orden y signo) |
+| Puente abstracto ↔ computable | `Etapa1_Puente.lean` | 701 | `bracket_ofWord`, para toda palabra bien formada |
+
+### R3: qué hay y qué falta (trabajo a medias, **no verificado**)
+`TMENudos/Etapa1_R3.lean` (1072 líneas, importa `Etapa1_R2`; no forma parte de la build). El agente lo dejó con la arquitectura completa:
+- La parte finita (las seis letras nuevas, el grafo local de nueve aristas, `reachB`, `rep`, `matL`, `mi`, `kk`), el diagrama `tri` que inserta el triángulo con dos caras (`o` y `¬ o`), la biyección de estados `r3State`, el lema de aristas `r3_graph_eq` y los lemas de conteo (`count_eq`, `count_circ`, `count_local`).
+- La **identidad algebraica** `FF_invariant` (sin `sorry`, cerrada con `field_simp; ring` por casos): la suma de ocho términos es invariante para los patrones válidos `validR3`.
+- El teorema final `bracket_r3` **ya escrito**: el corchete de las dos caras coincide para los patrones `validR3`. Solo depende de lo que falta.
+- La tabla de patrones válidos sale de `Procesos/Tests/auditoria_20260929/08_geometria_r3.py` (tres rectas en posición general, productos cruzados): **48 de los 64 pares (orden, signos)** son R3 geométricos, y la condición `validR3` excluye exactamente los otros 16 (alturas cíclicas). Que la cuenta coincida es una comprobación de consistencia, no una prueba de que `validR3` y el script describan el mismo conjunto.
+
+**Lo que falta, con el estado exacto:**
+1. **Un `sorry`** en `check_all` (línea 258): la comprobación finita de que, para cada uno de los 64 casos, el procedimiento booleano `CheckEq`/`CheckCirc` devuelve `true`. Es una enumeración decidible; se intentó cerrarla por `decide` y puede exigir partir en casos, subir `maxRecDepth` o reformular la comprobación. No se probó aquí ninguna estrategia hasta el final.
+2. **Un error de compilación** en `r3_lazos` (línea 1024, columna 74: `unsolved goals`, sobre un `Nat.card` de componentes tras el `simp`). El agente iba por ahí cuando se lo detuvo.
+3. Todo lo demás del archivo compila hasta ese punto, pero al no compilar entero **no hay garantía** de que el resto sea correcto ni de que los enunciados sean los que se pretendían.
+4. No consta que se haya hecho la comprobación numérica previa con `Word.bracket` (como en R2) ni el control negativo; el script de geometría sí está. Conviene hacerlas antes de dar R3 por bueno.
+
+### Qué falta después de R3 para cerrar `granny_distinct_from_square`
+1. **Writhe sobre `GDiag`** y prueba de que R1 lo cambia en ±1 y R2 y R3 lo conservan, para pasar del corchete al Jones invariante.
+2. **Movimientos y `Knot` sobre `GDiag`** (hitos M2 y M3): que `apply_R1/R2/R3` dejen de ser `sorry` y que `Knot` se construya sobre `GDiag` (con el isomorfismo entre diagramas como igualdad), definiendo `trefoil`, `mirror` y `connected_sum` a partir de `ofWord` y de la concatenación. La suma conexa requiere probar que está bien definida sobre el cociente (multiplicatividad del corchete).
+3. **Sustituir los axiomas de `Schubert`** (`trefoil`, `mirror`, `connected_sum`, y los que dependan) por esas definiciones. Esto toca `Reidemeister.lean`, `Schubert.lean` y `Bridge.lean`, es decir, la build de la rama principal, y habrá que rehacer el modelo de consistencia (`06_modelo_de_consistencia.lean`).
+4. La desigualdad `jones_granny_ne_square` ya está demostrada en el spike; se traslada al cociente con el puente y la invariancia.
+
+### Cómo retomar (orden sugerido)
+1. Cerrar los dos puntos de R3 (el `sorry` y el error) y hacer la verificación de siempre: compilación desde cero, búsqueda de trampas, `#print axioms`, y la comprobación numérica pendiente.
+2. Writhe sobre `GDiag`.
+3. Diseño de M2/M3 (protocolo del mapa de ruta: proponer el diseño al autor antes de tocar `Reidemeister.lean`).
+4. Decisiones abiertas del autor (mapa de ruta, sección 10), en particular la quiralidad del trébol en K3 y qué significa "realizable".
+
+### Cifras del proyecto al suspender (rama `auditoria-2026-09-29`; la rama de la etapa 1 no las cambia)
+34 módulos compilan sin errores ni alertas; 23 `sorry` en el código (`Schubert` 16, `Reidemeister` 5, `KN_00_Combinatoria` 1, `KN_Instance_K3` 1); 47 axiomas. Los archivos de la etapa 1 no forman parte de esos 34 módulos.
+
+## 1. Estado final en una tabla (cierre de la auditoría y de la etapa 0)
 
 | Métrica | Al empezar | Al terminar |
 |---|---|---|
@@ -269,6 +318,11 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
 - **Estructura de la prueba.** (i) Corrección de la unión-búsqueda: el invariante `Inv m comp r` dice que dos posiciones tienen la misma etiqueta si y solo si están conectadas por la clausura equivalencia de las parejas aplicadas; con él, `Nat.card` de componentes es la longitud de `eraseDups`. (ii) Los estados abstractos se biyectan con `Fin n → Bool` alineados con `crossings w`. (iii) Las parejas de `pairsAt` coinciden con `smoothRel`. El caso `m = 0` va aparte.
 - **Dificultad.** Lo más laborioso fue la corrección de la unión-búsqueda; el resto fue fontanería de índices `Fin` y `getElem` dependientes.
 - **Qué permite.** Los valores concretos calculados con `decide` sobre listas se trasladan al diagrama abstracto donde se demuestra la invariancia.
+
+### 4.21 Suspensión durante R3
+- El autor pidió suspender la sesión. El agente de R3 llevaba unos 60 minutos y fue **detenido a mano**; su archivo (`Etapa1_R3.lean`, 1072 líneas) y el script de geometría (`08_geometria_r3.py`) se commitean tal como estaban, marcados como trabajo en curso y no verificado.
+- Detalle del estado y de cómo retomar: ver la sección 0 de este documento.
+- El agente de R3 no llegó a entregar informe final, así que todo lo dicho sobre él sale de leer el archivo y de compilarlo: 1 `sorry` (`check_all`, línea 258) y 1 error (`r3_lazos`, línea 1024).
 
 ## 5. Pendiente y dónde retomar
 
