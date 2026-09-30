@@ -8,6 +8,33 @@
 
 Este documento es el registro cronológico completo: qué se probó, qué se encontró, qué se cambió y por qué, y dónde retomar. Las secciones 1 a 3 sirven para orientarse; la 4 es el registro detallado; la 5 lista lo pendiente.
 
+## 00. Resumen de la noche del 29 al 30 de septiembre (LEER PRIMERO)
+
+Mientras usted dormía se trabajó con autogestión **solo en archivos nuevos de la rama `etapa1-spike-gauss`**, sin tocar la build principal ni `Reidemeister.lean`, `Schubert.lean` ni `Bridge.lean`. Todo está commiteado (último commit de esta sección: ver `git log`) y **verificado por mí** (compilación desde cero, búsqueda de trampas, `#print axioms`, lectura de enunciados), no solo por los informes de los agentes.
+
+### Lo conseguido
+| Hito | Resultado | Sección |
+|---|---|---|
+| **R3** | Invariancia del corchete de Kauffman bajo el movimiento de tres cruces, sin `sorry` (`Etapa1_R3.lean`). Los 48 patrones válidos coinciden exactamente con la geometría; prueba numérica con control negativo confirmada por mi re-ejecución. | 4.24 |
+| **Jones completo** | Invariante bajo isomorfismo, R1, R1 libre, R2 y R3 sobre `GDiag` (`Etapa1_Jones.lean`, `Etapa1_JonesR3.lean`). | 4.23, 4.25 |
+| **Prototipo de nudos virtuales** | `trefoilV ≠ unknotV`, **`trefoilV ≠ trefoilV'` (el trébol es quiral)** y **`granny_ne_square`** demostrados en Lean (`Etapa1_Nudos.lean`). | 4.25 |
+| **Teoría modular frente al Jones** | El modelo modular de K3 pierde la quiralidad porque el signo se **deriva** de las posiciones; la órbita de 12 (`specialClass`) **no es planar**. | 4.26 |
+| **Opción 1 consistente** | Modelo extendido con un axioma `jones2` sin `sorryAx`, y borrador compilado contra `Schubert` real que demuestra el enunciado exacto de `granny_distinct_from_square`. | 4.27 |
+
+### Lo que necesita SU decisión (nada de esto se aplicó)
+Detalle en `20260929_2247_diseno_integracion_knot.md`.
+1. **Integración con `Schubert`** (opción 1, 2 o 3). Hallazgo: los movimientos abstractos generan nudos **virtuales**; redefinir `Schubert.Knot` como ese cociente probablemente contradiría los axiomas de suma conexa y factorización única. Recomendación: **Opción 1** (capa abstracta con `jones2`), ya comprobada consistente.
+2. **Signo como dato** en la teoría modular (la única forma comprobada de representar ambas quiralidades).
+3. Qué hacer con la **órbita de 12** de K3, que no es planar (¿virtual? ¿se excluye de "realizable"?).
+4. Sustituir el axioma `rational_to_diagram` de `Bridge` por una definición (exige decidir la cuestión del signo).
+5. Universos (`Type 1` o `Fin n`).
+
+### Qué NO está hecho
+`granny_distinct_from_square` sigue con `sorry` en `Schubert.lean`. El análogo está demostrado en el prototipo y en el borrador, pero la integración espera su decisión. Tampoco se han tocado los enunciados dudosos de clase B de `Schubert`.
+
+### Archivos nuevos de la noche (todos en la rama `etapa1-spike-gauss`)
+`TMENudos/`: `Etapa1_R3.lean`, `Etapa1_Jones.lean`, `Etapa1_JonesR3.lean`, `Etapa1_Nudos.lean`, `Etapa1_Modular.lean`. `Procesos/`: `20260929_2247_diseno_integracion_knot.md`, y en `Tests/auditoria_20260929/`: `09_r3_numerico.lean`, `09b_r3_hipotesis.lean`, `11_modelo_jones2.lean`, `12_opcion1_sobre_schubert.lean`.
+
 ## 0. Punto de suspensión (leer primero)
 
 > **ACTUALIZACIÓN (2026-09-29, noche):** tras la reanudación, **R3 quedó cerrado y verificado** (sección 4.24) y el **Jones invariante sobre `GDiag`** quedó hecho para R1 y R2 (sección 4.23). El resto de esta sección describe el punto de suspensión original y queda como testimonio; para el estado actual, ver las secciones 4.22 a 4.24 y el documento `20260929_2247_diseno_integracion_knot.md`.
