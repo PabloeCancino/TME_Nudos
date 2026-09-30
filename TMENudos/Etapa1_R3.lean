@@ -255,7 +255,7 @@ def CheckCirc (o ob : Fin 3 → Bool) : Bool :=
 theorem check_all : ∀ o0 o1 o2 x0 x1 x2 : Bool,
     (if kk o0 o1 o2 x0 x1 x2 = 0 then CheckEq ![o0, o1, o2] ![x0, x1, x2]
       else CheckCirc ![o0, o1, o2] ![x0, x1, x2]) = true := by
-  sorry
+  decide +kernel
 
 theorem pL_pL : ∀ l : Lt, pL (pL l) = l := by decide
 
@@ -319,7 +319,8 @@ theorem checkEq_spec (o ob : Fin 3 → Bool) (h : CheckEq o ob = true) :
   · intro u v hN
     have := h1 u (mem_allVl u) v (mem_allVl v)
     rcases hr : rep o ob u with _ | p <;> rcases hr' : rep o ob v with _ | q <;>
-      simp [hr, hr', hN] at this
+      simp only [hr, hr', hN, Bool.not_true, Bool.false_or, Bool.or_eq_true, Fin.isValue,
+        decide_eq_true_eq, Bool.false_eq_true] at this
     exact ⟨p, q, rfl, rfl, or_assoc.1 this⟩
   · intro p
     simpa using h2 p (mem_allBp p)
@@ -330,6 +331,7 @@ theorem checkEq_spec (o ob : Fin 3 → Bool) (h : CheckEq o ob = true) :
     · simp only [hr] at this
       exact ⟨p, rfl, this⟩
 
+set_option linter.flexible false in
 /-- Contenido de `CheckCirc`. -/
 theorem checkCirc_spec (o ob : Fin 3 → Bool) (h : CheckCirc o ob = true) :
     (∀ p, rep o ob (bpV o p) = some p) ∧
@@ -778,7 +780,8 @@ theorem new_sym (b0 b1 b2 : Bool) (a c : ι ⊕ Lt) :
     intro j a c h
     obtain ⟨u, v, hu, hv, hs⟩ := sm_exists D e he o ovc sgc _ _ _ _ h
     exact ⟨u, v, hu, hv, (NB_iff o ob u v).2 ⟨j, hs⟩⟩
-  have hN : ∀ a c, Nb e o ob a c → ∃ j, (tri D e he o ovc sgc).smoothRel (.inr (lo j)) (ob j) a c := by
+  have hN : ∀ a c, Nb e o ob a c →
+      ∃ j, (tri D e he o ovc sgc).smoothRel (.inr (lo j)) (ob j) a c := by
     rintro a c ⟨u, v, rfl, rfl, h⟩
     obtain ⟨j, hj⟩ := (NB_iff o ob u v).1 h
     exact ⟨j, (sm_phi D e he o ovc sgc _ _ u v).2 hj⟩
@@ -1010,7 +1013,8 @@ noncomputable def Qc (σ : D.Cross → Bool) (m : Fin 3 × Bool → Fin 3 × Boo
 
 theorem Qc_pos (σ : D.Cross → Bool) (m : Fin 3 × Bool → Fin 3 × Bool) : 1 ≤ Qc D e σ m := by
   unfold Qc
-  haveI : Nonempty (SimpleGraph.fromRel fun x y => OaD D e σ x y ∨ NMr e m x y).ConnectedComponent :=
+  haveI : Nonempty
+      (SimpleGraph.fromRel fun x y => OaD D e σ x y ∨ NMr e m x y).ConnectedComponent :=
     ⟨(SimpleGraph.fromRel fun x y => OaD D e σ x y ∨ NMr e m x y).connectedComponentMk
       (.inl (e 0))⟩
   have := Nat.card_pos (α := (SimpleGraph.fromRel fun x y => OaD D e σ x y ∨
@@ -1023,6 +1027,10 @@ theorem r3_lazos (σ : D.Cross → Bool) (b0 b1 b2 : Bool) :
       Qc D e σ (matOf (mi (o 0) (o 1) (o 2) (b0 == sgc 0) (b1 == sgc 1) (b2 == sgc 2))) +
         kk (o 0) (o 1) (o 2) (b0 == sgc 0) (b1 == sgc 1) (b2 == sgc 2) := by
   have h := count_local D e o σ (fun j => ![b0, b1, b2] j == sgc j)
+  have e0 : (![b0, b1, b2] : Fin 3 → Bool) 0 = b0 := rfl
+  have e1 : (![b0, b1, b2] : Fin 3 → Bool) 1 = b1 := rfl
+  have e2 : (![b0, b1, b2] : Fin 3 → Bool) 2 = b2 := rfl
+  simp only [e0, e1, e2] at h
   unfold lazos
   rw [r3_graph_eq, h]
   change _ + _ + D.free = _ + D.free + _
@@ -1070,3 +1078,8 @@ end Tri
 
 end GDiag
 end TMENudos.Invariancia
+
+open TMENudos.Invariancia in
+#print axioms GDiag.bracket_r3
+open TMENudos.Invariancia in
+#print axioms R3.FF_invariant

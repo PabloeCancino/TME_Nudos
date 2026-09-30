@@ -10,6 +10,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 ## 0. Punto de suspensión (leer primero)
 
+> **ACTUALIZACIÓN (2026-09-29, noche):** tras la reanudación, **R3 quedó cerrado y verificado** (sección 4.24) y el **Jones invariante sobre `GDiag`** quedó hecho para R1 y R2 (sección 4.23). El resto de esta sección describe el punto de suspensión original y queda como testimonio; para el estado actual, ver las secciones 4.22 a 4.24 y el documento `20260929_2247_diseno_integracion_knot.md`.
+
 **Sesión suspendida el 2026-09-29 por decisión del autor.** El agente que trabajaba en R3 fue detenido a mano; el resto del trabajo estaba terminado y commiteado.
 
 ### Dónde está todo
@@ -341,6 +343,19 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
   - **Trébol:** `jones_ofWord_trefoil = A⁻⁴ + A⁻¹² - A⁻¹⁶` (es decir, t + t³ - t⁴ con t = A⁻⁴) y `jones_ofWord_swap_trefoil = A⁴ + A¹² - A¹⁶`, ambos en cualquier cuerpo con `A ≠ 0`. Comprobado por mí en A = 2: 1/16 + 1/4096 - 1/65536 = 4111/65536 y 16 + 4096 - 65536 = -61424, que coinciden con los valores del spike.
 - **Dificultad.** R1 fue fácil una vez aislado el lema algebraico. Lo más incómodo fue `writhe_ofWordP`: pasar de la suma sobre la lista filtrada al subtipo `Cross` (`sum_filter_map`, `Finset.sum_subtype`).
 - **Para añadir R3:** probar `writhe_tri` (las dos caras tienen el mismo writhe, como en `writhe_r2`) y deducir `jones_tri` con `jones_of_bracket`. Conviene hacerlo en un archivo posterior que importe `Etapa1_R3` y `Etapa1_Jones`.
+
+### 4.24 R3 cerrado: invariancia del corchete bajo el movimiento de tres cruces
+- **Archivo:** `TMENudos/Etapa1_R3.lean` (1085 líneas, importa `Etapa1_R2`, no forma parte de la build). Verificado por mí: compilación desde cero de 67 s, **sin `sorry`, `native_decide` ni axiomas nuevos**; `#print axioms` de `bracket_r3` y `FF_invariant` solo `propext`, `Classical.choice`, `Quot.sound`. Única desviación de estilo: un `set_option linter.flexible false in` en `checkCirc_spec` (el `simp only` equivalente no cerraba un caso).
+- **Teorema final:** `bracket_r3 (A) (hA : A ≠ 0) (hv : validR3 (o 0) (o 1) (o 2) (sgc 0) (sgc 1) (sgc 2) = true) : (tri D e he o ovc sgc).bracket A = (tri D e he (fun i => !o i) ovc sgc).bracket A`, con `he : Function.Injective e` y `e : Fin 3 → ι` las tres aristas. Las dos caras del movimiento comparten letras, partners, `ovr` y signos; solo cambia `next`.
+- **Cómo se cerró lo que faltaba** (informe del agente, que compilé y verifiqué):
+  - `check_all` (64 casos): una sola línea, `decide +kernel` (sin `native_decide`); no hizo falta reformular.
+  - `r3_lazos`: el error no era de `Nat.card`. Quedaban términos `![b0,b1,b2] 0/1/2` sin reducir que `ring` tomaba como átomos distintos de `b0`, `b1`, `b2`; se añadieron `e0/e1/e2 : ![b0,b1,b2] i = bi := rfl` y un `simp only` previo.
+- **Verificaciones de fidelidad** (las que no se hicieron antes de la suspensión):
+  - **Hipótesis realizables y no vacías** (`Tests/auditoria_20260929/09b_r3_hipotesis.lean`, compilado por mí en 25 s): `validR3` es `true` en casos concretos y `false` en otros, exactamente 48 de los 64 patrones lo cumplen, y `bracket_r3` se instancia sobre el trébol como `GDiag (Fin 6)` con aristas `![0,2,4]` (inyectiva, por `decide`).
+  - **Comprobación independiente de la geometría** (`08_geometria_r3.py`): el agente comparó los 48 pares (o, s) del script con una transcripción de `validR3` sobre los 64 pares, y los conjuntos son idénticos (no solo el conteo).
+  - **Prueba numérica** (`09_r3_numerico.lean`, solo con el corchete de listas del spike y una inserción del triángulo independiente de `Etapa1_R3`; 5 palabras base, los 64 patrones, los 8 `ovc`, A = 2 y A = 3): según el agente, en todos los grupos sale (48 válidos conservan, 16 excluidos rompen, 0 válidos rompen, 0 excluidos conservan). **Mi re-ejecución de ese archivo (unos 7,5 min) estaba en curso al escribir esto; ver la nota final de esta sección.** Es una muestra de las ternas de aristas en las bases grandes, no todas.
+- **Alcance:** `bracket_r3` vale sean cuales sean las letras superiores `ovc`; la exclusión de las alturas cíclicas la hace `validR3` a través de la relación entre órdenes y signos. Como en R2, son movimientos sobre diagramas de Gauss abstractos (los de la teoría virtual).
+- **Estado de los tres movimientos:** R1, R2 y R3 tienen invariancia del corchete demostrada sobre `GDiag`. Falta el lado de R3 en el writhe (`writhe_tri`) para tener el Jones completo.
 
 ## 5. Pendiente y dónde retomar
 
