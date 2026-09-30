@@ -353,9 +353,23 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
 - **Verificaciones de fidelidad** (las que no se hicieron antes de la suspensión):
   - **Hipótesis realizables y no vacías** (`Tests/auditoria_20260929/09b_r3_hipotesis.lean`, compilado por mí en 25 s): `validR3` es `true` en casos concretos y `false` en otros, exactamente 48 de los 64 patrones lo cumplen, y `bracket_r3` se instancia sobre el trébol como `GDiag (Fin 6)` con aristas `![0,2,4]` (inyectiva, por `decide`).
   - **Comprobación independiente de la geometría** (`08_geometria_r3.py`): el agente comparó los 48 pares (o, s) del script con una transcripción de `validR3` sobre los 64 pares, y los conjuntos son idénticos (no solo el conteo).
-  - **Prueba numérica** (`09_r3_numerico.lean`, solo con el corchete de listas del spike y una inserción del triángulo independiente de `Etapa1_R3`; 5 palabras base, los 64 patrones, los 8 `ovc`, A = 2 y A = 3): según el agente, en todos los grupos sale (48 válidos conservan, 16 excluidos rompen, 0 válidos rompen, 0 excluidos conservan). **Mi re-ejecución de ese archivo (unos 7,5 min) estaba en curso al escribir esto; ver la nota final de esta sección.** Es una muestra de las ternas de aristas en las bases grandes, no todas.
+  - **Prueba numérica** (`09_r3_numerico.lean`, solo con el corchete de listas del spike y una inserción del triángulo independiente de `Etapa1_R3`; 5 palabras base, los 64 patrones, los 8 `ovc`, A = 2 y A = 3): según el agente, en todos los grupos sale (48 válidos conservan, 16 excluidos rompen, 0 válidos rompen, 0 excluidos conservan). **Mi re-ejecución de ese archivo (unos 7,5 min) confirmó el informe:** los tres grupos dan `(48, 48, 16, 16, 0, 0)`. Es una muestra de las ternas de aristas en las bases grandes, no todas.
 - **Alcance:** `bracket_r3` vale sean cuales sean las letras superiores `ovc`; la exclusión de las alturas cíclicas la hace `validR3` a través de la relación entre órdenes y signos. Como en R2, son movimientos sobre diagramas de Gauss abstractos (los de la teoría virtual).
 - **Estado de los tres movimientos:** R1, R2 y R3 tienen invariancia del corchete demostrada sobre `GDiag`. Falta el lado de R3 en el writhe (`writhe_tri`) para tener el Jones completo.
+
+### 4.25 Jones completo y prototipo de nudos virtuales: `trefoil ≠ mirror` y `granny ≠ square`
+- **Archivos** (dos, no importados por `TMENudos.lean`, sin importar `Reidemeister`, `Schubert` ni `Bridge`; verificados por mí con compilación desde cero, sin `sorry`, `native_decide` ni axiomas nuevos):
+  - `TMENudos/Etapa1_JonesR3.lean` (53 líneas): `writhe_tri : (tri D e he o ovc sgc).writhe = D.writhe + ∑ c : Fin 3, (if sgc c then 1 else -1)` (no depende de `o`, luego las dos caras coinciden) y `jones_tri`. Con esto **el Jones es invariante bajo isomorfismo, R1, R1 libre, R2 y R3** sobre `GDiag`.
+  - `TMENudos/Etapa1_Nudos.lean` (167 líneas): `structure Diag : Type 1`, la relación inductiva `GRel` (refl, symm, trans, iso, r1, r1F, r2, r3, con hipótesis realizables), `Diag.jones`, `jones_rel`, el cociente `NudoV`, y los nudos `unknotV`, `trefoilV`, `trefoilV'` (imagen especular), `grannyV` y `squareV`.
+- **Teoremas** (axiomas: solo `propext`, `Classical.choice`, `Quot.sound`):
+  - `trefoilV_ne_unknotV`: el trébol no es el nudo trivial.
+  - **`trefoilV_ne_mirror`: el trébol es quiral**, distinto de su imagen especular.
+  - **`granny_ne_square`**: trébol # trébol ≠ trébol # espejo. Es el análogo, en el cociente virtual, de `granny_distinct_from_square`.
+  - Los tres se prueban aplicando el Jones en A = 2 sobre ℚ y trasladando con `jones_ofWord` los valores calculados con `decide +kernel` en el spike.
+- **Alcance (leído en el comentario del módulo y por mí):** los movimientos son los abstractos (nudos virtuales sin detour). Como los clásicos son un caso particular, las clases distintas en `NudoV` también lo son como nudos clásicos, pero esa lectura es informal: no se define el cociente clásico ni el vínculo con `Knot`. No se afirma nada sobre la suma conexa como operación en el cociente (`grannyV` y `squareV` son las clases de los diagramas de `Word.concat`).
+- **Movimientos que no están en `GRel`:** R2 sobre la misma arista (`e = f`), R2 y R1 entre circunferencias libres, y cualquier otro cuya invariancia no esté demostrada.
+- **Dificultad:** casi ninguna; el empaquetado de las instancias `DecidableEq`/`Fintype` como campos de instancia no dio problemas.
+- **Qué significa para el proyecto.** La parte dura de `granny_distinct_from_square` (invariante bien definido bajo los tres movimientos y cálculo concreto) está hecha en el prototipo. **Lo que falta es la integración con `Schubert.lean`, que depende de una decisión del autor** (ver `20260929_2247_diseno_integracion_knot.md`).
 
 ## 5. Pendiente y dónde retomar
 

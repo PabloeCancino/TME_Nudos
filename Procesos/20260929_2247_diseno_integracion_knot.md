@@ -60,6 +60,10 @@ Solo en archivos nuevos de la rama `etapa1-spike-gauss`:
 2. Writhe y Jones invariante sobre `GDiag` para R1 y R2 (`Etapa1_Jones.lean`, en curso) y, cuando R3 cierre, para R3.
 3. Prototipo de `Knot` virtual concreto (`GRel`, cociente, `jones` sobre el cociente) y el teorema autocontenido `granny ≠ square` en él, sin tocar ni importar `Reidemeister.lean` ni `Schubert.lean`.
 
+## 6 bis. Actualización (2026-09-29, noche): el prototipo ya existe
+
+Los puntos 1 a 3 de la sección 6 se cumplieron: R3 cerrado (`Etapa1_R3.lean`), Jones invariante bajo los tres movimientos (`Etapa1_Jones.lean`, `Etapa1_JonesR3.lean`) y prototipo de `Knot` virtual (`Etapa1_Nudos.lean`) con los teoremas `trefoilV_ne_unknotV`, `trefoilV_ne_mirror` y `granny_ne_square`, todos sin `sorry` y con axiomas estándar. El resultado del prototipo respalda la **Opción 1**: la parte matemática dura ya está demostrada, y lo que queda es decidir cómo conectarla con la capa abstracta de `Schubert.lean` (el axioma `jones_knot` y su especificación), sin redefinir `Knot`.
+
 ## 7. Decisiones que necesito de usted
 
 1. ¿Opción 1, 2 o 3? (Recomiendo la 1.)
