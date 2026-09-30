@@ -213,6 +213,12 @@ Estado actual: 0 de clase A, 8 de clase B y 13 de clase C, más 2 fuera de `Reid
   - No cubre los teoremas con `sorry`: en el modelo algunos podrían ser falsos. Por eso `mirror` no es la identidad en el modelo, para que `granny_distinct_from_square` no quede refutado, aunque no se demuestra.
   - Habrá que rehacerlo cuando `apply_R*` tengan definición concreta (etapas 1 a 3 del mapa de ruta).
 
+### 4.16 Exploración: ¿hay una vía barata para `granny_distinct_from_square`?
+- **Pregunta.** Para demostrar `granny_distinct_from_square` hace falta un invariante que distinga la quiralidad. Los invariantes de coloración por quandles son mucho más baratos de formalizar que el corchete de Kauffman (la invariancia bajo R1-R3 sale de los axiomas del quandle) y los arcos de un código de Gauss con over y under salen solos. ¿Hay un quandle finito cuyo número de coloraciones distinga el trébol de su espejo?
+- **Método** (`Tests/auditoria_20260929/07_quandles_trebol_vs_espejo.py`): fuerza bruta sobre todas las tablas de quandle etiquetadas de orden 2 a 6 (1, 5, 36, 404 y 6658). El espejo se colorea con la operación inversa (el quandle dual). Convención: trébol = ternas (x,y,z) con z = x▷y, x = y▷z, y = z▷x.
+- **Resultado:** **ninguno** distingue el trébol de su espejo. La vía de coloraciones simples no sirve a órdenes pequeños; haría falta un quandle mayor o un invariante de cociclo, que ya no es barato. Corolario: el corchete de Kauffman (o el polinomio de Jones) sigue siendo el camino.
+- **Límites.** Solo se exploró hasta orden 6; no se descarta que exista un quandle mayor. No se verificó el script contra una lista de quandles de la literatura, solo que los conteos de tablas etiquetadas tienen la forma esperada (1, 5, 36, 404, 6658).
+
 ## 5. Pendiente y dónde retomar
 
 ### 5.1 Decisiones del autor
@@ -265,6 +271,7 @@ Todo desde la raíz del proyecto (`TME_Nudos`):
 | `mirrorTrefoil = swap trefoilKnot` | `lake env lean Procesos/Tests/auditoria_20260929/04_mirrorTrefoil_es_swap_trefoilKnot.lean` |
 | Rastreo de `sorry` en los teoremas cerrados de `Schubert` | `lake env lean Procesos/Tests/auditoria_20260929/05_rastreo_de_sorry_en_teoremas_cerrados.lean` |
 | Modelo de consistencia de los 34 axiomas | `lake env lean Procesos/Tests/auditoria_20260929/06_modelo_de_consistencia.lean` (unos 21 s); `06e_tipos_originales.lean` vuelca los tipos de los originales para compararlos |
+| Búsqueda de quandles que distingan el trébol de su espejo | `python Procesos/Tests/auditoria_20260929/07_quandles_trebol_vs_espejo.py 6` (unos 30 s) |
 | Pruebas históricas de inconsistencia | `01_...` y `02_...` **ya no compilan**; es lo esperado y prueba que la contradicción quedó bloqueada. Sirven de documentación del razonamiento. |
 
 Para volver a ver el estado: `git log --oneline master..auditoria-2026-09-29` lista los commits de esta sesión, y `git diff master --stat` el alcance total.
