@@ -18,6 +18,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 **Cómo retomar:** `git checkout reconstruccion`; `lake build TMENudos.Reconstruccion` (una sola build a la vez; las pruebas por `decide +kernel` pueden tardar minutos); leer qué teoremas existen y cuáles faltan frente a la lista de la tarea (1 teoremas finitos, 2 puente general, 3 equivalencias con Basic, 4 teorema principal, 5 contraejemplos, 6 dependencias del axioma falso). Después, Fase 3: restringir `rotation_of_ratio_pos_eq`, `same_IME_implies_rotation`, `same_SIME_implies_rotation`, `IME_complete` e `isotopic_irreducible_same_SIME`.
 
+**Reinicio del equipo (2026-10-01, tarde):** git INTACTO (`fsck` sin errores, árbol limpio, sin `.lock`, todas las ramas). `Basic` compila bien (30 s). La build de `Reconstruccion` que corría se interrumpió tras ~59 min con `Lean exited with code 3221226505` (0xC0000409, fallo del propio Lean, típico de desbordamiento de pila o memoria en un `decide +kernel` enorme): NO es corrupción del repositorio. El borrador de 204 líneas compilaba en 37 s; la parte general ampliada (líneas 1-538: puente, equivalencias, `main_gen`) compila en 17 s. El culpable está en los `decide +kernel` de la sección «Comprobaciones finitas» (probablemente n=5: `check_5`, `checkNP_5`, `cands_5`, `good_5`, `clases_5`). Se mide cada uno por separado con `lake env lean` sobre copias en el scratchpad. NO recompilar `lake build TMENudos.Reconstruccion` completo hasta resolverlo.
+
 ---
 
 ## 0000000. HALLAZGO (2026-10-01): `reconstruct_from_first` de `Basic` es FALSO — LEER PRIMERO
