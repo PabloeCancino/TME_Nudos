@@ -13,7 +13,9 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 **Dónde estoy:** rama `forma-normal` (1 commit sobre `master`). Nada de trabajo corriendo; todo commiteado.
 
 | Rama | Estado |
-|---|---|
+|**FORMA NORMAL, ETAPAS 2 Y 3 HECHAS (rama `forma-normal`):** `FormaNormal.lean` demuestra para TODO n la forma normal única de diagramas módulo R1/R2 (Newman módulo equivalencia + confluencia local + el solapamiento de dos pares R2), y A6 (`a6_irreducible_min`) y A7 (`a7_min_equiv`) fieles como teoremas, sin axiomas propios. Camino (A): diagramas, NO nudos. Siguiente: decidir fusión/subida y el objetivo (B).
+
+---|---|
 | `master` | Fase 3 hecha y **publicada** (`563173c` en `origin`); 2 commits locales más (sondas 20 y 21, diseño de la forma normal), sin subir |
 | `forma-normal` | Etapa 1 de la forma normal, **verificada**: `TMENudos/FormaNormal.lean` (680 líneas, solo Mathlib) |
 

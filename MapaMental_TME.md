@@ -83,6 +83,12 @@ mindmap
       Reidemeister abstracto
         Equivalencia inductiva
         apply_R1 R2 R3 «S»
+    Forma normal de diagramas, camino A
+      Lema de Newman módulo una equivalencia «P»
+      Confluencia local de R1 y R2 «P»
+      Forma normal única de diagramas «P»
+      A6 y A7 fieles para R1 y R2 «P»
+      Alcance: diagramas, no nudos
     Conexión Aritmética
       Fracciones Continuas «A»
       Clasificación de Schubert «C»

@@ -196,6 +196,14 @@ nadie). (3) El único solapamiento es entre dos pares R2 que comparten un cruce 
 diagrama vacío, con el enunciado de A7 «salvo rotación y reetiquetado». Diseño de la formalización:
 `Procesos/20261001_diseno_forma_normal.md`.
 
+### 3.8 A6 y A7 fieles DEMOSTRADOS para todo n (camino (A), 2026-10-01)
+
+`TMENudos/FormaNormal.lean` demuestra, para el modelo de palabras de Gauss con signos con R1/R2 fieles y el
+diagrama vacío, la forma normal única (Newman módulo `Equiv`, confluencia local con el único solapamiento de
+dos pares R2) y de ahí A6 (`a6_irreducible_min`) y A7 (`a7_min_equiv`) como teoremas, sin axiomas propios.
+Es lo que la sonda 21 anticipaba por cálculo (0 pares críticos no joinables). Alcance: diagramas módulo R1/R2 y
+rotación, NO nudos. Detalle: `Procesos/20261001_diseno_forma_normal.md`, sección 8.
+
 ### Fase 1. Reparar y probar `reconstruct`
 1. Sonda Python exhaustiva (n ≤ 6) de candidatos de enunciado: (a) añadir la hipótesis de que los cruces están ordenados por posición superior; (b) comparar como multiconjuntos de `(razón, signo)`; (c) exigir el desplazamiento solo salvo permutación de índices.
 2. Elegir el candidato que no admita contraejemplos y cuyo enunciado sea el que realmente usan los teoremas dependientes.

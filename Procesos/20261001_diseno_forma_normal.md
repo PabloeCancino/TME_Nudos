@@ -91,3 +91,36 @@ honesto es: «la reducción R1/R2 de diagramas con signos tiene forma normal ún
 **Pendiente.** (i) Compatibilidad de `Red` con `Equiv` (hipótesis (b) de Newman): rutinaria pero larga. (ii) El
 único solapamiento de dos pares R2 con un cruce común (el agente lo estima media-alta). (iii) Ensamblaje.
 Detalle fino: `Interlaced` es simétrico por definición; probar `Linked a b ↔ Linked b a` puede hacer falta.
+
+## 8. Estado final de las Etapas 2 y 3: HECHAS y verificadas (rama `forma-normal`, 2026-10-01)
+
+`TMENudos/FormaNormal.lean` (1 646 líneas, solo `import Mathlib`) compila desde el código fuente (~35 s con los
+linters del proyecto), sin `sorry`, axiomas ni `native_decide`. Todos los teoremas clave dependen solo de
+`propext`, `Classical.choice` y `Quot.sound`. Los enunciados son válidos para TODO n (no solo n ≤ 5).
+
+**Camino (A). Alcance: DIAGRAMAS módulo R1/R2 y rotación, NO nudos** (sin R3 ni flypes; sondas 19 y 19b).
+
+* **Hito 1.** `red_compat_equiv`: `Equiv w w' → Red w x → ∃ x', Red w' x' ∧ Equiv x x'` (hipótesis (b) de Newman),
+  con la invariancia por rotación (`R2cand.rotate`, `Red.rotate`, …) y por renombrado inyectivo
+  (`R2cand.relabelled`, `Red.relabelled`, …).
+* **Hito 2, el solapamiento.** `overlap_mid : Wf w → R2cand w a b → R2cand w b c → a ≠ c →
+  Equiv (remove2 w a b) (remove2 w b c)` y `r2_overlap` (todas las variantes con un cruce común). Las combinaciones
+  de órdenes opuestos (anidadas) no son entrelazadas (`nested_false`). Validado por cálculo: 48 casos en n = 3 y
+  2 304 en n = 4, todos equivalentes.
+* **Hito 3.** Confluencia local `red_local` (`local_r1_r1`, `local_r1_r2`, `local_r2_r2`), forma normal única
+  `normal_form_unique_words`, existencia `exists_normal_form_words`, y la clase `Cls := EqvGen Gen` con
+  `Gen x y := Wf x ∧ Wf y ∧ (Red x y ∨ Red y x ∨ Equiv x y)`.
+* **A6 y A7 fieles, como TEOREMAS:**
+  * `a6_irreducible_min : Wf w → (¬∃ y, Red w y) → IsMin w` (un diagrama irreducible tiene el menor número de
+    cruces de su clase);
+  * `a7_min_equiv : Wf w → Wf w' → Cls w w' → IsMin w → IsMin w' → Equiv w w'` (dos diagramas de la misma clase y
+    de grado mínimo son el mismo salvo rotación y renombrado);
+  * `exists_min_in_class` (cada clase tiene un representante de grado mínimo).
+
+**Qué NO es.** No es la clasificación de nudos: sin R3 ni flypes, el mismo nudo puede tener formas normales
+distintas desde n = 7. No sustituye los axiomas A6 y A7 de `Basic` (que hablan de la relación laxa `Isotopic`);
+los reemplaza como teoremas de un modelo nuevo y fiel, que además incluye el diagrama vacío (`Basic` no puede).
+
+**Decisiones de diseño a revisar:** `Cls` exige `Wf` en ambos extremos de cada paso; `Equiv` renombra solo sobre
+`labelSet w`; `Red` actúa sobre `W` completo y Newman se aplica al subtipo `{w // Wf w}`; el campo `over` se
+llama `up`.
