@@ -231,6 +231,28 @@ instance (M : PerfectMatching) : Fintype (Orientation M) := by
   haveI : Fintype ↑M.edges := Finset.fintypeCoeSort M.edges
   exact inferInstance
 
+/-- Una asignación de signos da un signo (Bool, `true` = positivo) a cada arista de un matching.
+
+    MIGRACIÓN (signo como dato, Etapa 2): antes → después
+    - antes: una configuración = matching + orientación (15 · 8 = 120).
+    - después: una configuración firmada = matching + orientación + signos
+      (15 · 8 · 8 = 960, ver `K3Config` en TCN_01). -/
+def Signing (M : PerfectMatching) : Type :=
+  M.edges → Bool
+
+instance (M : PerfectMatching) : Fintype (Signing M) := by
+  unfold Signing
+  haveI : Fintype ↑M.edges := Finset.fintypeCoeSort M.edges
+  exact inferInstance
+
+/-- El número de asignaciones de signos es exactamente 8 -/
+theorem signing_card (M : PerfectMatching) : Fintype.card (Signing M) = 8 := by
+  classical
+  have h : Fintype.card (M.edges → Bool) = 8 := by
+    rw [Fintype.card_fun, Fintype.card_bool, Fintype.card_coe, M.card_edges]
+    norm_num
+  convert h
+
 /-- Número de orientaciones posibles para un matching con 3 aristas: 2³ = 8 -/
 theorem num_orientations : ∀ (M : PerfectMatching),
   ∃ n : ℕ, n = 8 ∧ n = 2 ^ M.edges.card := by
@@ -347,33 +369,41 @@ theorem OrderedPair.mem_iff (p : OrderedPair) (i : ZMod 6) :
 
 attribute [simp] OrderedPair.mem_iff
 
-/-- Convierte una arista no ordenada y una orientación en un par ordenado -/
-noncomputable def edgeToPair (e : Finset (ZMod 6)) (h : e.card = 2) (orient : Bool) : OrderedPair :=
+/-- Convierte una arista no ordenada, una orientación y un signo en un par ordenado firmado
+    (MIGRACIÓN: gana el parámetro `pos`, que pasa tal cual al campo `pos`). -/
+noncomputable def edgeToPair (e : Finset (ZMod 6)) (h : e.card = 2) (orient pos : Bool) :
+    OrderedPair :=
   if orient then
-    ⟨edgeMin e h, edgeMax e h, edgeMin_ne_edgeMax e h⟩
+    ⟨edgeMin e h, edgeMax e h, edgeMin_ne_edgeMax e h, pos⟩
   else
-    ⟨edgeMax e h, edgeMin e h, (edgeMin_ne_edgeMax e h).symm⟩
+    ⟨edgeMax e h, edgeMin e h, (edgeMin_ne_edgeMax e h).symm, pos⟩
 
 /-- Los elementos del par están en la arista original -/
-theorem edgeToPair_fst_mem (e : Finset (ZMod 6)) (h : e.card = 2) (orient : Bool) :
-    (edgeToPair e h orient).fst ∈ e := by
+theorem edgeToPair_fst_mem (e : Finset (ZMod 6)) (h : e.card = 2) (orient pos : Bool) :
+    (edgeToPair e h orient pos).fst ∈ e := by
   unfold edgeToPair
   split_ifs <;> first | exact edgeMin_mem e h | exact edgeMax_mem e h
 
-theorem edgeToPair_snd_mem (e : Finset (ZMod 6)) (h : e.card = 2) (orient : Bool) :
-    (edgeToPair e h orient).snd ∈ e := by
+theorem edgeToPair_snd_mem (e : Finset (ZMod 6)) (h : e.card = 2) (orient pos : Bool) :
+    (edgeToPair e h orient pos).snd ∈ e := by
   unfold edgeToPair
   split_ifs <;> first | exact edgeMax_mem e h | exact edgeMin_mem e h
 
 /-! ## Conversión de Matching a Configuración -/
 
-/-- Dado un matching y una orientación, construir una configuración K₃.
+/-- Dado un matching, una orientación y una asignación de signos, construir una
+    configuración K₃ firmada.
 
     Para cada arista {a,b} del matching:
     - Si orientación = true: crear tupla [min(a,b), max(a,b)]
-    - Si orientación = false: crear tupla [max(a,b), min(a,b)] -/
-noncomputable def matchingToConfig (M : PerfectMatching) (orient : Orientation M) : K3Config := {
-  pairs := M.edges.attach.image (fun ⟨e, he⟩ => edgeToPair e (M.edge_size e he) (orient ⟨e, he⟩))
+    - Si orientación = false: crear tupla [max(a,b), min(a,b)]
+    - El signo de la tupla es el que da `sgn` a esa arista.
+
+    MIGRACIÓN: gana el parámetro `sgn : Signing M`. -/
+noncomputable def matchingToConfig (M : PerfectMatching) (orient : Orientation M)
+    (sgn : Signing M) : K3Config := {
+  pairs := M.edges.attach.image (fun ⟨e, he⟩ =>
+    edgeToPair e (M.edge_size e he) (orient ⟨e, he⟩) (sgn ⟨e, he⟩))
 
   card_eq := by
     rw [Finset.card_image_of_injective]
@@ -385,28 +415,28 @@ noncomputable def matchingToConfig (M : PerfectMatching) (orient : Orientation M
       -- Si los OrderedPairs son iguales, los fst y snd son iguales
       split_ifs at heq with ho1 ho2 ho2
       · -- Ambos true: fst = min, snd = max
-        simp only [OrderedPair.mk.injEq] at heq
-        obtain ⟨h1, h2⟩ := heq
+        obtain ⟨h1, h2⟩ : _ ∧ _ := ⟨congrArg OrderedPair.fst heq, congrArg OrderedPair.snd heq⟩
+        dsimp only at h1 h2
         rw [edge_eq_minmax e1 (M.edge_size e1 he1),
             edge_eq_minmax e2 (M.edge_size e2 he2)]
         rw [h1, h2]
       · -- true/false: min1 = max2, max1 = min2
-        simp only [OrderedPair.mk.injEq] at heq
-        obtain ⟨h1, h2⟩ := heq
+        obtain ⟨h1, h2⟩ : _ ∧ _ := ⟨congrArg OrderedPair.fst heq, congrArg OrderedPair.snd heq⟩
+        dsimp only at h1 h2
         rw [edge_eq_minmax e1 (M.edge_size e1 he1),
             edge_eq_minmax e2 (M.edge_size e2 he2)]
         rw [h1, h2]
         rw [Finset.pair_comm]
       · -- false/true: max1 = min2, min1 = max2
-        simp only [OrderedPair.mk.injEq] at heq
-        obtain ⟨h1, h2⟩ := heq
+        obtain ⟨h1, h2⟩ : _ ∧ _ := ⟨congrArg OrderedPair.fst heq, congrArg OrderedPair.snd heq⟩
+        dsimp only at h1 h2
         rw [edge_eq_minmax e1 (M.edge_size e1 he1),
             edge_eq_minmax e2 (M.edge_size e2 he2)]
         rw [h1, h2]
         rw [Finset.pair_comm]
       · -- Ambos false: fst = max, snd = min
-        simp only [OrderedPair.mk.injEq] at heq
-        obtain ⟨h1, h2⟩ := heq
+        obtain ⟨h1, h2⟩ : _ ∧ _ := ⟨congrArg OrderedPair.fst heq, congrArg OrderedPair.snd heq⟩
+        dsimp only at h1 h2
         rw [edge_eq_minmax e1 (M.edge_size e1 he1),
             edge_eq_minmax e2 (M.edge_size e2 he2)]
         rw [h1, h2]
@@ -416,7 +446,7 @@ noncomputable def matchingToConfig (M : PerfectMatching) (orient : Orientation M
     -- i está en exactamente una arista del matching
     obtain ⟨e, ⟨he, hi⟩, huniq⟩ := M.is_partition i
     -- El par correspondiente
-    let p := edgeToPair e (M.edge_size e he) (orient ⟨e, he⟩)
+    let p := edgeToPair e (M.edge_size e he) (orient ⟨e, he⟩) (sgn ⟨e, he⟩)
     use p
     constructor
     · constructor
@@ -457,8 +487,8 @@ noncomputable def matchingToConfig (M : PerfectMatching) (orient : Orientation M
         rw [← OrderedPair.mem_iff] at hq_i
         rw [← hq_eq] at hq_i
         cases hq_i with
-        | inl h => subst h; exact edgeToPair_fst_mem e' (M.edge_size e' he') _
-        | inr h => subst h; exact edgeToPair_snd_mem e' (M.edge_size e' he') _
+        | inl h => subst h; exact edgeToPair_fst_mem e' (M.edge_size e' he') _ _
+        | inr h => subst h; exact edgeToPair_snd_mem e' (M.edge_size e' he') _ _
       -- Por unicidad del matching, e = e'
       have h_eq : e = e' := (huniq e' ⟨he', hi'⟩).symm
       subst h_eq
@@ -469,8 +499,8 @@ noncomputable def matchingToConfig (M : PerfectMatching) (orient : Orientation M
 
 /-- Arista consecutiva implica par consecutivo -/
 theorem consecutive_edge_gives_consecutive_pair (e : Finset (ZMod 6)) (h : e.card = 2)
-    (i : ZMod 6) (heq : e = {i, i + 1}) (orient : Bool) :
-    isConsecutive (edgeToPair e h orient) := by
+    (i : ZMod 6) (heq : e = {i, i + 1}) (orient pos : Bool) :
+    isConsecutive (edgeToPair e h orient pos) := by
   unfold isConsecutive edgeToPair
   -- e = {i, i+1}, así que min y max son i e i+1
   have hmin_mem := edgeMin_mem e h
@@ -519,15 +549,17 @@ theorem consecutive_edge_gives_consecutive_pair (e : Finset (ZMod 6)) (h : e.car
       rw [hmin_eq, hmax_val]
 
 /-- Si un matching tiene arista consecutiva, cualquier orientación produce configuración con R1 -/
-theorem matching_consecutive_implies_config_r1 (M : PerfectMatching) (orient : Orientation M) :
-    M.hasConsecutiveEdge → hasR1 (matchingToConfig M orient) := by
+theorem matching_consecutive_implies_config_r1 (M : PerfectMatching) (orient : Orientation M)
+    (sgn : Signing M) :
+    M.hasConsecutiveEdge → hasR1 (matchingToConfig M orient sgn) := by
   intro ⟨e, he, i, heq⟩
   unfold hasR1
-  use edgeToPair e (M.edge_size e he) (orient ⟨e, he⟩)
+  use edgeToPair e (M.edge_size e he) (orient ⟨e, he⟩) (sgn ⟨e, he⟩)
   constructor
   · simp only [matchingToConfig, Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists]
     use e, he
   · exact consecutive_edge_gives_consecutive_pair e (M.edge_size e he) i heq (orient ⟨e, he⟩)
+      (sgn ⟨e, he⟩)
 
 lemma min_max_of_lt {a b : ZMod 6} (h : a < b) :
   edgeMin {a, b} (by
@@ -564,9 +596,17 @@ lemma edges_disjoint_of_common_mem (M : PerfectMatching) (e1 e2 : Finset (ZMod 6
   have he2_eq : e2 = e := h_unique e2 ⟨he2, hx2⟩
   rw [he1_eq, he2_eq]
 
-/-- Si un matching tiene par R2, existe orientación que produce configuración con R2 -/
+/-- Si un matching tiene par R2, existe orientación Y asignación de signos que produce
+    configuración con R2.
+
+    MIGRACIÓN: antes → después
+    - antes: `∃ orient, hasR2 (matchingToConfig M orient)`.
+    - después: como `formsR2Pattern` exige signos opuestos, hace falta elegir también los signos:
+      `∃ orient sgn, hasR2 (matchingToConfig M orient sgn)` (las dos aristas del par R2 reciben
+      signos opuestos). Para signos arbitrarios el enunciado antiguo sería FALSO. -/
 theorem matching_r2_implies_config_r2 (M : PerfectMatching) :
-    M.hasR2Pair → ∃ orient : Orientation M, hasR2 (matchingToConfig M orient) := by
+    M.hasR2Pair → ∃ (orient : Orientation M) (sgn : Signing M),
+      hasR2 (matchingToConfig M orient sgn) := by
   intro ⟨e1, he1, e2, he2, hne, a, b, c, d, he1_eq, he2_eq, hpat⟩
   subst he1_eq
   subst he2_eq
@@ -575,12 +615,15 @@ theorem matching_r2_implies_config_r2 (M : PerfectMatching) :
     if h1 : e = {a, b} then decide (a < b)
     else if h2 : e = {c, d} then decide (c < d)
     else true
-  use my_orient
+  let my_sgn : Signing M := fun ⟨e, _⟩ => decide (e = {a, b})
+  use my_orient, my_sgn
   unfold hasR2 formsR2Pattern matchingToConfig
   simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists]
   -- Usamos los pares correspondientes a {a,b} y {c,d}
   let p1 := edgeToPair {a, b} (M.edge_size {a, b} he1) (my_orient ⟨{a, b}, he1⟩)
+    (my_sgn ⟨{a, b}, he1⟩)
   let p2 := edgeToPair {c, d} (M.edge_size {c, d} he2) (my_orient ⟨{c, d}, he2⟩)
+    (my_sgn ⟨{c, d}, he2⟩)
   use p1
   constructor
   · use {a, b}, he1
@@ -596,10 +639,11 @@ theorem matching_r2_implies_config_r2 (M : PerfectMatching) :
       -- p1.fst está en {a,b}
       have h_mem1 : p1.fst ∈ ({a, b} : Finset (ZMod 6)) :=
         edgeToPair_fst_mem {a, b} (M.edge_size {a, b} he1) (my_orient ⟨{a, b}, he1⟩)
+          (my_sgn ⟨{a, b}, he1⟩)
       -- p2.fst (que es p1.fst) está en {c,d}
       have h_mem2 : p1.fst ∈ ({c, d} : Finset (ZMod 6)) := by
         rw [h_fst]; exact edgeToPair_fst_mem {c, d} (M.edge_size {c, d} he2)
-          (my_orient ⟨{c, d}, he2⟩)
+          (my_orient ⟨{c, d}, he2⟩) (my_sgn ⟨{c, d}, he2⟩)
       -- Por la propiedad de partición, {a,b} debe ser igual a {c,d}
       exact edges_disjoint_of_common_mem M {a, b} {c, d} he1 he2 p1.fst h_mem1 h_mem2
     exact hne h_edges
@@ -610,18 +654,23 @@ theorem matching_r2_implies_config_r2 (M : PerfectMatching) :
     have h_orient_p2 : my_orient ⟨{c, d}, he2⟩ = decide (c < d) := by
       have h_ne : ({c, d} : Finset (ZMod 6)) ≠ {a, b} := Ne.symm hne
       simp [my_orient, h_ne]
+    have h_sgn1 : my_sgn ⟨{a, b}, he1⟩ = true := by
+      simp [my_sgn]
+    have h_sgn2 : my_sgn ⟨{c, d}, he2⟩ = false := by
+      have h_ne : ({c, d} : Finset (ZMod 6)) ≠ {a, b} := Ne.symm hne
+      simp [my_sgn, h_ne]
     have hp1_eq : p1 = OrderedPair.mk a b (by
       simp only [ne_eq]
       intro h; rw [h] at he1; have := M.edge_size {b, b} he1; simp at this
-    ) := by
+    ) true := by
       dsimp [p1]
-      rw [h_orient_p1]
+      rw [h_orient_p1, h_sgn1]
       unfold edgeToPair
       split_ifs with h_lt
       · -- a < b
         simp only [decide_eq_true_eq] at h_lt
         have h_min_max := min_max_of_lt h_lt
-        simp only [OrderedPair.mk.injEq]
+        simp only [OrderedPair.mk.injEq, and_true]
         constructor
         · exact h_min_max.1
         · exact h_min_max.2
@@ -632,22 +681,22 @@ theorem matching_r2_implies_config_r2 (M : PerfectMatching) :
           intro h; rw [h] at he1; have := M.edge_size {b, b} he1; simp at this
         have h_lt_ba : b < a := lt_of_le_of_ne h_le h_ne.symm
         have h_min_max := min_max_of_lt h_lt_ba
-        simp only [OrderedPair.mk.injEq]
+        simp only [OrderedPair.mk.injEq, and_true]
         constructor
         · refine Eq.trans ?_ h_min_max.2; congr 1; simp [Finset.pair_comm]
         · refine Eq.trans ?_ h_min_max.1; congr 1; simp [Finset.pair_comm]
     have hp2_eq : p2 = OrderedPair.mk c d (by
        simp only [ne_eq]
        intro h; rw [h] at he2; have := M.edge_size {d, d} he2; simp at this
-    ) := by
+    ) false := by
       dsimp [p2]
-      rw [h_orient_p2]
+      rw [h_orient_p2, h_sgn2]
       unfold edgeToPair
       split_ifs with h_lt
       · -- c < d
         simp only [decide_eq_true_eq] at h_lt
         have h_min_max := min_max_of_lt h_lt
-        simp only [OrderedPair.mk.injEq]
+        simp only [OrderedPair.mk.injEq, and_true]
         constructor
         · exact h_min_max.1
         · exact h_min_max.2
@@ -658,17 +707,21 @@ theorem matching_r2_implies_config_r2 (M : PerfectMatching) :
           intro h; rw [h] at he2; have := M.edge_size {d, d} he2; simp at this
         have h_lt_dc : d < c := lt_of_le_of_ne h_le h_ne_cd.symm
         have h_min_max := min_max_of_lt h_lt_dc
-        simp only [OrderedPair.mk.injEq]
+        simp only [OrderedPair.mk.injEq, and_true]
         constructor
         · refine Eq.trans ?_ h_min_max.2; congr 1; simp [Finset.pair_comm]
         · refine Eq.trans ?_ h_min_max.1; congr 1; simp [Finset.pair_comm]
     -- Con p1=[a,b] y p2=[c,d], hpat implica formsR2Pattern
     rw [hp1_eq, hp2_eq]
-    exact hpat
+    exact ⟨by simp, hpat⟩
 
-/-- Si un matching es trivial, todas sus orientaciones producen configuraciones sin R1 ni R2 -/
-theorem trivial_matching_implies_trivial_configs (M : PerfectMatching) (orient : Orientation M) :
-    M.isTrivial → ¬hasR1 (matchingToConfig M orient) ∧ ¬hasR2 (matchingToConfig M orient) := by
+/-- Si un matching es trivial, todas sus orientaciones y TODAS sus asignaciones de signos
+    producen configuraciones sin R1 ni R2 (la condición de signos opuestos de R2 solo resta
+    patrones, así que la implicación sigue valiendo para cualquier signo). -/
+theorem trivial_matching_implies_trivial_configs (M : PerfectMatching) (orient : Orientation M)
+    (sgn : Signing M) :
+    M.isTrivial → ¬hasR1 (matchingToConfig M orient sgn) ∧
+      ¬hasR2 (matchingToConfig M orient sgn) := by
   intro ⟨hnoR1, hnoR2⟩
   constructor
   · -- No tiene R1
@@ -748,7 +801,7 @@ theorem trivial_matching_implies_trivial_configs (M : PerfectMatching) (orient :
     -- Si la config tiene R2, el matching tiene R2
     -- Este es el recíproco, que también se puede probar
     unfold hasR2 formsR2Pattern at hR2
-    obtain ⟨p1, hp1_mem, p2, hp2_mem, hne, hpat⟩ := hR2
+    obtain ⟨p1, hp1_mem, p2, hp2_mem, hne, -, hpat⟩ := hR2
     simp only [matchingToConfig, Finset.mem_image, Finset.mem_attach, true_and,
                Subtype.exists] at hp1_mem hp2_mem
     obtain ⟨e1, he1, hp1_eq⟩ := hp1_mem

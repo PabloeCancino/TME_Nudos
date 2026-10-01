@@ -8,6 +8,22 @@
 
 Este documento es el registro cronológico completo: qué se probó, qué se encontró, qué se cambió y por qué, y dónde retomar. Las secciones 1 a 3 sirven para orientarse; la 4 es el registro detallado; la 5 lista lo pendiente.
 
+## 0000. PAUSA (2026-09-30, fin de jornada) — RETOMAR AQUÍ
+
+**Rama:** `migracion-signo`. `master` = e7e4422 (fusión local, NADA subido a `origin`).
+**Etapa 1: TERMINADA y verificada** (commit 8bbb542): `Basic` con `pos : Bool`, build completa en verde, 51 axiomas / 17 sorry sin cambio.
+**Etapa 2: INTERRUMPIDA A MEDIAS** (agente detenido a propósito). El árbol tiene cambios parciales en `TCN_01`..`TCN_04` y `CrossingPairIsomorphism`, guardados en un commit `WIP` **que NO compila** (excepción consciente a la regla 6; sólo vive en esta rama, no se fusiona). El último mensaje del agente fue "Fix remaining spots manually": había errores de compilación sin resolver. No se conocen los módulos que fallan; hay que correr `lake build TMENudos.TCN_01_Fundamentos` etc. uno a uno.
+**Medición de riesgo (hecha):** `decide +kernel` sobre `powersetCard 3` de 60 pares firmados (34 220 subconjuntos) con predicado barato: ~57 s y exige `maxHeartbeats 0`. Viable pero caro; los predicados reales R1/R2 serán más pesados (Etapa 3).
+
+### Cómo retomar
+1. `git checkout migracion-signo`; `lake build TMENudos.TCN_01_Fundamentos` y seguir en orden 01→02→03→04→CrossingPairIsomorphism, arreglando errores (o relanzar el agente de Etapa 2 con ese estado como punto de partida).
+2. Reglas del plan `20260930_plan_migracion_signo_firmado.md` (1-8). R2 con signos opuestos va en TCN_02.
+3. Cuando 01-04 + CrossingPairIsomorphism compilen, Etapa 3 (TCN_05..08, AUX, TNC_05_1) con regla 8: realizable = irreducible ∧ índice cero (esperado 4 configs, 2 órbitas de tamaño 2). Sonda 14 lo respalda.
+4. Commitear "verde" sólo con build completa (34 módulos + raíz) y Etapa1_* por nombre; luego Etapa 4 (limpieza capa paralela).
+5. Pendientes para revisar de la Etapa 1: `SIME` (IME_complete), transiciones `is_R*_transition` que comparan sólo `ratio_val` (tensión con el axioma de rotación), `formR2Pair` de TCN_10 sin signos opuestos (falsifica K3_special), réplica de TCN_08_Uniformity independiente de Basic.
+
+---
+
 ## 000. CIERRE DE SESIÓN (2026-09-30) — LEER PRIMERO
 
 > **ACTUALIZACIÓN (sesión de retorno, rama `clase-b-y-capa-paralela`, sale de `integracion-opcion1`):** el autor pidió empezar por lo barato y seguro. Hecho: reformulación de los enunciados falsos de la clase B (sección 4.31). **También hecho: la capa paralela de `rational_to_diagram` (sección 4.32).** **Cifras actuales:** build de los 34 módulos más la raíz con 0 errores y 0 alertas; `sorry` en el código **17** (`Schubert` 11, `Reidemeister` 4, `KN_00_Combinatoria` 1, `KN_Instance_K3` 1); axiomas **51** (sin cambio). Las cifras del cuadro de abajo corresponden al cierre anterior.

@@ -101,12 +101,24 @@ theorem actionZMod_preserves_ne (g : DihedralD6) (a b : ZMod 6) (h : a ≠ b) :
     actionZMod g a ≠ actionZMod g b :=
   Function.Injective.ne (actionZMod_injective g) h
 
-/-- Acción sobre OrderedPair preservando la desigualdad -/
+/-- Acción sobre OrderedPair preservando la desigualdad.
+
+    MIGRACIÓN (signo como dato): antes → después
+    - antes: actuaba solo sobre `fst`, `snd`.
+    - después: además CONSERVA el signo (`pos := p.pos`), tanto para rotaciones como para la
+      reflexión σ: x ↦ -(x+i). (La imagen especular τ, que niega el signo, es `swap`, no D₆.) -/
 def actOnPair (g : DihedralD6) (p : OrderedPair) : OrderedPair :=
   OrderedPair.mk
     (actionZMod g p.fst)
     (actionZMod g p.snd)
     (actionZMod_preserves_ne g p.fst p.snd p.distinct)
+    p.pos
+
+/-- Propiedad de actOnPair para pos: la acción de D₆ conserva el signo -/
+@[simp]
+theorem actOnPair_pos (g : DihedralD6) (p : OrderedPair) :
+    (actOnPair g p).pos = p.pos :=
+  rfl
 
 /-- Propiedad de actOnPair para fst -/
 @[simp]
@@ -124,16 +136,16 @@ theorem actOnPair_snd (g : DihedralD6) (p : OrderedPair) :
 theorem actOnPair_injective (g : DihedralD6) : Function.Injective (actOnPair g) := by
   intro p₁ p₂ h
   -- Usar cases para analizar la estructura OrderedPair (sin @[ext])
-  obtain ⟨fst₁, snd₁, distinct₁⟩ := p₁
-  obtain ⟨fst₂, snd₂, distinct₂⟩ := p₂
+  obtain ⟨fst₁, snd₁, distinct₁, pos₁⟩ := p₁
+  obtain ⟨fst₂, snd₂, distinct₂, pos₂⟩ := p₂
   -- Simplificar usando las definiciones
   simp only [actOnPair, OrderedPair.mk.injEq] at h ⊢
   -- Obtener las dos igualdades de h
-  obtain ⟨h_fst, h_snd⟩ := h
+  obtain ⟨h_fst, h_snd, h_pos⟩ := h
   -- Usar inyectividad de actionZMod
   have h1 : fst₁ = fst₂ := actionZMod_injective g h_fst
   have h2 : snd₁ = snd₂ := actionZMod_injective g h_snd
-  exact And.intro h1 h2
+  exact And.intro h1 (And.intro h2 h_pos)
 
 @[simp]
 theorem actOnPair_one (p : OrderedPair) : actOnPair (1 : DihedralD6) p = p := by
@@ -212,6 +224,16 @@ theorem actOnConfig_comp (g₁ g₂ : DihedralD6) (K : K3Config) :
     rcases h with ⟨_, ⟨q, hq, rfl⟩, rfl⟩
     refine ⟨q, hq, ?_⟩
     simp [actOnPair, actionZMod_mul]
+
+/-- La acción de D₆ CONSERVA el writhe (suma de signos dato): rotaciones y reflexión σ no
+    cambian `pos`. (La imagen especular τ = `swap` sí lo niega: `K3Config.writhe_swap`.) -/
+theorem writhe_actOnConfig (g : DihedralD6) (K : K3Config) :
+    (actOnConfig g K).writhe = K.writhe := by
+  unfold K3Config.writhe actOnConfig
+  simp only
+  rw [Finset.sum_image (fun x _ y _ h => actOnPair_injective g h)]
+  simp [OrderedPair.posSign]
+  rfl
 
 /-- La acción de D₆ sobre K3Config es una acción de grupo -/
 instance : MulAction DihedralD6 K3Config where

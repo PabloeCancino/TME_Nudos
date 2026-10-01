@@ -30,7 +30,8 @@ básicos para la teoría de configuraciones K₃ sobre Z/6Z.
 ## Resultados Principales
 
 - `toMatching_card`: Una configuración K₃ tiene exactamente 3 aristas en su matching
-- `total_configs_formula`: Hay 120 = 6!/3! configuraciones K₃ totales
+- `total_configs_formula`: Hay 960 = 6!/3! · 2³ configuraciones K₃ firmadas (120 sin signo)
+- `OrderedPair.card_eq_sixty`, `K3Config.card_eq_960`: cardinales de los tipos
 
 ## Referencias
 
@@ -47,8 +48,16 @@ namespace KnotTheory
 
 /-! ## Tuplas Ordenadas -/
 
-/-- Una tupla ordenada es un par [a,b] de elementos distintos de Z/6Z
-    donde el orden importa: [a,b] ≠ [b,a] -/
+/-- Una tupla ordenada FIRMADA es un par [a,b] de elementos distintos de Z/6Z
+    donde el orden importa: [a,b] ≠ [b,a], junto con el signo del cruce `pos`.
+
+    MIGRACIÓN (signo como dato, Etapa 2): antes → después
+    - antes: `OrderedPair` tenía 3 campos (`fst`, `snd`, `distinct`): 30 pares; el signo no era
+      dato (se podía derivar de las posiciones, pero no distinguía las dos quiralidades del trébol).
+    - después: gana `pos : Bool` (`true` = positivo) como ÚLTIMO campo, sin valor por defecto:
+      60 pares firmados (`OrderedPair.card_eq_sixty`).
+    - `reverse` (swap, imagen especular τ) intercambia `fst`/`snd` y NIEGA `pos`;
+      la rotación y toda la acción de D₆ (TCN_04) CONSERVAN `pos` (convención de `Basic`). -/
 structure OrderedPair where
   /-- Primer elemento -/
   fst : ZMod 6
@@ -56,22 +65,33 @@ structure OrderedPair where
   snd : ZMod 6
   /-- Los elementos deben ser distintos -/
   distinct : fst ≠ snd
+  /-- Signo del cruce (`true` = positivo). Es un DATO, independiente de las posiciones. -/
+  pos : Bool
   deriving DecidableEq
 
 namespace OrderedPair
 
-/-- Constructor conveniente para tuplas ordenadas -/
-def make (a b : ZMod 6) (h : a ≠ b) : OrderedPair := ⟨a, b, h⟩
+/-- Constructor conveniente para tuplas ordenadas firmadas -/
+def make (a b : ZMod 6) (h : a ≠ b) (pos : Bool) : OrderedPair := ⟨a, b, h, pos⟩
 
-/-- La tupla inversa intercambia el orden de los elementos -/
+/-- La tupla inversa intercambia el orden de los elementos y NIEGA el signo
+    (imagen especular: convención de `Basic.swap_crossing`). -/
 def reverse (p : OrderedPair) : OrderedPair :=
-  ⟨p.snd, p.fst, p.distinct.symm⟩
+  ⟨p.snd, p.fst, p.distinct.symm, !p.pos⟩
 
 /-- La inversión es involutiva: invertir dos veces da la tupla original -/
 theorem reverse_involutive (p : OrderedPair) :
   p.reverse.reverse = p := by
   cases p
-  rfl
+  simp [reverse]
+
+/-- Signo numérico (±1) de una tupla firmada, leído del campo `pos`. -/
+def posSign (p : OrderedPair) : ℤ := if p.pos then 1 else -1
+
+/-- La inversión niega el signo numérico. -/
+theorem posSign_reverse (p : OrderedPair) : p.reverse.posSign = -p.posSign := by
+  unfold posSign reverse
+  cases p.pos <;> simp
 
 /-- La arista no ordenada subyacente a una tupla ordenada -/
 def toEdge (p : OrderedPair) : Finset (ZMod 6) :=
@@ -119,17 +139,25 @@ theorem toEdge_eq_iff (p q : OrderedPair) :
         · right; exact h2.symm   -- x = q.fst → x = p.snd
         · left; exact h1.symm    -- x = q.snd → x = p.fst
 
-/-- `OrderedPair` es finito (se inyecta en `ZMod 6 × ZMod 6`). -/
-noncomputable instance : Fintype OrderedPair :=
-  Fintype.ofInjective (fun p : OrderedPair => (p.fst, p.snd)) (by
-    intro p q h
-    cases p
-    cases q
-    simp only [Prod.mk.injEq] at h
-    obtain ⟨h1, h2⟩ := h
-    subst h1
-    subst h2
-    rfl)
+/-- Equivalencia: tupla firmada ≃ (par de posiciones distintas) × signo. -/
+def equivSubtypeBool : OrderedPair ≃ { c : ZMod 6 × ZMod 6 // c.1 ≠ c.2 } × Bool where
+  toFun p := (⟨(p.fst, p.snd), p.distinct⟩, p.pos)
+  invFun q := ⟨q.1.val.1, q.1.val.2, q.1.property, q.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-- `OrderedPair` es finito. Instancia COMPUTABLE (vía `equivSubtypeBool`), para poder usar
+    `decide` sobre conjuntos de pares.
+
+    MIGRACIÓN: antes era `noncomputable` (`Fintype.ofInjective`); ahora es computable. -/
+instance : Fintype OrderedPair :=
+  Fintype.ofEquiv _ equivSubtypeBool.symm
+
+/-- **Cardinal de `OrderedPair`: 60** (antes, sin signo: 30). -/
+theorem card_eq_sixty : Fintype.card OrderedPair = 60 := by
+  rw [Fintype.card_congr equivSubtypeBool, Fintype.card_prod, Fintype.card_bool]
+  have : Fintype.card { c : ZMod 6 × ZMod 6 // c.1 ≠ c.2 } = 30 := by decide
+  omega
 
 end OrderedPair
 
@@ -155,15 +183,72 @@ instance : DecidableEq K3Config :=
     ⟨fun h => by cases K1; cases K2; simp_all,
      fun h => by rw [h]⟩
 
-/-- `K3Config` es finito (se inyecta en `Finset OrderedPair`). -/
-noncomputable instance : Fintype K3Config :=
-  Fintype.ofInjective K3Config.pairs (by
-    intro K L h
-    cases K
-    cases L
-    simp only at h
-    subst h
-    rfl)
+/-- Unicidad existencial en un `Finset` ⟺ el filtro tiene cardinal 1. -/
+theorem existsUnique_iff_filter_card {α : Type*} (s : Finset α) (P : α → Prop)
+    [DecidablePred P] : (∃! p, p ∈ s ∧ P p) ↔ (s.filter P).card = 1 := by
+  rw [Finset.card_eq_one]
+  constructor
+  · rintro ⟨a, ⟨ha, hP⟩, hu⟩
+    refine ⟨a, ?_⟩
+    ext x
+    simp only [Finset.mem_filter, Finset.mem_singleton]
+    constructor
+    · rintro ⟨hx, hPx⟩; exact hu x ⟨hx, hPx⟩
+    · rintro rfl; exact ⟨ha, hP⟩
+  · rintro ⟨a, ha⟩
+    have ha' : a ∈ s.filter P := by rw [ha]; exact Finset.mem_singleton_self a
+    rw [Finset.mem_filter] at ha'
+    refine ⟨a, ha', ?_⟩
+    rintro y ⟨hy, hP⟩
+    have : y ∈ s.filter P := Finset.mem_filter.mpr ⟨hy, hP⟩
+    rw [ha] at this
+    exact Finset.mem_singleton.mp this
+
+/-- Forma decidible de la condición de partición: cada elemento de Z/6Z aparece en
+    exactamente una tupla. -/
+def partitionPred (s : Finset OrderedPair) : Prop :=
+  ∀ i : ZMod 6, (s.filter (fun p => i = p.fst ∨ i = p.snd)).card = 1
+
+instance : DecidablePred partitionPred := fun s => by unfold partitionPred; infer_instance
+
+/-- Los conjuntos de pares que son configuraciones K₃: los subconjuntos de 3 pares firmados
+    que particionan Z/6Z. Es un `Finset` explícito y computable. -/
+def finsetOfConfigs : Finset (Finset OrderedPair) :=
+  (Finset.powersetCard 3 (Finset.univ : Finset OrderedPair)).filter partitionPred
+
+/-- `K3Config` ≃ el conjunto finito `finsetOfConfigs` (equivalencia computable). -/
+def equivFinset : K3Config ≃ finsetOfConfigs where
+  toFun K := ⟨K.pairs, by
+    unfold finsetOfConfigs
+    rw [Finset.mem_filter, Finset.mem_powersetCard]
+    exact ⟨⟨Finset.subset_univ _, K.card_eq⟩,
+      fun i => (existsUnique_iff_filter_card _ _).1 (K.is_partition i)⟩⟩
+  invFun s := ⟨s.1, by
+    have h := s.2
+    unfold finsetOfConfigs at h
+    rw [Finset.mem_filter, Finset.mem_powersetCard] at h
+    exact h.1.2, by
+    have h := s.2
+    unfold finsetOfConfigs at h
+    rw [Finset.mem_filter, Finset.mem_powersetCard] at h
+    exact fun i => (existsUnique_iff_filter_card _ _).2 (h.2 i)⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-- `K3Config` es finito. Instancia COMPUTABLE (vía `equivFinset`).
+
+    MIGRACIÓN: antes era `noncomputable` (`Fintype.ofInjective` en `Finset OrderedPair`);
+    ahora es computable para poder contar con `decide +kernel`. -/
+instance : Fintype K3Config :=
+  Fintype.ofEquiv _ equivFinset.symm
+
+/-- **Número de configuraciones K₃ firmadas: 960** (antes, sin signo: 120 = 15 · 8;
+    ahora 15 · 8 · 8 = 960, el tipo firmado es LIBRE). Cálculo por `decide +kernel`
+    sobre los 34 220 subconjuntos de tamaño 3 de los 60 pares firmados. -/
+theorem card_eq_960 : Fintype.card K3Config = 960 := by
+  rw [Fintype.card_congr equivFinset, Fintype.card_coe]
+  unfold finsetOfConfigs
+  decide +kernel
 
 /-- El matching subyacente de una configuración: el conjunto de aristas no ordenadas -/
 def toMatching (K : K3Config) : Finset (Finset (ZMod 6)) :=
@@ -177,13 +262,16 @@ theorem toMatching_card (K : K3Config) : K.toMatching.card = 3 := by
   have h_inj : ∀ p1 ∈ K.pairs, ∀ p2 ∈ K.pairs, p1.toEdge = p2.toEdge → p1 = p2 := by
     intro p1 hp1 p2 hp2 h_edge
     rw [OrderedPair.toEdge_eq_iff] at h_edge
+    -- MIGRACIÓN: con el signo como dato, "mismo orden" ya no da p1 = p2 por extensionalidad
+    -- (los signos podrían diferir); en ambos casos se usa la unicidad de `is_partition`:
+    -- p1.fst aparece en ambos pares.
+    obtain ⟨q, ⟨hq_mem, hq_has⟩, hq_unique⟩ := K.is_partition p1.fst
+    have h1 : p1 = q := hq_unique p1 ⟨hp1, Or.inl rfl⟩
     rcases h_edge with ⟨hf, hs⟩ | ⟨hf, hs⟩
-    · -- Mismo orden: p1.fst = p2.fst, p1.snd = p2.snd
-      cases p1; cases p2; simp_all
-    · -- Orden opuesto: p1.fst = p2.snd, p1.snd = p2.fst
-      -- Esto contradice is_partition: p1.fst aparece en ambos pares
-      obtain ⟨q, ⟨hq_mem, hq_has⟩, hq_unique⟩ := K.is_partition p1.fst
-      have h1 : p1 = q := hq_unique p1 ⟨hp1, Or.inl rfl⟩
+    · -- Mismo orden: p1.fst = p2.fst
+      have h2 : p2 = q := hq_unique p2 ⟨hp2, Or.inl hf⟩
+      exact h1.trans h2.symm
+    · -- Orden opuesto: p1.fst = p2.snd
       have h2 : p2 = q := hq_unique p2 ⟨hp2, Or.inr hf⟩
       exact h1.trans h2.symm
   rw [Finset.card_image_of_injOn h_inj]
@@ -365,8 +453,21 @@ noncomputable def ime (K : K3Config) : List ℕ :=
     - Permite reconstruir DME desde IME y σ
      -/
 
-noncomputable def chiralSigns (K : K3Config) : List ℤ :=
+/-- Vector de signos de la forma DME: `sgn(δᵢ)`, el signo del DESPLAZAMIENTO (derivado de las
+    posiciones). Es lo que hacía `chiralSigns` antes de la migración; se conserva porque
+    `DME = IME ⊙ dmeSigns` (`dme_decomposition`) es una identidad sobre posiciones. -/
+noncomputable def dmeSigns (K : K3Config) : List ℤ :=
   K.dme.map Int.sign
+
+/-- Vector de signos quirales: los signos DATO (`pos`) de los tres cruces, `+1`/`-1`.
+
+    MIGRACIÓN (regla 3): antes → después
+    - antes: `chiralSigns K = K.dme.map Int.sign` (signo derivado de las posiciones; las dos
+      quiralidades del trébol no se distinguían como datos).
+    - después: `chiralSigns K = K.pairsList.map OrderedPair.posSign`, lee `pos`. El signo de
+      desplazamiento antiguo pasa a `dmeSigns`. -/
+noncomputable def chiralSigns (K : K3Config) : List ℤ :=
+  K.pairsList.map OrderedPair.posSign
 
 /-! Gap Total: Complejidad estructural acumulada.
 
@@ -396,9 +497,9 @@ noncomputable def gap (K : K3Config) : ℕ :=
 
 /-! ## Writhe (Suma Algebraica) -/
 
-/-! Writhe: Suma algebraica de desplazamientos con signo.
+/-! Writhe: Suma algebraica de los signos de los cruces.
 
-    **Writhe = Σ δᵢ**
+    **Writhe = Σ posSign(pᵢ)** (MIGRACIÓN: antes Σ δᵢ; esa suma es ahora `dmeSum`)
 
     ## Propiedades
 
@@ -417,13 +518,28 @@ noncomputable def gap (K : K3Config) : ℕ :=
     ## Ejemplo
 
     ```lean
-    Trébol derecho:  DME = (3,-3,-3)  → Writhe = -3
-    Trébol izquierdo: DME = (-3,3,3)  → Writhe = +3
+    Trébol derecho (todos los signos +):  Writhe = +3
+    Trébol izquierdo (todos los signos -): Writhe = -3
+    (antes, con Σ δᵢ: DME = (3,-3,-3) → -3; ahora eso es `dmeSum`)
     ```
      -/
 
-noncomputable def writhe (K : K3Config) : ℤ :=
+/-- Suma algebraica de desplazamientos Σ δᵢ (la antigua definición de `writhe`).
+
+    MIGRACIÓN: antes se llamaba `writhe`; con el signo como dato el writhe es la suma de los
+    signos `pos` (ver `writhe`), y esta suma de desplazamientos se conserva con otro nombre. -/
+noncomputable def dmeSum (K : K3Config) : ℤ :=
   K.dme.foldl (· + ·) 0
+
+/-- **Writhe** del diagrama firmado: suma de los signos DATO de los cruces, `Σ posSign`.
+
+    MIGRACIÓN (regla 3): antes → después
+    - antes: `writhe K = Σ δᵢ` (suma de desplazamientos, derivada de las posiciones).
+    - después: `writhe K = Σ_{p ∈ pairs} posSign p` (lee `pos`). Sigue valiendo
+      `writhe (swap K) = - writhe K` (`writhe_swap`), ahora porque `swap` niega cada `pos`.
+      La suma de desplazamientos es `dmeSum`. -/
+def writhe (K : K3Config) : ℤ :=
+  ∑ p ∈ K.pairs, p.posSign
 
 /-! ## Conversión Bidireccional -/
 
@@ -775,7 +891,7 @@ theorem dme_decomposition (K : K3Config) :
   ∀ i, i < 3 →
     ∃ (mag : ℕ) (sgn : ℤ),
       K.ime[i]? = some mag ∧
-      K.chiralSigns[i]? = some sgn ∧
+      K.dmeSigns[i]? = some sgn ∧
       K.dme[i]? = some (mag * sgn) := by
   intro i hi
   -- Probar que dme tiene longitud 3
@@ -787,7 +903,7 @@ theorem dme_decomposition (K : K3Config) :
   · unfold ime
     simp [List.getElem?_map, List.getElem?_eq_getElem hi_valid]
   constructor
-  · unfold chiralSigns
+  · unfold dmeSigns
     simp [List.getElem?_map, List.getElem?_eq_getElem hi_valid]
   · simp only [List.getElem?_eq_getElem hi_valid, Option.some.injEq]
     rw [mul_comm]
@@ -978,15 +1094,31 @@ theorem gap_swap (K : K3Config) :
   rw [h_dme]
   rw [natAbs_map_neg_eq]
 
-/-- **TEOREMA**: Writhe cambia de signo bajo reflexión.
-
-    Writhe(K̄) = -Writhe(K) -/
-theorem writhe_swap (K : K3Config) :
-  K.swap.writhe = -K.writhe := by
-  unfold writhe
+/-- **TEOREMA**: la suma de desplazamientos cambia de signo bajo reflexión
+    (la antigua `writhe_swap`). -/
+theorem dmeSum_swap (K : K3Config) :
+  K.swap.dmeSum = -K.dmeSum := by
+  unfold dmeSum
   have h_dme : K.swap.dme = K.dme.map (· * (-1)) := dme_swap K
   rw [h_dme]
   exact foldl_sum_neg K.dme
+
+/-- **TEOREMA**: Writhe cambia de signo bajo reflexión.
+
+    Writhe(K̄) = -Writhe(K). Con el signo como dato, vale porque `reverse` niega cada `pos`. -/
+theorem writhe_swap (K : K3Config) :
+  K.swap.writhe = -K.writhe := by
+  unfold writhe swap
+  rw [Finset.sum_image (fun x _ y _ h => by
+    have := congrArg OrderedPair.reverse h
+    rwa [OrderedPair.reverse_involutive, OrderedPair.reverse_involutive] at this)]
+  simp only [OrderedPair.posSign_reverse, Finset.sum_neg_distrib]
+
+/-- El writhe es la suma de la lista de signos quirales. -/
+theorem writhe_eq_sum_chiralSigns (K : K3Config) :
+  K.writhe = K.chiralSigns.sum := by
+  unfold writhe chiralSigns pairsList
+  exact (Finset.sum_map_toList K.pairs OrderedPair.posSign).symm
 
 /-! ## Propiedades de DME como Multiconjunto
 
@@ -1105,24 +1237,37 @@ end K3Config
 
 /-! ## Conteos Básicos -/
 
-/-- Número total de configuraciones K₃ sobre Z/6Z -/
-def totalConfigs : ℕ := 120
+/-- Número de configuraciones K₃ SIN signo (matching + orientación): 120.
+    Es la cifra antigua de `totalConfigs`. -/
+def unsignedConfigs : ℕ := 120
+
+/-- Número total de configuraciones K₃ firmadas sobre Z/6Z.
+
+    MIGRACIÓN (cifra): antes → después
+    - antes: `totalConfigs = 120`.
+    - después: `totalConfigs = 960 = 120 · 2³` (cada uno de los 3 cruces lleva un signo dato). -/
+def totalConfigs : ℕ := 960
 
 /-- Fórmula para el número total de configuraciones:
-    Total = 6! / 3! = 720 / 6 = 120
+    Total = 6! / 3! · 2³ = 720 / 6 · 8 = 960
 
     Interpretación:
     - 6! formas de permutar los 6 elementos
     - Agrupar consecutivamente en 3 pares
-    - /3! porque el orden de los pares no importa -/
+    - /3! porque el orden de los pares no importa
+    - ·2³ por el signo dato de cada uno de los 3 cruces -/
 theorem total_configs_formula :
-  totalConfigs = Nat.factorial 6 / Nat.factorial 3 := by
+  totalConfigs = Nat.factorial 6 / Nat.factorial 3 * 2 ^ 3 := by
   unfold totalConfigs
-  norm_num
+  norm_num [Nat.factorial]
 
--- El espacio de configuraciones tiene cardinalidad 120
--- TODO: Requiere instancia Fintype K3Config
--- axiom total_configs_count : Fintype.card K3Config = totalConfigs
+/-- La cifra antigua (sin signo) es `6!/3!`. -/
+theorem unsigned_configs_formula : unsignedConfigs = Nat.factorial 6 / Nat.factorial 3 := by
+  unfold unsignedConfigs
+  norm_num [Nat.factorial]
+
+/-- `totalConfigs` es de verdad el cardinal del tipo `K3Config` (antes era solo una constante). -/
+theorem total_configs_count : Fintype.card K3Config = totalConfigs := K3Config.card_eq_960
 
 /-! ## Matchings Perfectos y Doble Factorial -/
 
@@ -1157,7 +1302,7 @@ theorem num_perfect_matchings_formula (n : ℕ) :
 
 - `OrderedPair`: Tuplas ordenadas con operaciones
 - `K3Config`: Configuraciones de 3 tuplas
-- `totalConfigs`: Constante 120
+- `totalConfigs`: Constante 960 (antes 120)
 - `doubleFactorial`: Función !!
 
 ## Teoremas Principales
@@ -1165,7 +1310,7 @@ theorem num_perfect_matchings_formula (n : ℕ) :
 - `toMatching_card`: Matching tiene 3 aristas
 - `toMatching_edge_size`: Cada arista tiene 2 elementos
 - `toMatching_covers_all`: El matching cubre Z/6Z
-- `total_configs_formula`: 120 = 6!/3!
+- `total_configs_formula`: 960 = 6!/3! · 2³
 
 ## Próximo Bloque
 
