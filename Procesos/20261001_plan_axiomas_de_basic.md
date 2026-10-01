@@ -137,6 +137,33 @@ alertas. Axiomas de `Basic`: 5 → 4 (total del proyecto 50 → 49).
 * **A6 y A7** llevan en su documentación el estado de sospecha y la referencia a las sondas.
 * Los cuatro teoremas solo se usaban dentro de `Basic`: ningún otro módulo cambió.
 
+### 3.6 Transiciones fieles R1/R2 (sonda 20, 2026-10-01): A6 se sostiene y A7 es cierto salvo reetiquetado
+
+**Modelo.** `Isotopic` reparado: rotación, R1 y R2 con transiciones BIYECTIVAS (se quitan los cruces
+eliminados, las posiciones restantes se renumeran por rango y los índices saltan los quitados), y sus
+inversas (simetría); R3 queda fuera por ser vacuo (sonda 17). Es el modelo «solo R1, R2 y rotación»,
+sin flypes. Cerradura acotada a grado ≤ 5.
+
+**Resultado para n = 3** (220 clases de rotación de configuraciones irreducibles, indexadas):
+
+| Pregunta | Resultado |
+|---|---|
+| A6: ¿irreducible ⇒ grado mínimo n? | **Se cumple**: 0 contraejemplos en 220 |
+| A7 literal: ¿todo K₂ de grado 3 de la clase es rotación EXACTA de K₁? | **Falla en 220 de 220**: cada clase tiene 5 miembros que no son rotación |
+| ¿Algún K₂ es un diagrama distinto incluso reindexando? | **0 de 220**: los 5 son las otras 5 permutaciones de los índices (3! − 1) |
+
+**Lectura.** A7 falla solo por el etiquetado `Fin n` de `RationalConfiguration`; es verdadero para la
+relación R1/R2/rotación «salvo permutación de índices»: `∃ k σ, K₂ = rotate k (K₁ ∘ σ)`. Para n = 3 y
+grados ≤ 5.
+
+**Hallazgos combinados (3.4 + 3.6).**
+* Sin R3 (solo R1, R2 y rotación), el A7 reformulado «salvo permutación de índices» es plausible; A6 también.
+* Con una isotopía fiel completa (con R3 y flypes), A7 es falso desde n = 7 (sección 3.4).
+* Por tanto la reparación correcta del modelo de `Basic` NO es hacer cierto el A7 actual, sino:
+  (a) cambiar su conclusión a «salvo permutación de índices», y (b) declarar que la relación `Isotopic`
+  de `Basic` es R1/R2/rotación y NO la isotopía de nudos, con lo cual la clasificación que se obtiene es
+  de DIAGRAMAS irreducibles módulo R1/R2, no de nudos.
+
 ### Fase 1. Reparar y probar `reconstruct`
 1. Sonda Python exhaustiva (n ≤ 6) de candidatos de enunciado: (a) añadir la hipótesis de que los cruces están ordenados por posición superior; (b) comparar como multiconjuntos de `(razón, signo)`; (c) exigir el desplazamiento solo salvo permutación de índices.
 2. Elegir el candidato que no admita contraejemplos y cuyo enunciado sea el que realmente usan los teoremas dependientes.

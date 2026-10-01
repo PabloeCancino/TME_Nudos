@@ -22,6 +22,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 **Fase 3 hecha y verificada (rama `fase3-basic`):** los 48 módulos compilan, 0 errores/alertas. `reconstruct_from_first` eliminado (ahora la hipótesis `UniformOverShift`); `rotation_of_ratio_pos_eq`, `same_IME_implies_rotation` y `same_SIME_implies_rotation` son teoremas sin axiomas propios; `IME_complete` exige `h_rec` para la vuelta. Axiomas de `Basic` 5 → 4; total 49. Detalle: plan, sección 3.5.
 
+**Sonda 20 (transiciones R1/R2 fieles, n=3, grado ≤ 5):** A6 se cumple (0/220 contraejemplos). A7 literal falla en 220/220 pero SOLO por reetiquetado de índices (0/220 diagramas realmente distintos): es cierto «salvo permutación de índices». Detalle: plan, sección 3.6.
+
 ---
 
 ## 0000000. HALLAZGO (2026-10-01): `reconstruct_from_first` de `Basic` es FALSO — LEER PRIMERO
