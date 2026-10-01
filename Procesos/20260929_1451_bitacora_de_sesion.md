@@ -17,6 +17,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 **Estado de publicación y camino (B) (2026-10-01, tarde):** `master` incluye la forma normal de (A) y `FormaNormal` está en la raíz `TMENudos.lean` (build por defecto verificada: 8 255 trabajos, 1 min 26 s, 0 errores). Diseño del camino (B), SEPARADO de (A): `Procesos/20261001_diseno_camino_B_nudos_racionales.md`. Idea central: el span del corchete de Kauffman (4n para alternantes reducidos, ≤ 4c en general) daría la MINIMALIDAD REAL de cruces a nivel de nudo como teorema, usando la maquinaria de planaridad (`s_A + s_B = n + 2`); «reducido» (sin cuerdas aisladas) no es «sin candidatos R1/R2». Orden recomendado: B1 (censo por cálculo, sondas 22 a 25), luego B3 (span), luego B2 (tabla verificada), B4 abierto.
 
+**(B), fase B1, resultados (sondas 22 y 22b):** el span del corchete es 4n en el 100 % de los alternantes planares reducidos (n = 2..6, exhaustivo) y menor en los no reducidos; `s_A + s_B = n + 2` sin excepciones. Corregí una cautela errónea del diseño: en alternantes, reducido ⇔ sin candidatos R1/R2 (comprobado exhaustivamente n ≤ 4), así que las palabras irreducibles de (A) SON los diagramas alternantes reducidos de (B). El teorema del span (minimalidad real de cruces a nivel de nudo) es viable.
+
 ---|---|
 | `master` | Fase 3 hecha y **publicada** (`563173c` en `origin`); 2 commits locales más (sondas 20 y 21, diseño de la forma normal), sin subir |
 | `forma-normal` | Etapa 1 de la forma normal, **verificada**: `TMENudos/FormaNormal.lean` (680 líneas, solo Mathlib) |

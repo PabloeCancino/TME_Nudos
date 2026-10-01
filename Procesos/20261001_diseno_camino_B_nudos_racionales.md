@@ -45,8 +45,13 @@ Esa es la minimalidad a nivel de nudo, que el axioma A6 de `Basic` intentaba afi
 * Ingrediente combinatorio: las contribuciones de los estados «todo A» y «todo B» ocupan los grados extremos y no se cancelan en
   un diagrama alternante reducido, porque `s_A + s_B = n + 2` (con `s_A`, `s_B` los círculos de cada estado), igualdad que usa la
   PLANARIDAD (la fórmula de Euler de la sección 2). Es la misma maquinaria de caras de `Etapa1_Planaridad.lean`.
-* **«Reducido» no es «sin R1/R2».** Reducido = sin cruces nugatorios (una cuerda que no se entrelaza con ninguna). Un candidato R1
-  exige además extremos adyacentes. Hay que adaptar la hipótesis.
+* **CORRECCIÓN (sonda 22b): «reducido» SÍ equivale a «irreducible» en los diagramas alternantes.** Reducido = sin cuerdas aisladas
+  (sin cruces nugatorios). (1) Hay una cuerda aislada ⇔ hay un candidato R1, porque la cuerda más interna de un arco libre tiene
+  extremos adyacentes y no se entrelaza con nadie. (2) Un diagrama alternante no tiene candidatos R2, porque R2 exige pasos
+  superiores consecutivos y en un diagrama alternante los pasos consecutivos alternan. Luego, para diagramas ALTERNANTES,
+  reducido ⇔ sin R1 ⇔ sin R1/R2 (irreducible en el sentido de (A)). Comprobado exhaustivamente en 27 892 diagramas con n ≤ 4
+  (0 discrepancias); la versión de la tesis (1) y (2) es además elemental y formalizable en `FormaNormal.lean`.
+* **Esto une (A) y (B):** las palabras alternantes, planares e irreducibles de (A) SON los diagramas alternantes reducidos de (B).
 * Dificultad: media-alta, pero acotada y sin literatura externa. Es el entregable de mayor valor científico de (B).
 
 ## 5. Fases
@@ -88,7 +93,7 @@ flypes a su forma de Conway. Exige teoría estructural de tangles racionales. No
 | Admitir un axioma de la literatura mal transcrito (como `reconstruct_from_first`) | Regla de la sección 3: transcripción fiel, sonda de `False` y verificación por cálculo n ≤ 8 |
 | El flype es un movimiento no local sobre listas; su implementación puede ser frágil | B1 lo valida por cálculo y por la coincidencia con las clases de Jones antes de tocar Lean |
 | El puente entre `Word` y `GDiag` es el cuello de botella de B2 | Empezar por los movimientos que ya tienen el lema de invariancia (R1, R2) y añadir R3 al final |
-| El span exige entender los estados extremos con signos y orientación | B1 (sonda 24) prueba el enunciado en n ≤ 8 antes de formalizar |
+| El span exige entender los estados extremos con signos y orientación | La sonda 22 ya lo comprueba (ver sección 10); formalizar después |
 | Que (B4) resulte inabarcable | Se declara abierto; B0 a B3 ya forman un resultado completo sin él |
 
 ## 8. Orden recomendado y criterio de éxito
@@ -101,3 +106,20 @@ flypes a su forma de Conway. Exige teoría estructural de tangles racionales. No
 
 ## 9. Qué NO promete
 No demuestra la clasificación de Schubert ni el teorema de Reidemeister; no cubre nudos no racionales; no cambia nada de (A).
+
+## 10. Resultados de la fase B1 hechos hasta ahora
+
+**Sonda 22 (span del corchete, exhaustiva para diagramas alternantes planares):**
+
+| n | reducidos | con span = 4n | no reducidos | con span < 4n |
+|---|---|---|---|---|
+| 2 | 0 | 0 | 16 | 16 |
+| 3 | 4 | 4 | 80 | 80 |
+| 4 | 8 | 8 | 512 | 512 |
+| 5 | 24 | 24 | 3 568 | 3 568 |
+| 6 | 168 | 168 | 26 624 | 26 624 |
+
+Cumplimiento del 100 %: reducido ⇒ span = 4n; no reducido ⇒ span < 4n. Tampoco hubo ningún reducido con `s_A + s_B ≠ n + 2`.
+El teorema del span (B3) es viable por cálculo. Sonda 22b: reducido ⇔ irreducible en alternantes (sección 4).
+
+**Pendiente de B1:** flypes y clases de Jones (sondas 23 a 25 del plan), n = 7 y 8, y la contrastación con tablas de nudos racionales.
