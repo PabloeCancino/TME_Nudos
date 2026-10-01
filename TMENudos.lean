@@ -6,3 +6,4 @@ import TMENudos.Reidemeister
 import TMENudos.Schubert
 import TMENudos.Bridge
 import TMENudos.TCN_01_Fundamentos
+import TMENudos.FormaNormal

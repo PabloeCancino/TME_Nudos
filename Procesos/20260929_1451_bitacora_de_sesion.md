@@ -15,6 +15,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 | Rama | Estado |
 |**FORMA NORMAL, ETAPAS 2 Y 3 HECHAS (rama `forma-normal`):** `FormaNormal.lean` demuestra para TODO n la forma normal única de diagramas módulo R1/R2 (Newman módulo equivalencia + confluencia local + el solapamiento de dos pares R2), y A6 (`a6_irreducible_min`) y A7 (`a7_min_equiv`) fieles como teoremas, sin axiomas propios. Camino (A): diagramas, NO nudos. Siguiente: decidir fusión/subida y el objetivo (B).
 
+**Estado de publicación y camino (B) (2026-10-01, tarde):** `master` incluye la forma normal de (A) y `FormaNormal` está en la raíz `TMENudos.lean` (build por defecto verificada: 8 255 trabajos, 1 min 26 s, 0 errores). Diseño del camino (B), SEPARADO de (A): `Procesos/20261001_diseno_camino_B_nudos_racionales.md`. Idea central: el span del corchete de Kauffman (4n para alternantes reducidos, ≤ 4c en general) daría la MINIMALIDAD REAL de cruces a nivel de nudo como teorema, usando la maquinaria de planaridad (`s_A + s_B = n + 2`); «reducido» (sin cuerdas aisladas) no es «sin candidatos R1/R2». Orden recomendado: B1 (censo por cálculo, sondas 22 a 25), luego B3 (span), luego B2 (tabla verificada), B4 abierto.
+
 ---|---|
 | `master` | Fase 3 hecha y **publicada** (`563173c` en `origin`); 2 commits locales más (sondas 20 y 21, diseño de la forma normal), sin subir |
 | `forma-normal` | Etapa 1 de la forma normal, **verificada**: `TMENudos/FormaNormal.lean` (680 líneas, solo Mathlib) |
