@@ -2,42 +2,33 @@ import TMENudos.TCN_03_Matchings
 import TMENudos.TCN_05_Orbitas
 
 /-!
-# Bloque 6: Representantes Canónicos
+# Bloque 6: Representantes Canónicos (firmados)
 
-Este módulo define los 3 representantes canónicos de las clases de equivalencia
-de configuraciones K₃ sin movimientos Reidemeister R1 ni R2.
+Representantes canónicos de las configuraciones K₃ FIRMADAS sin R1 ni R2 y su estructura de
+órbitas bajo D₆ (que CONSERVA el signo).
+
+## MIGRACIÓN (Etapa 3, signo como dato): antes → después
+
+| Cifra | antes (sin signo) | después (signo dato) |
+|---|---|---|
+| configuraciones sin R1 ni R2 | 14 | 172 |
+| órbitas de D₆ entre ellas | 2 (12 + 2) | 18 (doce de tamaño 12, cuatro de 6, dos de 2) |
+| \|Stab(specialClass)\|, órbita | 1, 12 | 1, 12 (con signos +) |
+| \|Stab(trefoilKnot)\|, órbita | 6, 2 | 6, 2 (signos +) |
+| \|Stab(mirrorTrefoil)\|, órbita | 6, 2 | 6, 2 (signos −) |
+| `mirrorTrefoil` en la órbita de `trefoilKnot` | SÍ (`r³ • trefoilKnot`) | **NO** (dos órbitas) |
+| irreducibles con índice cero | — | 4 = 2 + 2 (las dos órbitas de tréboles) |
+| configuraciones con índice cero (de 960) | — | 336 |
 
 ## Contenido Principal
 
-1. **specialClass**: Configuración antipodal (matching2)
-2. **trefoilKnot**: Nudo trefoil derecho ALTERNANTE (matching modificado)
-3. **mirrorTrefoil**: Nudo trefoil izquierdo ALTERNANTE (imagen especular)
-4. **Verificaciones**: Ausencia de R1 y R2
-5. **Estabilizadores**: Cálculo de simetrías
-6. **Tamaños de órbitas**: 12 y 2 (dos órbitas; ver saneamiento abajo)
-
-## Propiedades
-
-- ✅ **Completo**: 3 representantes definidos
-- ✅ **Verificado**: Sin R1 ni R2 (con decide)
-- ✅ **Estabilizadores**: Calculados explícitamente
-- ✅ **Órbitas**: Tamaños verificados
-- ✅ **ALTERNANCIA**: trefoilKnot ahora es perfectamente alternante O-U-O-U-O-U
-
-## Resultados Principales (corregidos en la auditoría 2026-09-29)
-
-- specialClass: |Stab| = 1, |Orb| = 12
-- trefoilKnot: |Stab| = 6, |Orb| = 2
-- mirrorTrefoil: |Stab| = 6, |Orb| = 2, y `mirrorTrefoil = r³ • trefoilKnot`, así que
-  está en la MISMA órbita que trefoilKnot
-- Hay DOS órbitas de configuraciones sin R1/R2: 12 + 2 = 14
-  (`configsNoR1NoR2_eq_two_orbits`)
-
-## Referencias
-
-- Nudo trefoil (3₁): El nudo no trivial más simple
-- Quiralidad: trefoilKnot y mirrorTrefoil son imágenes especulares
-- Configuración antipodal: Conecta elementos opuestos
+1. **specialClass**: {[0,2]+, [1,4]+, [3,5]+} (irreducible, NO realizable: viola la paridad de
+   Gauss y el índice cero).
+2. **trefoilKnot**: trébol derecho ALTERNANTE {[0,3]+, [4,1]+, [2,5]+}.
+3. **mirrorTrefoil**: trébol izquierdo = imagen especular τ (`swap`) del derecho, con signos −.
+4. **Clasificación firmada**: entre las irreducibles con **índice cero** hay exactamente las
+   órbitas de `trefoilKnot` y `mirrorTrefoil` (`irreducible_indexZero_iff`). Las 172 irreducibles
+   sin condición de índice NO se clasifican aquí (solo se cuenta: 18 órbitas).
 
 ## Autor
 
@@ -51,82 +42,58 @@ open OrderedPair K3Config DihedralD6 PerfectMatching
 
 /-! ## Los 3 Representantes Canónicos -/
 
-/-- **specialClass**: Configuración problemática {[0,2], [1,4], [3,5]}
+/-- **specialClass**: {[0,2]+, [1,4]+, [3,5]+} (todos los signos positivos).
 
-    Esta configuración conecta elementos opuestos en Z/6Z:
-    - 0 ↔ 3
-    - 1 ↔ 4
-    - 2 ↔ 5
-
-    Proviene de matching1 = {{0,2}, {1,4}, {3,5}}.
-    IMPORTANTE: Esta configuración TIENE pares R2 (a nivel de matching).
-    No es un nudo válido en la clasificación "sin R1/R2".
-    Se mantiene como ejemplo de configuración con R2. -/
+    Su matching subyacente es `matching1 = {{0,2}, {1,4}, {3,5}}`.  Es IRREDUCIBLE (sin R1 ni R2:
+    con todos los signos iguales ningún par forma R2), pero NO es realizable: viola la paridad de
+    Gauss y tiene índice ≠ 0.  Se mantiene como ejemplo de irreducible no plana.
+    Con la acción de D₆ (que conserva el signo): |Stab| = 1, |Orb| = 12. -/
 def specialClass : K3Config := {
   pairs := {
-    OrderedPair.make 0 2 (by decide),
-    OrderedPair.make 1 4 (by decide),
-    OrderedPair.make 3 5 (by decide)
+    OrderedPair.make 0 2 (by decide) true,
+    OrderedPair.make 1 4 (by decide) true,
+    OrderedPair.make 3 5 (by decide) true
   }
   card_eq := by decide
   is_partition := fun i => existsUnique_of_filter_card _ _ (by revert i; decide)
 }
 
-/-- **trefoilKnot**: Nudo trefoil derecho ALTERNANTE {[0,3], [4,1], [2,5]}
+/-- **trefoilKnot**: trébol derecho ALTERNANTE {[0,3]+, [4,1]+, [2,5]+}, todos los signos
+    positivos (la quiralidad la da ahora el DATO `pos`).
 
-    Esta es la configuración ALTERNANTE del nudo trefoil derecho (right-handed trefoil, 3₁).
-
-    **Propiedad de alternancia:**
-    Recorrido en Z/6Z: 0→over, 1→under, 2→over, 3→under, 4→over, 5→under
-    Patrón perfecto: O-U-O-U-O-U ✅
-
-    **Matching subyacente:** {{0,3}, {2,5}, {4,1}}
-
-    **IME (Invariante Modular Estructural):**
-    [0,3] = 3, [4,1] = -3 ≡ 3 (mod 6), [2,5] = 3
-    IME = {3, 3, 3} - Completamente uniforme
-
-    Con la acción actual de D₆: |Stab| = 6, |Orb| = 2 (ver `stab_trefoil_card_actual`). -/
+    Recorrido en Z/6Z: 0→over, 1→under, 2→over, 3→under, 4→over, 5→under (O-U-O-U-O-U).
+    Matching subyacente: {{0,3}, {2,5}, {4,1}}.  IME = {3, 3, 3}.
+    |Stab| = 6, |Orb| = 2 (ver `stab_trefoil_card_actual`). -/
 def trefoilKnot : K3Config := {
   pairs := {
-    OrderedPair.make 0 3 (by decide),
-    OrderedPair.make 4 1 (by decide),
-    OrderedPair.make 2 5 (by decide)
+    OrderedPair.make 0 3 (by decide) true,
+    OrderedPair.make 4 1 (by decide) true,
+    OrderedPair.make 2 5 (by decide) true
   }
   card_eq := by decide
   is_partition := fun i => existsUnique_of_filter_card _ _ (by revert i; decide)
 }
 
-/-- **mirrorTrefoil**: Nudo trefoil izquierdo ALTERNANTE {[3,0], [1,4], [5,2]}
+/-- **mirrorTrefoil**: trébol izquierdo {[3,0]−, [1,4]−, [5,2]−}.
 
-    Esta es la imagen especular del trefoil derecho (left-handed trefoil).
-    (imagen especular real: τ = swap aplicada a trefoilKnot; se conserva el nombre
-    histórico `mirrorTrefoil` por el número de usos.)
-    También es ALTERNANTE con patrón O-U-O-U-O-U.
-
-    **Propiedad de alternancia:**
-    Recorrido en Z/6Z: 0→under, 1→over, 2→under, 3→over, 4→under, 5→over
-    Patrón perfecto: U-O-U-O-U-O ✅ (complementario del derecho)
-
-    **Matching subyacente:** {{0,3}, {1,4}, {2,5}} (mismo que trefoilKnot, orientación inversa)
-
-    **IME:**
-    [3,0] = -3 ≡ 3 (mod 6), [1,4] = 3, [5,2] = -3 ≡ 3 (mod 6)
-    IME = {3, 3, 3} - Idéntico al derecho (el IME no distingue quiralidad)
-
-    Con la acción actual de D₆: |Stab| = 6, |Orb| = 2.
-
-    OJO: con las definiciones actuales `mirrorTrefoil = r³ • trefoilKnot`, así que SÍ está en la
-    órbita de trefoilKnot (ver `mirrorTrefoil_mem_orbit_trefoilKnot`). -/
+    Es la imagen especular τ (`swap`) de `trefoilKnot` (intercambia over/under y NIEGA los
+    signos): `mirrorTrefoil_eq_swap`.  MIGRACIÓN: antes (sin signo)
+    `mirrorTrefoil = r³ • trefoilKnot`
+    estaba en la MISMA órbita que el derecho; con el signo como dato son DOS órbitas distintas
+    (`mirrorTrefoil_not_mem_orbit_trefoilKnot`).  |Stab| = 6, |Orb| = 2. -/
 def mirrorTrefoil : K3Config := {
   pairs := {
-    OrderedPair.make 3 0 (by decide),
-    OrderedPair.make 1 4 (by decide),
-    OrderedPair.make 5 2 (by decide)
+    OrderedPair.make 3 0 (by decide) false,
+    OrderedPair.make 1 4 (by decide) false,
+    OrderedPair.make 5 2 (by decide) false
   }
   card_eq := by decide
   is_partition := fun i => existsUnique_of_filter_card _ _ (by revert i; decide)
 }
+
+/-- `mirrorTrefoil` es la imagen especular (τ = `swap`) de `trefoilKnot`. -/
+theorem mirrorTrefoil_eq_swap : mirrorTrefoil = trefoilKnot.swap := by
+  decide
 
 /-! ## Verificación: Ausencia de R1 -/
 
@@ -144,28 +111,9 @@ theorem mirrorTrefoil_no_r1 : ¬hasR1 mirrorTrefoil := by
 
 /-! ## Verificación: Ausencia de R2 -/
 
-/-- Con la orientación concreta de sus tuplas ([0,2], [1,4], [3,5]), specialClass no exhibe
-    un patrón R2 ordenado (su matching subyacente sí tiene un par R2 no ordenado, ver
-    `matching1_has_r2`). -/
+/-- specialClass no tiene R2 (con todos los signos iguales, ningún par puede formar R2). -/
 theorem specialClass_no_r2_ordered : ¬hasR2 specialClass := by
   decide
-
--- theorem specialClass_no_r2 : ¬hasR2 specialClass := by
---   unfold hasR2 specialClass
---   push_neg
---   intro p hp q hq hne
---   fin_cases hp <;> fin_cases hq <;> {
---     intro a b c d heq1 heq2
---     simp [OrderedPair.make] at heq1 heq2
---     intro h_pattern
---     rcases h_pattern with ⟨h1, h2⟩ | ⟨h1, h2⟩ | ⟨h1, h2⟩ | ⟨h1, h2⟩ <;> {
---       cases heq1 <;> cases heq2 <;> {
---         simp at h1 h2
---         try { decide }
---         try { omega }
---       }
---     }
---   }
 
 /-- trefoilKnot no tiene movimiento R2 -/
 theorem trefoilKnot_no_r2 : ¬hasR2 trefoilKnot := by
@@ -175,7 +123,7 @@ theorem trefoilKnot_no_r2 : ¬hasR2 trefoilKnot := by
 theorem mirrorTrefoil_no_r2 : ¬hasR2 mirrorTrefoil := by
   decide
 
-/-- Los 3 representantes son configuraciones triviales (sin R1 ni R2) -/
+/-- Los dos tréboles son configuraciones irreducibles (sin R1 ni R2) -/
 theorem representatives_are_trivial :
   (¬hasR1 trefoilKnot ∧ ¬hasR2 trefoilKnot) ∧
   (¬hasR1 mirrorTrefoil ∧ ¬hasR2 mirrorTrefoil) := by
@@ -193,39 +141,29 @@ theorem representatives_distinct :
 
 /-! ## Estabilizadores -/
 
-/-! **Saneamiento (auditoría 2026-09-29).** Con las definiciones actuales la acción de D₆
-sobre `K3Config` da |Stab| = 1, 6, 6 para `specialClass`, `trefoilKnot`, `mirrorTrefoil`
-(y no 2, 3, 3 como afirmaban los enunciados anteriores `stab_special_card`,
-`stab_trefoil_card` y `stab_mirror_card`, que eran FALSOS y se eliminaron: quedan
-subsumidos por las versiones `*_card_actual`, que se conservan con su nombre).
-Además `mirrorTrefoil = r³ • trefoilKnot`, es decir, ambos trefoils están en la MISMA
-órbita, que tiene 2 elementos. -/
+/-! Con el signo como dato (la acción de D₆ lo conserva) los estabilizadores se RECALCULAN:
+|Stab| = 1, 6, 6 para `specialClass`, `trefoilKnot`, `mirrorTrefoil`
+(antes → después: 1, 6, 6 → 1, 6, 6; no cambian, porque cada representante tiene los tres signos
+iguales y D₆ no los mueve). Los nombres `*_card_actual` se conservan. -/
 
-/-- El estabilizador de specialClass es trivial: |Stab| = 1 (calculado por `decide`).
-    (Reemplaza al falso `stab_special_card : … = 2`). -/
+/-- El estabilizador de specialClass es trivial: |Stab| = 1 (calculado por `decide`). -/
 theorem stab_special_card_actual : (Stab(specialClass)).card = 1 := by
   unfold stabilizer
   decide
 
-/-- El estabilizador de trefoilKnot tiene 6 elementos (calculado por `decide`).
-    (Reemplaza al falso `stab_trefoil_card : … = 3`). -/
+/-- El estabilizador de trefoilKnot tiene 6 elementos (calculado por `decide`). -/
 theorem stab_trefoil_card_actual : (Stab(trefoilKnot)).card = 6 := by
   unfold stabilizer
   decide
 
-/-- El estabilizador de mirrorTrefoil tiene 6 elementos (calculado por `decide`).
-    (Reemplaza al falso `stab_mirror_card : … = 3`). -/
+/-- El estabilizador de mirrorTrefoil tiene 6 elementos (calculado por `decide`). -/
 theorem stab_mirror_card_actual : (Stab(mirrorTrefoil)).card = 6 := by
   unfold stabilizer
   decide
 
-/-- Con las definiciones actuales, mirrorTrefoil está en la órbita de trefoilKnot. -/
-theorem mirrorTrefoil_mem_orbit_trefoilKnot : mirrorTrefoil ∈ Orb(trefoilKnot) := by
-  unfold orbit
-  decide
-
-/-- Las órbitas de trefoilKnot y mirrorTrefoil coinciden (son la misma clase). -/
-theorem orbit_mirrorTrefoil_eq_orbit_trefoilKnot : Orb(mirrorTrefoil) = Orb(trefoilKnot) := by
+/-- **REFORMULADO** (antes: `mirrorTrefoil_mem_orbit_trefoilKnot`,
+    que con el signo dato es FALSO): el trébol izquierdo NO está en la órbita del derecho. -/
+theorem mirrorTrefoil_not_mem_orbit_trefoilKnot : mirrorTrefoil ∉ Orb(trefoilKnot) := by
   unfold orbit
   decide
 
@@ -242,46 +180,48 @@ theorem orbit_eq_of_mem {K K₀ : K3Config} (h : K ∈ Orb(K₀)) : Orb(K) = Orb
     rw [DihedralD6.actOnConfig_comp, ← DihedralD6.actOnConfig_comp g⁻¹, inv_mul_cancel,
       DihedralD6.actOnConfig_id]
 
+/-- **REFORMULADO** (antes: `Orb(mirrorTrefoil) = Orb(trefoilKnot)`): las órbitas de los dos
+    tréboles son DISTINTAS. -/
+theorem orbit_mirrorTrefoil_ne_orbit_trefoilKnot : Orb(mirrorTrefoil) ≠ Orb(trefoilKnot) := by
+  intro h
+  exact mirrorTrefoil_not_mem_orbit_trefoilKnot (h ▸ mem_orbit_self mirrorTrefoil)
+
 /-! ## Tamaños de Órbitas -/
 
-/-- La órbita de specialClass tiene 12 elementos (|Stab| = 1).
-    (Antes: 6, falso). -/
+/-- La órbita de specialClass tiene 12 elementos (|Stab| = 1). (Sin cambio: 12 → 12.) -/
 theorem orbit_specialClass_card : (Orb(specialClass)).card = 12 := by
   have h := orbit_stabilizer specialClass
   rw [stab_special_card_actual] at h
   omega
 
-/-- La órbita de trefoilKnot tiene 2 elementos (|Stab| = 6).
-    (Antes: 4, falso). -/
+/-- La órbita de trefoilKnot tiene 2 elementos (|Stab| = 6). (Sin cambio: 2 → 2.) -/
 theorem orbit_trefoilKnot_card : (Orb(trefoilKnot)).card = 2 := by
   have h := orbit_stabilizer trefoilKnot
   rw [stab_trefoil_card_actual] at h
   omega
 
-/-- La órbita de mirrorTrefoil tiene 2 elementos (|Stab| = 6); es la misma que la de
-    trefoilKnot. (Antes: 4, falso). -/
+/-- La órbita de mirrorTrefoil tiene 2 elementos (|Stab| = 6); es DISTINTA de la de trefoilKnot.
+    (Sin cambio de cifra: 2 → 2, pero antes era la misma órbita.) -/
 theorem orbit_mirrorTrefoil_card : (Orb(mirrorTrefoil)).card = 2 := by
   have h := orbit_stabilizer mirrorTrefoil
   rw [stab_mirror_card_actual] at h
   omega
 
-/-- Las órbitas de specialClass y trefoilKnot suman exactamente 14 configuraciones.
-    (Reemplaza al falso `three_orbits_sum_to_14`: la tercera órbita coincide con la segunda). -/
-theorem two_orbits_sum_to_14 :
-  (Orb(specialClass)).card + (Orb(trefoilKnot)).card = 14 := by
-  rw [orbit_specialClass_card, orbit_trefoilKnot_card]
+/-- **REFORMULADO** (antes `two_orbits_sum_to_14 : … = 14`): las órbitas de los dos tréboles
+    suman 2 + 2 = 4 configuraciones (las realizables). -/
+theorem trefoil_orbits_sum_to_4 :
+  (Orb(trefoilKnot)).card + (Orb(mirrorTrefoil)).card = 4 := by
+  rw [orbit_trefoilKnot_card, orbit_mirrorTrefoil_card]
 
 /-! ## Órbitas Disjuntas -/
 
 /-- Las órbitas de specialClass y trefoilKnot son disjuntas -/
 theorem orbits_disjoint_special_trefoil :
   Orb(specialClass) ∩ Orb(trefoilKnot) = ∅ := by
-  -- Probar que trefoilKnot no está en Orb(specialClass)
   have h : trefoilKnot ∉ Orb(specialClass) := by
     intro h_contra
     rw [in_same_orbit_iff] at h_contra
     obtain ⟨g, h_eq⟩ := h_contra
-    -- Verificar exhaustivamente que ningún g • specialClass = trefoilKnot
     revert g
     decide
   exact orbits_disjoint specialClass trefoilKnot h
@@ -297,51 +237,88 @@ theorem orbits_disjoint_special_mirror :
     decide
   exact orbits_disjoint specialClass mirrorTrefoil h
 
-/-! `orbits_disjoint_trefoil_mirror` y `three_orbits_pairwise_disjoint` se ELIMINARON:
-eran falsos porque `mirrorTrefoil ∈ Orb(trefoilKnot)` (ver
-`mirrorTrefoil_mem_orbit_trefoilKnot` y `orbit_mirrorTrefoil_eq_orbit_trefoilKnot`).
-La versión verdadera es `two_orbits_disjoint`. -/
+/-- **NUEVO** (con el signo dato): las órbitas de los dos tréboles son disjuntas. -/
+theorem orbits_disjoint_trefoil_mirror :
+  Orb(trefoilKnot) ∩ Orb(mirrorTrefoil) = ∅ :=
+  orbits_disjoint trefoilKnot mirrorTrefoil
+    (fun h => mirrorTrefoil_not_mem_orbit_trefoilKnot h)
 
-/-- Estructura correcta: hay dos órbitas disjuntas, la de specialClass y la de trefoilKnot
-    (que contiene a mirrorTrefoil). -/
-theorem two_orbits_disjoint :
+/-- Las tres órbitas (specialClass, trefoilKnot, mirrorTrefoil) son disjuntas dos a dos. -/
+theorem three_orbits_pairwise_disjoint :
   Orb(specialClass) ∩ Orb(trefoilKnot) = ∅ ∧
-  Orb(specialClass) ∩ Orb(mirrorTrefoil) = ∅ :=
-  ⟨orbits_disjoint_special_trefoil, orbits_disjoint_special_mirror⟩
+  Orb(specialClass) ∩ Orb(mirrorTrefoil) = ∅ ∧
+  Orb(trefoilKnot) ∩ Orb(mirrorTrefoil) = ∅ :=
+  ⟨orbits_disjoint_special_trefoil, orbits_disjoint_special_mirror,
+    orbits_disjoint_trefoil_mirror⟩
 
-/-! ## Cobertura Completa -/
+/-! ## Cobertura y clasificación firmada -/
 
-/-- Las órbitas de specialClass y trefoilKnot están contenidas en `configsNoR1NoR2`
+/-- Las órbitas de los tres representantes están contenidas en `configsNoR1NoR2`
     (la acción de D₆ preserva la ausencia de R1 y R2; verificado por `decide`). -/
 theorem orbits_subset_configsNoR1NoR2 :
-    Orb(specialClass) ∪ Orb(trefoilKnot) ⊆ configsNoR1NoR2 := by
+    Orb(specialClass) ∪ Orb(trefoilKnot) ∪ Orb(mirrorTrefoil) ⊆ configsNoR1NoR2 := by
   intro K hK
   rw [mem_configsNoR1NoR2]
-  rw [Finset.mem_union, in_same_orbit_iff, in_same_orbit_iff] at hK
-  rcases hK with ⟨g, rfl⟩ | ⟨g, rfl⟩
+  rw [Finset.mem_union, Finset.mem_union, in_same_orbit_iff, in_same_orbit_iff,
+    in_same_orbit_iff] at hK
+  rcases hK with (⟨g, rfl⟩ | ⟨g, rfl⟩) | ⟨g, rfl⟩
+  · revert g
+    decide
   · revert g
     decide
   · revert g
     decide
 
-/-- `configsNoR1NoR2` es exactamente la unión de las órbitas de specialClass (12 elementos)
-    y trefoilKnot (2 elementos, que incluye a mirrorTrefoil): 12 + 2 = 14. -/
-theorem configsNoR1NoR2_eq_two_orbits :
-    configsNoR1NoR2 = Orb(specialClass) ∪ Orb(trefoilKnot) := by
-  symm
-  apply Finset.eq_of_subset_of_card_le orbits_subset_configsNoR1NoR2
-  rw [configs_no_r1_no_r2_card,
+/-- **CLASIFICACIÓN FIRMADA (clave, `decide +kernel` sobre las 960 configuraciones).**
+
+    Una configuración firmada es irreducible (sin R1 ni R2) y de índice cero SI Y SOLO SI está
+    en la órbita de `trefoilKnot` (trébol derecho, signos +) o en la de `mirrorTrefoil`
+    (trébol izquierdo, signos −).
+
+    Se demuestra enumerando `Fintype K3Config` (960 configuraciones; la equivalencia con los
+    subconjuntos de pares es la de `equivFinset`, ya demostrada), sin enumeraciones auxiliares.
+
+    **Es un resultado sobre las irreducibles con índice cero, NO una clasificación de las 172
+    irreducibles firmadas.** Que el índice cero caracterice la planaridad en general es una
+    CONJETURA no demostrada. -/
+theorem irreducible_indexZero_iff (K : K3Config) :
+    (¬hasR1 K ∧ ¬hasR2 K ∧ indexZero K) ↔ (K ∈ Orb(trefoilKnot) ∨ K ∈ Orb(mirrorTrefoil)) := by
+  revert K
+  decide +kernel
+
+/-- Las irreducibles de índice cero son exactamente las 2 + 2 configuraciones de las órbitas de
+    los dos tréboles. -/
+theorem configsNoR1NoR2_indexZero_eq :
+    configsNoR1NoR2.filter (fun K => indexZero K) = Orb(trefoilKnot) ∪ Orb(mirrorTrefoil) := by
+  ext K
+  simp only [Finset.mem_filter, mem_configsNoR1NoR2, Finset.mem_union]
+  rw [← irreducible_indexZero_iff, and_assoc]
+
+/-- **Conteo**: hay exactamente 4 irreducibles firmadas con índice cero (antes, sin signo,
+    «realizables» = 2). -/
+theorem configsNoR1NoR2_indexZero_card :
+    (configsNoR1NoR2.filter (fun K => indexZero K)).card = 4 := by
+  rw [configsNoR1NoR2_indexZero_eq,
     Finset.card_union_of_disjoint (Finset.disjoint_iff_inter_eq_empty.mpr
-      orbits_disjoint_special_trefoil),
-    orbit_specialClass_card, orbit_trefoilKnot_card]
+      orbits_disjoint_trefoil_mirror),
+    orbit_trefoilKnot_card, orbit_mirrorTrefoil_card]
 
-/-- Las 2 órbitas (specialClass y trefoilKnot) cubren exactamente las 14 configuraciones
-    sin R1/R2. (Reemplaza a `three_orbits_cover_all`, cuya tercera órbita es redundante). -/
-theorem two_orbits_cover_all :
-  ∀ K ∈ configsNoR1NoR2, K ∈ Orb(specialClass) ∨ K ∈ Orb(trefoilKnot) := by
-  intro K hK
-  rw [configsNoR1NoR2_eq_two_orbits, Finset.mem_union] at hK
-  exact hK
+/-- **Conteo de la sonda 14**: 336 de las 960 configuraciones tienen índice cero en todas las
+    cuerdas (`decide +kernel`). -/
+theorem indexZero_card : (Finset.univ.filter (fun K : K3Config => indexZero K)).card = 336 := by
+  decide +kernel
+
+/-- **Suma de estabilizadores sobre las 172 irreducibles firmadas: 216 = 12 · 18.**
+
+    Por órbita-estabilizador (`orbit_stabilizer`) cada órbita `O` aporta `Σ_{K∈O} |Stab K| = 12`,
+    así que esta suma es `12 ×` (número de órbitas): hay 18 órbitas de D₆ entre las 172
+    irreducibles firmadas (antes, sin signo: 14 configuraciones en 2 órbitas).  Solo es un RECUENTO
+    (coincide con la sonda 14: dos órbitas de tamaño 2, cuatro de 6 y doce de 12); no es una
+    clasificación.  (Cálculo directo por `decide +kernel`; el conteo de órbitas como `Finset` de
+    `Finset`s es mucho más caro, ver la bitácora.) -/
+theorem irreducible_stabilizer_sum :
+    ∑ K ∈ configsNoR1NoR2, (Stab(K)).card = 216 := by
+  decide +kernel
 
 /-! ## Relación con Matchings -/
 
@@ -355,7 +332,7 @@ theorem trefoilKnot_from_matching2 :
   trefoilKnot.toMatching = matching2.edges := by
   decide
 
-/-- mirrorTrefoil también proviene de matching2 (orientación inversa) -/
+/-- mirrorTrefoil también proviene de matching2 (orientación y signo inversos) -/
 theorem mirrorTrefoil_from_matching2 :
   mirrorTrefoil.toMatching = matching2.edges := by
   decide
@@ -363,39 +340,27 @@ theorem mirrorTrefoil_from_matching2 :
 /-! ## Resumen del Bloque 6 -/
 
 /-
-## Estado del Bloque
+## Estado del Bloque (firmado)
 
-✅ **3 representantes definidos**: specialClass, trefoilKnot, mirrorTrefoil
-✅ **Verificaciones completas**: Sin R1 ni R2 (con decide)
-✅ **Estabilizadores calculados**: 1, 6, 6 (con decide)
-✅ **Órbitas calculadas**: 12, 2, 2 (mirrorTrefoil en la órbita de trefoilKnot)
-✅ **Órbitas disjuntas**: Probado exhaustivamente
-✅ **Relación con matchings**: Establecida
-
-## Definiciones Exportadas
-
-- `specialClass`: Configuración antipodal
-- `trefoilKnot`: Nudo trefoil derecho
-- `mirrorTrefoil`: Nudo trefoil izquierdo
+✅ 3 representantes: specialClass (+++), trefoilKnot (+++), mirrorTrefoil (−−−, = swap)
+✅ Estabilizadores: 1, 6, 6; órbitas 12, 2, 2 (las de los tréboles son DISTINTAS)
+✅ Irreducibles firmadas: 172 en 18 órbitas (recuento)
+✅ Irreducibles con índice cero: exactamente las 2 + 2 configuraciones de los tréboles
+   (`irreducible_indexZero_iff`)
 
 ## Teoremas Principales
 
-- `representatives_are_trivial`: Sin R1 ni R2
-- `representatives_distinct`: Son distintos
-- `stab_*_card_actual`: Tamaños de estabilizadores (1, 6, 6)
-- `orbit_*_card`: Tamaños de órbitas
-- `two_orbits_sum_to_14`: 12 + 2 = 14
-- `two_orbits_disjoint`, `two_orbits_cover_all`, `configsNoR1NoR2_eq_two_orbits`
-- `*_from_matching*`: Relación con matchings
+- `representatives_are_trivial`, `representatives_distinct`, `mirrorTrefoil_eq_swap`
+- `stab_*_card_actual`, `orbit_*_card`, `trefoil_orbits_sum_to_4`
+- `three_orbits_pairwise_disjoint`, `orbits_subset_configsNoR1NoR2`
+- `irreducible_indexZero_iff`, `configsNoR1NoR2_indexZero_eq`, `configsNoR1NoR2_indexZero_card`
+- `indexZero_card`, `irreducible_stabilizer_sum` (216 = 12 · 18 órbitas)
 
-## Próximo Bloque
+## Eliminados (falsos con el signo dato)
 
-**Bloque 7: Teorema de Clasificación**
-- k3_classification: Toda config sin R1/R2 está en Orb(specialClass) o Orb(trefoilKnot)
-- k3_classification_strong: Unicidad del representante
-- exactly_two_classes: Exactamente 2 clases de equivalencia
-- Resultado final completo
-
+`mirrorTrefoil_mem_orbit_trefoilKnot`, `orbit_mirrorTrefoil_eq_orbit_trefoilKnot`,
+`two_orbits_sum_to_14`, `two_orbits_disjoint`, `configsNoR1NoR2_eq_two_orbits`,
+`two_orbits_cover_all` (las 172 irreducibles firmadas NO son dos órbitas).
 -/
 
 end KnotTheory

@@ -121,12 +121,12 @@ theorem formsR2Pattern_actOnPair_iff (p q : OrderedPair) (g : D6) :
       constructor <;> intro h <;> linear_combination h
     have e2 : ∀ a b : ZMod 6, a + k = b + k - 1 ↔ a = b - 1 := fun a b => by
       constructor <;> intro h <;> linear_combination h
-    simp only [formsR2Pattern, actOnPair_fst, actOnPair_snd, actionZMod, e1, e2]
+    simp only [formsR2Pattern, actOnPair_pos, actOnPair_fst, actOnPair_snd, actionZMod, e1, e2]
   · have e1 : ∀ a b : ZMod 6, -(a + k) = -(b + k) + 1 ↔ a = b - 1 := fun a b => by
       constructor <;> intro h <;> linear_combination -h
     have e2 : ∀ a b : ZMod 6, -(a + k) = -(b + k) - 1 ↔ a = b + 1 := fun a b => by
       constructor <;> intro h <;> linear_combination -h
-    simp only [formsR2Pattern, actOnPair_fst, actOnPair_snd, actionZMod, e1, e2]
+    simp only [formsR2Pattern, actOnPair_pos, actOnPair_fst, actOnPair_snd, actionZMod, e1, e2]
     tauto
 
 /-- **TEOREMA CLAVE 7: Acción de D₆ Preserva hasR2** -/
@@ -168,14 +168,25 @@ section ClassificationTheorems
 
     trefoilKnot no está en la órbita de specialClass.
 
-    (Auditoría 2026-09-29: el enunciado anterior `trefoil_not_in_mirror_orbit` era FALSO,
-    pues `mirrorTrefoil ∈ Orb(trefoilKnot)`; se eliminó y se reemplazó por este.) -/
+    (Auditoría 2026-09-29: el enunciado anterior `trefoil_not_in_mirror_orbit` era FALSO sin
+    signo, pues `mirrorTrefoil ∈ Orb(trefoilKnot)`; se eliminó.  MIGRACIÓN Etapa 3: con el signo
+    como dato vuelve a ser VERDADERO, ver `trefoil_not_in_mirror_orbit` abajo.) -/
 theorem trefoil_not_in_special_orbit :
     trefoilKnot ∉ orbit specialClass := by
   intro h
   have hmem : trefoilKnot ∈ orbit specialClass ∩ orbit trefoilKnot :=
     Finset.mem_inter.mpr ⟨h, mem_orbit_self _⟩
   rw [orbits_disjoint_special_trefoil] at hmem
+  exact absurd hmem (Finset.notMem_empty _)
+
+/-- **COROLARIO (signo dato)**: `trefoilKnot` no está en la órbita de `mirrorTrefoil`
+    (los dos tréboles son clases de D₆ distintas; D₆ conserva el signo). -/
+theorem trefoil_not_in_mirror_orbit :
+    trefoilKnot ∉ orbit mirrorTrefoil := by
+  intro h
+  have hmem : trefoilKnot ∈ orbit trefoilKnot ∩ orbit mirrorTrefoil :=
+    Finset.mem_inter.mpr ⟨mem_orbit_self _, h⟩
+  rw [orbits_disjoint_trefoil_mirror] at hmem
   exact absurd hmem (Finset.notMem_empty _)
 
 end ClassificationTheorems
@@ -246,7 +257,10 @@ end KnotTheory
 - 🎯 Una vez completados, eliminan TODOS los sorry de TCN_08
 
 ## Nota (revisión Opción 1, paridad de Gauss)
-Ninguno de estos enunciados cambia: son sobre órbitas, R1/R2 y particiones de `Finset`,
+Etapa 3 (signo dato): los enunciados sobre órbitas, R1/R2 y particiones de `Finset` se conservan
+(`formsR2Pattern_actOnPair_iff` se readapta: D₆ conserva el signo, la nueva cláusula `p.pos ≠ q.pos`
+se preserva), y se añade `trefoil_not_in_mirror_orbit`.  Antes: ninguno de estos enunciados
+cambia: son sobre órbitas, R1/R2 y particiones de `Finset`,
 independientes de la definición de «realizable».  Se usan en `TCN_08_Realizabilidad`,
 donde `isRealizable` pasó de «sin R1 ni R2» (14 configuraciones) a «sin R1 ni R2 y
 `gaussEven`» (2 configuraciones, la órbita del trébol).  `trefoil_not_in_special_orbit`

@@ -214,11 +214,13 @@ theorem orbit_card_3_of_stab_4 (K : K3Config) :
 
 /-! ## Configuraciones sin R1 ni R2 -/
 
-/-- Conjunto de todas las configuraciones K₃ sin movimientos R1 ni R2.
+/-- Conjunto de todas las configuraciones K₃ FIRMADAS sin movimientos R1 ni R2
+    (R2 exige signos opuestos).
 
-    Definición concreta (antes era `sorry`): el filtro de `Finset.univ` (que existe porque
-    `K3Config` es `Fintype`, de forma no computable). -/
-noncomputable def configsNoR1NoR2 : Finset K3Config :=
+    MIGRACIÓN (signo como dato): antes era `noncomputable` porque `Fintype K3Config` lo era;
+    ahora `Fintype K3Config` es computable (TCN_01) y la definición es un `Finset.filter`
+    ordinario sobre las 960 configuraciones. -/
+def configsNoR1NoR2 : Finset K3Config :=
   Finset.univ.filter (fun K => ¬hasR1 K ∧ ¬hasR2 K)
 
 /-- Membresía en `configsNoR1NoR2`. -/
@@ -226,86 +228,88 @@ theorem mem_configsNoR1NoR2 (K : K3Config) :
     K ∈ configsNoR1NoR2 ↔ ¬hasR1 K ∧ ¬hasR2 K := by
   simp [configsNoR1NoR2]
 
-/-! ### Conteo computable de `configsNoR1NoR2`
+/-- **El número de configuraciones firmadas sin R1 ni R2 es 172.**
 
-`K3Config` sólo es `Fintype` de forma no computable, así que el conteo se hace sobre
-una enumeración computable: los subconjuntos de 3 elementos del conjunto de las 30
-tuplas ordenadas, filtrados por las mismas condiciones (partición, sin R1, sin R2). -/
+    MIGRACIÓN (cifra): antes → después: 14 (de 120) → 172 (de 960).
+    Se obtiene directamente de `counts_signed` (TCN_02, `decide +kernel` sobre las 960
+    configuraciones). Ya NO hace falta la enumeración auxiliar `allOrderedPairs`/`goodPairs`/
+    `configsNoR1NoR2_map_pairs`/`good_pairs_card` (subconjuntos de 3 de los 30 pares sin signo,
+    que con el signo serían 34 220 de 60): `K3Config` es `Fintype` computable, así que se cuenta
+    el tipo mismo, y la equivalencia con los subconjuntos de pares es la de `equivFinset`
+    (demostrada, `K3Config.card_eq_960`).
 
-/-- Las 30 tuplas ordenadas de `Z/6Z`, como `Finset` computable. -/
-def allOrderedPairs : Finset OrderedPair :=
-  (Finset.univ : Finset {p : ZMod 6 × ZMod 6 // p.1 ≠ p.2}).image
-    (fun p => (⟨p.1.1, p.1.2, p.2⟩ : OrderedPair))
+    ✅ Antes era un `axiom`; luego teorema con `decide +kernel`; ahora es un corolario de
+    `counts_signed`. -/
+theorem configs_no_r1_no_r2_card : configsNoR1NoR2.card = 172 :=
+  counts_signed.2.2
 
-theorem mem_allOrderedPairs (p : OrderedPair) : p ∈ allOrderedPairs := by
-  unfold allOrderedPairs
-  rw [Finset.mem_image]
-  exact ⟨⟨(p.fst, p.snd), p.distinct⟩, Finset.mem_univ _, rfl⟩
+/-! ## Predicados de clasicidad (regla 8 del plan de migración)
 
-/-- Condición computable para que un conjunto de tuplas sea una configuración K₃
-    sin R1 ni R2. -/
-def goodPairs (S : Finset OrderedPair) : Prop :=
-  (∀ i : ZMod 6, (S.filter (fun p => i = p.fst ∨ i = p.snd)).card = 1) ∧
-  (∀ p ∈ S, ¬isConsecutive p) ∧
-  (∀ p ∈ S, ∀ q ∈ S, p ≠ q → ¬formsR2Pattern p q)
+El TIPO firmado `K3Config` es libre (960 configuraciones). La clasicidad (que la configuración
+sea un diagrama plano) se impone por PREDICADOS, no restringiendo el tipo:
+`gaussEven` (paridad de Gauss, NO mira el signo) e `indexZero` (consistencia de signos: el
+índice de cada cuerda es 0, condición NECESARIA de planaridad). Se definen aquí (y no en
+TCN_08) porque la clasificación de TCN_07 ya necesita `indexZero`. -/
 
-/-- Decidibilidad computable de `goodPairs` (se evita la instancia no computable
-    `Fintype OrderedPair`, usando explícitamente `Finset.decidableDforallFinset`). -/
-instance (S : Finset OrderedPair) : Decidable (goodPairs S) :=
-  haveI : Decidable (∀ p ∈ S, ¬isConsecutive p) := Finset.decidableDforallFinset
-  haveI : Decidable (∀ p ∈ S, ∀ q ∈ S, p ≠ q → ¬formsR2Pattern p q) :=
-    @Finset.decidableDforallFinset _ _ _ (fun _ _ =>
-      @Finset.decidableDforallFinset _ _ _ (fun _ _ => inferInstance))
-  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
+/-- `x` está **estrictamente entre** `a` y `b` en el orden lineal `0 < 1 < ... < 5` de los
+    representantes `.val` de `ZMod 6` (se compara con `.val`, NO con el orden cíclico). -/
+def strictlyBetween (a b x : ZMod 6) : Prop :=
+  min a.val b.val < x.val ∧ x.val < max a.val b.val
 
-/-- Los conjuntos de tuplas de las configuraciones sin R1/R2 son exactamente los
-    subconjuntos de 3 tuplas que cumplen `goodPairs`. -/
-theorem configsNoR1NoR2_map_pairs :
-    configsNoR1NoR2.map ⟨K3Config.pairs, fun K L h => by
-        cases K; cases L; simp only at h; subst h; rfl⟩ =
-      (allOrderedPairs.powersetCard 3).filter goodPairs := by
-  ext S
-  simp only [Finset.mem_map, Function.Embedding.coeFn_mk, Finset.mem_filter,
-    Finset.mem_powersetCard, mem_configsNoR1NoR2]
-  constructor
-  · rintro ⟨K, ⟨hR1, hR2⟩, rfl⟩
-    refine ⟨⟨fun p _ => mem_allOrderedPairs p, K.card_eq⟩, ?_, ?_, ?_⟩
-    · intro i
-      obtain ⟨p, ⟨hp, hi⟩, huniq⟩ := K.is_partition i
-      rw [Finset.card_eq_one]
-      refine ⟨p, ?_⟩
-      ext q
-      simp only [Finset.mem_filter, Finset.mem_singleton]
-      exact ⟨fun h => huniq q h, fun h => h ▸ ⟨hp, hi⟩⟩
-    · exact (not_hasR1_iff K).mp hR1
-    · exact (not_hasR2_iff K).mp hR2
-  · rintro ⟨⟨_, hcard⟩, hpart, hr1, hr2⟩
-    refine ⟨⟨S, hcard, fun i => ?_⟩, ⟨?_, ?_⟩, rfl⟩
-    · obtain ⟨p, hp⟩ := Finset.card_eq_one.mp (hpart i)
-      have hp' : p ∈ S.filter (fun p => i = p.fst ∨ i = p.snd) := by
-        rw [hp]; exact Finset.mem_singleton_self p
-      rw [Finset.mem_filter] at hp'
-      refine ⟨p, hp', fun q hq => ?_⟩
-      have : q ∈ S.filter (fun p => i = p.fst ∨ i = p.snd) :=
-        Finset.mem_filter.mpr hq
-      rw [hp] at this
-      exact Finset.mem_singleton.mp this
-    · exact (not_hasR1_iff _).mpr hr1
-    · exact (not_hasR2_iff _).mpr hr2
+instance (a b x : ZMod 6) : Decidable (strictlyBetween a b x) :=
+  inferInstanceAs (Decidable (min a.val b.val < x.val ∧ x.val < max a.val b.val))
 
-/-- Verificación computacional del conteo de subconjuntos buenos. -/
-theorem good_pairs_card :
-    ((allOrderedPairs.powersetCard 3).filter goodPairs).card = 14 := by
-  decide +kernel
+/-- La pareja `q` **se entrelaza** con la pareja `p` si exactamente uno de los extremos
+    de `q` está estrictamente entre los extremos de `p` (las cuerdas se cruzan en el
+    círculo de 6 puntos).  Se exige además que los cuatro extremos sean distintos, lo que
+    hace el predicado invariante bajo rotaciones; una pareja no se entrelaza consigo
+    misma.  NO depende del signo. -/
+def chordsInterlace (p q : OrderedPair) : Prop :=
+  (p.fst ≠ q.fst ∧ p.fst ≠ q.snd ∧ p.snd ≠ q.fst ∧ p.snd ≠ q.snd) ∧
+  (strictlyBetween p.fst p.snd q.fst ↔ ¬ strictlyBetween p.fst p.snd q.snd)
 
-/-- El número de configuraciones sin R1 ni R2 es 14.
+instance (p q : OrderedPair) : Decidable (chordsInterlace p q) :=
+  inferInstanceAs (Decidable ((p.fst ≠ q.fst ∧ p.fst ≠ q.snd ∧ p.snd ≠ q.fst ∧ p.snd ≠ q.snd) ∧
+    (strictlyBetween p.fst p.snd q.fst ↔ ¬ strictlyBetween p.fst p.snd q.snd)))
 
-    ✅ ANTES era un `axiom`; ahora es un teorema demostrado con `decide +kernel`. -/
-theorem configs_no_r1_no_r2_card : configsNoR1NoR2.card = 14 := by
-  have h := congrArg Finset.card configsNoR1NoR2_map_pairs
-  rw [Finset.card_map] at h
-  rw [h]
-  exact good_pairs_card
+/-- **Condición de paridad de Gauss** para K₃: cada pareja se entrelaza con un número PAR
+    de las otras parejas de la configuración.  Es condición NECESARIA de planaridad
+    (todo código de Gauss de un diagrama de nudo clásico la cumple) y no mira el signo. -/
+def gaussEven (K : K3Config) : Prop :=
+  ∀ p ∈ K.pairs, (K.pairs.filter (chordsInterlace p)).card % 2 = 0
+
+instance (K : K3Config) : Decidable (gaussEven K) :=
+  Finset.decidableDforallFinset
+
+/-- `x` está en el **arco abierto** que va de `o` a `u` recorriendo `Z/6Z` en sentido creciente
+    (las posiciones `o+1, o+2, …, u-1`).  Copia de `arc` de la sonda
+    `Procesos/Tests/auditoria_20260929/14_conteos_k3_firmados.py`. -/
+def inArc (o u x : ZMod 6) : Prop :=
+  0 < (x - o).val ∧ (x - o).val < (u - o).val
+
+instance (o u x : ZMod 6) : Decidable (inArc o u x) :=
+  inferInstanceAs (Decidable (0 < (x - o).val ∧ (x - o).val < (u - o).val))
+
+/-- **Índice de la cuerda `c = (o,u)`** en la configuración `K`: suma, sobre las cuerdas `d`
+    entrelazadas con `c` (automáticamente `d ≠ c`), de `+sgn d` si el extremo SUPERIOR de `d`
+    (`d.fst`, el primero de la pareja) cae en el arco de `o` a `u` (`inArc`), y `-sgn d` si cae
+    el inferior (`d.snd`).  `sgn d = d.posSign` se lee del campo `pos`. -/
+def chordIndex (K : K3Config) (c : OrderedPair) : ℤ :=
+  ∑ d ∈ K.pairs.filter (chordsInterlace c),
+    (if inArc c.fst c.snd d.fst then d.posSign else -d.posSign)
+
+/-- **Condición de índice cero**: el índice de TODA cuerda de la configuración es 0.  Es una
+    condición NECESARIA de planaridad que SÍ mira el signo (un trébol con signos mixtos pasa la
+    paridad de Gauss pero no el índice cero).
+
+    **CONJETURA NO DEMOSTRADA:** que el índice cero caracterice la planaridad en general.  Para
+    K₃ solo se ha comprobado (por cálculo, en este proyecto) que, junto con irreducibilidad, da
+    exactamente los dos tréboles. -/
+def indexZero (K : K3Config) : Prop :=
+  ∀ c ∈ K.pairs, chordIndex K c = 0
+
+instance (K : K3Config) : Decidable (indexZero K) :=
+  Finset.decidableDforallFinset
 
 
 /-!
@@ -321,8 +325,8 @@ theorem configs_no_r1_no_r2_card : configsNoR1NoR2.card = 14 := by
 - `one_mem_stabilizer`
 
 ✅ **Teoremas avanzados probados** (sin sorry): `orbit_stabilizer`, `orbit_card_from_stabilizer`,
-`configsNoR1NoR2` (definición concreta) y `configs_no_r1_no_r2_card` (antes axioma, ahora
-teorema con `decide +kernel`).
+`configsNoR1NoR2` (definición concreta) y `configs_no_r1_no_r2_card` (= 172 firmadas; antes 14).
+✅ **Predicados de clasicidad**: `gaussEven`, `indexZero` (regla 8).
 
 -/
 
