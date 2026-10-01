@@ -45,13 +45,10 @@ Esa es la minimalidad a nivel de nudo, que el axioma A6 de `Basic` intentaba afi
 * Ingrediente combinatorio: las contribuciones de los estados «todo A» y «todo B» ocupan los grados extremos y no se cancelan en
   un diagrama alternante reducido, porque `s_A + s_B = n + 2` (con `s_A`, `s_B` los círculos de cada estado), igualdad que usa la
   PLANARIDAD (la fórmula de Euler de la sección 2). Es la misma maquinaria de caras de `Etapa1_Planaridad.lean`.
-* **CORRECCIÓN (sonda 22b): «reducido» SÍ equivale a «irreducible» en los diagramas alternantes.** Reducido = sin cuerdas aisladas
-  (sin cruces nugatorios). (1) Hay una cuerda aislada ⇔ hay un candidato R1, porque la cuerda más interna de un arco libre tiene
-  extremos adyacentes y no se entrelaza con nadie. (2) Un diagrama alternante no tiene candidatos R2, porque R2 exige pasos
-  superiores consecutivos y en un diagrama alternante los pasos consecutivos alternan. Luego, para diagramas ALTERNANTES,
-  reducido ⇔ sin R1 ⇔ sin R1/R2 (irreducible en el sentido de (A)). Comprobado exhaustivamente en 27 892 diagramas con n ≤ 4
-  (0 discrepancias); la versión de la tesis (1) y (2) es además elemental y formalizable en `FormaNormal.lean`.
-* **Esto une (A) y (B):** las palabras alternantes, planares e irreducibles de (A) SON los diagramas alternantes reducidos de (B).
+* **CORRECCIÓN DOBLE (sondas 22b y 22c).** La sonda 22b (n ≤ 4) pareció indicar que «reducido» equivale a «sin R1/R2» en alternantes; eso es FALSO en general y el primer contraejemplo aparece en n = 7. Lo que sí vale:
+  * (a) todo candidato R1 es una cuerda aislada, luego **reducido ⇒ sin R1** (y en alternantes, sin R2 siempre, porque R2 exige pasos superiores consecutivos y en un alternante los consecutivos alternan). Es decir, **reducido ⇒ irreducible**.
+  * (b) el recíproco FALLA: dos tréboles unidos por una cuerda aislada (cuerda `(0,7)` con un trébol en cada arco; n = 7) es planar, alternante, tiene una cuerda aislada y NO tiene ningún candidato R1 ni R2 (sonda 22c). Una cuerda aislada con bloques entrelazados a ambos lados no tiene extremos adyacentes. Por eso a partir de n = 7 hay más irreducibles (788) que reducidos (676).
+* **Consecuencia para (A) y (B).** Las palabras irreducibles de (A) NO son todas diagramas reducidos de (B): los reducidos son un subconjunto propio. El teorema del span necesita la hipótesis EXPLÍCITA «sin cuerdas aisladas»; no se deduce de (A). La relación es: reducido ⇒ irreducible, pero no al revés.
 * Dificultad: media-alta, pero acotada y sin literatura externa. Es el entregable de mayor valor científico de (B).
 
 ## 5. Fases
@@ -119,7 +116,8 @@ No demuestra la clasificación de Schubert ni el teorema de Reidemeister; no cub
 | 5 | 24 | 24 | 3 568 | 3 568 |
 | 6 | 168 | 168 | 26 624 | 26 624 |
 
-Cumplimiento del 100 %: reducido ⇒ span = 4n; no reducido ⇒ span < 4n. Tampoco hubo ningún reducido con `s_A + s_B ≠ n + 2`.
-El teorema del span (B3) es viable por cálculo. Sonda 22b: reducido ⇔ irreducible en alternantes (sección 4).
+| 7 | 676 | 676 | 210 736 | 210 736 |
+
+Cumplimiento del 100 %: reducido ⇒ span = 4n; no reducido ⇒ span < 4n. Tampoco hubo ningún reducido con `s_A + s_B ≠ n + 2` (n ≤ 6). El teorema del span (B3) es viable por cálculo. OJO: en alternantes, reducido ⇒ irreducible pero NO al revés (sección 4, sonda 22c).
 
 **Pendiente de B1:** flypes y clases de Jones (sondas 23 a 25 del plan), n = 7 y 8, y la contrastación con tablas de nudos racionales.
