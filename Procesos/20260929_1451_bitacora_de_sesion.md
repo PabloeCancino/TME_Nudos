@@ -8,6 +8,30 @@
 
 Este documento es el registro cronológico completo: qué se probó, qué se encontró, qué se cambió y por qué, y dónde retomar. Las secciones 1 a 3 sirven para orientarse; la 4 es el registro detallado; la 5 lista lo pendiente.
 
+## 000000. PENDIENTES RESUELTOS EN LA RAMA `pendientes` (2026-10-01) — LEER PRIMERO
+
+Rama `pendientes` (sale de `master` = e2c300b; **sin fusionar, nada subido a `origin`**).
+
+| Pendiente | Resultado | Dónde |
+|---|---|---|
+| 4 tensiones de la Etapa 1 | RESUELTAS (T1 `formR2Pair` con signos opuestos; T2 réplica eliminada, `TCN_08_Uniformity` importa `Basic`; T3 transiciones conservan `pos`; T4 axioma A7 sin cambio) | commits 87a8a05, 3b2b30e |
+| ¿índice cero suficiente? | **NO.** Contraejemplo n=4 probado en Lean (`indexZero_not_sufficient`): palabra con índice cero y paridad de Gauss, no planar. Para K₃ SÍ coinciden: `indexZero_iff_planar_toWord` (960 casos, `decide +kernel`) y `isRealizable_iff_irreducible_planar` | `Etapa1_Planaridad.lean` |
+| Opción 2 (Knot clásico) | `ClassicalKnot` = diagramas planares módulo movimientos entre planares; `ClassicalKnot.jones` baja al cociente; `trefoilC_ne_mirrorC`, `trefoilC_ne_unknotC` por Jones | `Etapa1_Clasico.lean` |
+| axioma `rational_to_diagram` | CERRADO: ahora es una definición (codificación inyectiva `crossingCode`, `rational_to_diagram_injective`). NO afirma respetar movimientos de Reidemeister. Axiomas de `Bridge`: 2 → 1 (total del proyecto 51 → 50) | `Bridge.lean` |
+
+**Planaridad exacta (definición):** mapa combinatorio con orden cíclico fijado por el signo; caras = ciclos de sigma∘alpha; `planar w := w = [] ∨ faces w = n + 2` (género 0). Convención y sonda: `Procesos/Tests/auditoria_20260929/15_genero_vs_indice_cero.py`.
+
+**Límites (qué NO se probó)**
+- Que planar ⇒ índice cero en general: comprobado solo hasta n=4 por la sonda (no es teorema).
+- `swap` preserva planaridad: solo para el trébol concreto; `ClassicalKnot` no tiene operación espejo general ni suma conexa (exige pegar en la misma cara).
+- El axioma `rational_equivalence_preserves_isotopy` de `Bridge` SIGUE (verdadero en el modelo pretendido, pero `HEq` no permite deducir `n = m` sin un argumento de cardinalidad no formalizado).
+- `rational_to_knot` depende de `sorryAx` solo vía `apply_R*` (como antes).
+- Costos: `Etapa1_Planaridad` tarda ~62 min en compilar desde cero (los `decide +kernel` sobre 960 configuraciones).
+
+**Pendiente de decisión del autor:** fusionar `pendientes` a `master` (avance rápido local) y, aparte, subir a `origin`.
+
+---
+
 ## 00000. PAUSA EN LA RAMA `pendientes` (2026-09-30) — RETOMAR AQUÍ
 
 `master` = e2c300b (migración al signo firmado completa y verificada; nada subido a `origin`). Rama de trabajo: `pendientes` (sale de master).

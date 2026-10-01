@@ -9,8 +9,8 @@ import TMENudos.Etapa1_GaussWord
 /-!
 # Etapa 1: la funcion CONCRETA "configuracion racional -> diagrama" de la capa paralela
 
-`Bridge.lean` declara el axioma `rational_to_diagram {n} (rc : RationalConfiguration n) : Diagram`
-(con `Diagram` del modelo antiguo de `Reidemeister.lean`). Aqui se da, en la capa paralela, la
+`Bridge.lean` define `rational_to_diagram {n} (rc : RationalConfiguration n) : Diagram` (antes era un
+axioma) como una CODIFICACION inyectiva en el `Diagram` del modelo antiguo de `Reidemeister.lean`. Aqui se da, en la capa paralela, la
 funcion concreta hacia `GDiag` / `Diag` (`Etapa1_Nudos`):
 
 * `SignedRationalConfiguration n`: configuracion racional + signo por cruce como DATO;
@@ -22,8 +22,10 @@ funcion concreta hacia `GDiag` / `Diag` (`Etapa1_Nudos`):
 
 ## ALCANCE (leer antes de citar)
 
-* Esta es la funcion concreta de la capa paralela. **El axioma `rational_to_diagram` de `Bridge.lean`
-  NO se cierra** (su codominio `Diagram` es otro tipo; no se cambia `Diagram` a `GDiag`).
+* Esta es la funcion concreta de la capa paralela. `rational_to_diagram` de `Bridge.lean` YA NO es un
+  axioma: es una definicion inyectiva (`rational_to_diagram_injective`) hacia el `Diagram` del modelo
+  antiguo, que NO afirma respetar los movimientos de Reidemeister; la traduccion con significado
+  geometrico es la de esta capa (`GDiag`).
 * Los diagramas `GDiag` son de tipo nudo virtual (la planaridad no se exige): `ofSigned` esta
   definida para TODA configuracion racional, planar o no.
 * La definicion y los cuatro axiomas son GENERALES en `n`. Las pruebas de que es "la funcion
@@ -180,8 +182,8 @@ def signedToDiag {n : ℕ} [NeZero n] (rc : SignedRationalConfiguration n) : Dia
   Diag.mk (ZMod (2 * n)) (ofSigned rc)
 
 /-- **Version "como `rational_to_diagram`"**: signo derivado de `crossing_sign`.
-Es la funcion concreta de la capa paralela; el axioma `rational_to_diagram` de `Bridge.lean`
-NO se cierra con ella (su codominio es el `Diagram` del modelo antiguo). -/
+Es la funcion concreta de la capa paralela; `rational_to_diagram` de `Bridge.lean` es una
+codificacion inyectiva hacia el `Diagram` del modelo antiguo (no es esta funcion). -/
 def rationalToDiag {n : ℕ} [NeZero n] (rc : RationalConfiguration n) : Diag :=
   Diag.mk (ZMod (2 * n)) (ofSigned (SignedRationalConfiguration.ofDerived rc))
 
