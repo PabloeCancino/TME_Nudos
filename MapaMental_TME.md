@@ -45,13 +45,13 @@ mindmap
         Progresión
     Teoremas Principales
       Reconstrucción
-        Mismas razones y signos implica rotación «A», refutado en n=3
+        Axioma falso eliminado, ahora hipótesis explícita «P»
         Cierto en alternantes ordenadas sin R1 R2, demostrado n=3 a 5 «P», cálculo hasta n=7
       Forma Normal (T5)
         Existencia y Unicidad «A»
         Irreducibilidad = Minimalidad, L5 «A»
       Completitud
-        Isotopía <=> mismo SIME en irreducibles «A», falso si no es alternante
+        Isotopía <=> mismo SIME en irreducibles «A», vuelta condicionada y ida falsa desde n=7
         Con el IME solo la vuelta es falsa
     Realizabilidad y Planaridad
       K3 firmado
@@ -94,7 +94,7 @@ mindmap
 | Capa | Estado |
 |---|---|
 | Módulos de `TMENudos/` | 47 compilan por nombre, 0 errores |
-| Axiomas declarados | 50 (Schubert 25, Reidemeister 11, Basic 5, KN_01 5, Bridge 1, y uno en `KN_00`, `TCN_01` y `TCN_08_Uniformity`) |
+| Axiomas declarados | 49 (Schubert 25, Reidemeister 11, Basic 4, KN_01 5, Bridge 1, y uno en `KN_00`, `TCN_01` y `TCN_08_Uniformity`) |
 | `sorry` | 17 (Schubert 11, Reidemeister 4, `KN_00_Combinatoria` 1, `KN_Instance_K3` 1) |
 | Capa de Gauss, planaridad y `ClassicalKnot` | sin `sorry` ni axiomas propios; fuera de la build por defecto (módulos `Etapa1_*`) |
 

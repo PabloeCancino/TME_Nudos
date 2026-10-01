@@ -703,16 +703,18 @@ theorem rotation_inverse {n : ℕ} (K : RationalConfiguration n) (k : ℝ[n]) :
   simp only [add_neg_cancel] at h
   rw [h, rotate_zero]
 
-/-- Axioma de Reconstrucción Uniforme: El IME determina posiciones salvo desplazamiento.
+/-- **Desplazamiento uniforme de las posiciones superiores** entre dos configuraciones.
 
-    Este axioma establece que si dos configuraciones tienen las mismas razones modulares,
-    entonces sus posiciones over difieren por un desplazamiento uniforme k.
-
-    Justificación computacional: Verificado mediante implementación en
-    E:\Nudos_LEAN\Programacion\reidemeister_moves.py (funciones apply_r1_removal,
-    apply_r2_removal, cyclic_renumber) que preservan el IME bajo transformaciones. -/
-axiom reconstruct_from_first {n : ℕ} [NeZero n] (K₁ K₂ : RationalConfiguration n)
-  (h_ratio : ∀ i : Fin n, ratio_val (K₁.crossings i) = ratio_val (K₂.crossings i)) :
+    FASE 3 (2026-10-01): ANTES esto era el axioma `reconstruct_from_first`
+    ("mismas razones modulares ⇒ desplazamiento uniforme"), que es FALSO: con n = 3, las
+    configuraciones `[(0,3),(1,4),(2,5)]` y `[(0,3),(2,5),(1,4)]` (todos `+`) tienen las mismas
+    razones índice a índice y no difieren en una constante (prueba que deriva `False`:
+    `Procesos/Tests/auditoria_20260929/16_refuta_reconstruct_from_first.lean`). Más aún, ni el IME
+    ni el SIME son invariantes completos en general (la configuración especial y el trébol tienen
+    igual SIME). Ahora es una HIPÓTESIS explícita de los teoremas que la necesitan. El enunciado
+    reparado, para configuraciones ordenadas, alternantes, planares y sin candidatos R1/R2, está
+    demostrado para n = 3, 4 y 5 en `TMENudos/Reconstruccion.lean`. -/
+def UniformOverShift {n : ℕ} (K₁ K₂ : RationalConfiguration n) : Prop :=
   ∃ k : ℝ[n], ∀ i : Fin n, (K₂.crossings i).over_pos = (K₁.crossings i).over_pos + k
 
 /-!
@@ -1561,6 +1563,11 @@ lemma minimal_configs_nonempty {n : ℕ} (K : RationalConfiguration n) :
 Axioma A6 (Teorema de Schubert/Reidemeister):
 Si una configuración no es mínima en su clase de isotopía, entonces es reducible.
 Esto es equivalente a decir que si es irreducible, entonces es mínima.
+
+ESTADO (2026-10-01): SOSPECHOSO, no refutado formalmente. Para diagramas no alternantes
+"irreducible" (sin R1/R2) no implica "mínimo" (el desenredo de Goeritz, 10 cruces) y en este modelo
+`is_R3_candidate` es vacuo (0 candidatos en n = 3 y 4, sonda 17), así que R3 no puede reducir esos
+casos. Ver `Procesos/20261001_plan_axiomas_de_basic.md`, secciones 3.1 y 3.2.
 -/
 axiom axiom_irreducible_is_minimal {n : ℕ} (K : RationalConfiguration n) :
   is_irreducible K → n = min_degree K
@@ -1685,6 +1692,12 @@ Si dos configuraciones tienen el grado mínimo en su clase de isotopía,
 entonces son equivalentes salvo rotación.
 Adaptado de `E:\Nudos_LEAN\Articulo\Lema de Unicidad Modular.md`.
 
+ESTADO (2026-10-01): MUY PROBABLEMENTE FALSO en el modelo actual, no refutado formalmente. Las
+transiciones R1/R2 de `Isotopic` solo comparan CONJUNTOS de pares (razón, signo), no posiciones, y
+la sonda 17b halla 720 configuraciones de grado 3 sin candidatos, con clase mínima de grado 3 dentro
+de la cota 4, unidas a otra del mismo conjunto que NO es rotación (falta un invariante de grado
+para cerrar la contradicción). Ver `Procesos/20261001_plan_axiomas_de_basic.md`, sección 3.1.
+
 REVISIÓN (tensiones T3/T4, signo como dato): el enunciado NO cambia (sigue siendo UN axioma, con el
 mismo nombre y tipo; axiomas de `Basic`: 5). Ya estaba formulado con la igualdad EXACTA de
 configuraciones, `K2 = rotate_knot k K1`, y `rotate_knot` conserva razones y signos, así que
@@ -1720,14 +1733,18 @@ theorem isotopic_irreducible_same_IME {n : ℕ} (K₁ K₂ : RationalConfigurati
     -- 3. IME es invariante bajo rotación
     exact (IME_rotation_invariant K₁ k).symm
 
-/-- Núcleo: razones modulares iguales Y signos iguales, cruce a cruce, implican que una
-    configuración es rotación de la otra. -/
+/-- Núcleo: razones modulares iguales Y signos iguales, cruce a cruce, y un desplazamiento
+    uniforme de las posiciones superiores (`UniformOverShift`), implican que una configuración
+    es rotación de la otra.
+
+    FASE 3: el desplazamiento uniforme ya no lo da un axioma (falso), es una hipótesis. -/
 theorem rotation_of_ratio_pos_eq {n : ℕ} [NeZero n] (K₁ K₂ : RationalConfiguration n)
     (h_ratio : ∀ i : Fin n, ratio_val (K₁.crossings i) = ratio_val (K₂.crossings i))
-    (h_sgn : ∀ i : Fin n, (K₁.crossings i).pos = (K₂.crossings i).pos) :
+    (h_sgn : ∀ i : Fin n, (K₁.crossings i).pos = (K₂.crossings i).pos)
+    (h_shift : UniformOverShift K₁ K₂) :
     ∃ (k : ℝ[n]), K₂ = rotate_knot k K₁ := by
-  -- Axioma de reconstrucción da el desplazamiento k
-  obtain ⟨k, h_over⟩ := reconstruct_from_first K₁ K₂ h_ratio
+  -- El desplazamiento uniforme k es ahora una hipótesis (antes: el axioma falso)
+  obtain ⟨k, h_over⟩ := h_shift
   use k
   apply RationalConfiguration.ext
   funext i
@@ -1764,7 +1781,8 @@ theorem rotation_of_ratio_pos_eq {n : ℕ} [NeZero n] (K₁ K₂ : RationalConfi
       salvo rotación (dos cruces con las mismas posiciones y signos opuestos tienen el mismo IME);
       se añade la hipótesis de signos iguales cruce a cruce. -/
 theorem same_IME_implies_rotation {n : ℕ} (K₁ K₂ : RationalConfiguration n)
-  (h_sgn : ∀ i : Fin n, (K₁.crossings i).pos = (K₂.crossings i).pos) :
+  (h_sgn : ∀ i : Fin n, (K₁.crossings i).pos = (K₂.crossings i).pos)
+  (h_shift : UniformOverShift K₁ K₂) :
   IME K₁ = IME K₂ → ∃ (k : ℝ[n]), K₂ = rotate_knot k K₁ := by
   intro h_ime
   -- Caso n=0
@@ -1776,7 +1794,7 @@ theorem same_IME_implies_rotation {n : ℕ} (K₁ K₂ : RationalConfiguration n
     exact Fin.elim0 i
   -- Caso n>0
   · haveI : NeZero n := ⟨h_n⟩
-    exact rotation_of_ratio_pos_eq K₁ K₂ (IME_eq_implies_ratio_val_eq K₁ K₂ h_ime) h_sgn
+    exact rotation_of_ratio_pos_eq K₁ K₂ (IME_eq_implies_ratio_val_eq K₁ K₂ h_ime) h_sgn h_shift
 
 /-- El SIME es invariante bajo rotaciones (la rotación conserva razones y signos). -/
 theorem SIME_rotation_invariant {n : ℕ} [NeZero n] (K : RationalConfiguration n) (k : ℝ[n]) :
@@ -1787,8 +1805,13 @@ theorem SIME_rotation_invariant {n : ℕ} [NeZero n] (K : RationalConfiguration 
   simp only [ratio_val, rotation_preserves_ratios]
   rfl
 
-/-- Si dos configuraciones tienen el mismo SIME, una es rotación de la otra. -/
-theorem same_SIME_implies_rotation {n : ℕ} (K₁ K₂ : RationalConfiguration n) :
+/-- Si dos configuraciones tienen el mismo SIME y sus posiciones superiores difieren por un
+    desplazamiento uniforme, una es rotación de la otra.
+
+    FASE 3: sin la hipótesis `h_shift` el enunciado es FALSO (el SIME no es invariante completo
+    en general; ver `Reconstruccion.lean`). -/
+theorem same_SIME_implies_rotation {n : ℕ} (K₁ K₂ : RationalConfiguration n)
+  (h_shift : UniformOverShift K₁ K₂) :
   SIME K₁ = SIME K₂ → ∃ (k : ℝ[n]), K₂ = rotate_knot k K₁ := by
   intro h
   by_cases h_n : n = 0
@@ -1799,7 +1822,7 @@ theorem same_SIME_implies_rotation {n : ℕ} (K₁ K₂ : RationalConfiguration 
     exact Fin.elim0 i
   · haveI : NeZero n := ⟨h_n⟩
     have h' := (SIME_eq_iff K₁ K₂).mp h
-    exact rotation_of_ratio_pos_eq K₁ K₂ (fun i => (h' i).1) (fun i => (h' i).2)
+    exact rotation_of_ratio_pos_eq K₁ K₂ (fun i => (h' i).1) (fun i => (h' i).2) h_shift
 
 /-- Irreducibles isotópicos tienen el mismo SIME (razones y signos): por el Axioma A7 son
     rotaciones una de otra, y la rotación conserva razones y signos. -/
@@ -1828,11 +1851,20 @@ MIGRACIÓN: antes → después
 - antes: `Isotopic ↔ n = m ∧ IME K₁ = IME K₂`.
 - después: `Isotopic ↔ n = m ∧ SIME K₁ = SIME K₂` (razones Y signos). Con el signo como dato, la
   implicación `←` con solo el IME es falsa (mismas razones, signos distintos); la ida sigue
-  valiendo porque la rotación conserva el signo. El IME solo sigue siendo consecuencia
-  (`IME_complete_ime`).
+  valiendo porque la rotación conserva el signo.
+
+FASE 3 (2026-10-01): la vuelta `←` ("mismo SIME ⇒ isotópicos") era falsa como estaba: se apoyaba en
+`reconstruct_from_first`, que es falso, y el SIME no es invariante completo en general (la
+configuración especial y el trébol tienen igual SIME y no son rotación una de otra). Ahora la
+vuelta exige el PRINCIPIO DE RECONSTRUCCIÓN `h_rec` como hipótesis explícita: si dos irreducibles
+del mismo grado tienen igual SIME, una es rotación de la otra. Ese principio está demostrado, en
+una forma ligeramente distinta (con reindexado cíclico), para configuraciones ordenadas,
+alternantes y sin candidatos R1/R2 con n = 3, 4, 5 en `TMENudos/Reconstruccion.lean`. La ida (`→`)
+sigue dependiendo de los axiomas A6 y A7, que son sospechosos (sondas 17 y 17b).
 -/
 theorem IME_complete {n m : ℕ} (K₁ : RationalConfiguration n) (K₂ : RationalConfiguration m)
-  (h_irr1 : is_irreducible K₁) (h_irr2 : is_irreducible K₂) :
+  (h_irr1 : is_irreducible K₁) (h_irr2 : is_irreducible K₂)
+  (h_rec : ∀ h : n = m, SIME K₁ = SIME K₂ → ∃ k : ℝ[m], K₂ = rotate_knot k (h ▸ K₁)) :
   Isotopic ⟨n, K₁⟩ ⟨m, K₂⟩ ↔ (n = m ∧ SIME K₁ = SIME K₂) := by
   constructor
   · intro h_iso
@@ -1841,7 +1873,7 @@ theorem IME_complete {n m : ℕ} (K₁ : RationalConfiguration n) (K₂ : Ration
     exact ⟨rfl, isotopic_irreducible_same_SIME K₁ K₂ h_irr1 h_irr2 h_iso⟩
   · intro h
     rcases h with ⟨rfl, h_SIME⟩
-    obtain ⟨k, rfl⟩ := same_SIME_implies_rotation K₁ K₂ h_SIME
+    obtain ⟨k, rfl⟩ := h_rec rfl h_SIME
     exact rotation_implies_isotopic K₁ k
 
 

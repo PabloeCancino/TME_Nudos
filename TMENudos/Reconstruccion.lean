@@ -722,18 +722,20 @@ end Contraejemplos
 end Reconstruccion
 end TMENudos
 
-/-! ## Teoremas de `Basic` que dependen de `reconstruct_from_first` (falso)
+/-! ## Estado de los teoremas de `Basic` tras la Fase 3 (2026-10-01)
 
-Calculado recorriendo todos los teoremas de `TMENudos` con `CollectAxioms` (solo estos cuatro
-usan el axioma):
-* `TMENudos.rotation_of_ratio_pos_eq`
-* `TMENudos.same_IME_implies_rotation`
-* `TMENudos.same_SIME_implies_rotation`
-* `TMENudos.IME_complete`
-`isotopic_irreducible_same_SIME` (direccion «isotopicos implica mismo SIME») no usa ese axioma, pero
-depende de `axiom_irreducible_is_minimal` y de `minimal_isotopic_implies_rotation` (A6 y A7), que
-son sospechosos y NO estan refutados formalmente. Lo que SI se refuta aqui es la direccion
-contraria de `IME_complete` (mismo SIME implica isotopicos) para irreducibles no alternantes. -/
+ANTES de la Fase 3, `Basic` declaraba el axioma `reconstruct_from_first` (FALSO, sonda 16) y cuatro
+teoremas dependian de el: `rotation_of_ratio_pos_eq`, `same_IME_implies_rotation`,
+`same_SIME_implies_rotation` e `IME_complete`.
+
+AHORA el axioma ya no existe (su conclusion es la definicion `UniformOverShift`, usada como
+HIPOTESIS). Los tres primeros son teoremas demostrados sin axiomas propios (solo `propext` y
+`Quot.sound`). `IME_complete` exige ademas el principio de reconstruccion `h_rec` para la direccion
+«mismo SIME implica isotopicos», y su direccion «isotopicos implica mismo SIME» (igual que
+`isotopic_irreducible_same_SIME`) depende de `axiom_irreducible_is_minimal` y de
+`minimal_isotopic_implies_rotation` (A6 y A7), que son sospechosos y NO estan refutados
+formalmente. Lo que SI se refuta en este archivo es la direccion contraria de `IME_complete` para
+irreducibles no alternantes (contraejemplos `tA`/`kA` y `mA`/`mB`). -/
 
 #print axioms TMENudos.Reconstruccion.bridge
 #print axioms TMENudos.Reconstruccion.noCand_iff

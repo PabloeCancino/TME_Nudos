@@ -81,6 +81,62 @@ Compila en ~5 min, sin `sorry`, axiomas ni `native_decide`; los teoremas princip
 
 **Qué NO se logró:** el enunciado para n general (solo n = 3, 4, 5 por cálculo exhaustivo); la Fase 3 (restringir los teoremas de `Basic`); A6 y A7 siguen sin resolverse.
 
+### 3.4 Hallazgo que cambia el rumbo: A7 es falso también en la teoría clásica (sondas 19 y 19b, 2026-10-01)
+
+**Prueba.** Se enumeran las configuraciones planares, alternantes y sin candidato R1/R2 y se calcula su
+polinomio de Jones (corchete de Kauffman por estados, misma convención que `Etapa1_GaussWord.lean`).
+Se agrupa por Jones y se compara con las clases de rotación y las clases diédricas (rotación más
+reflexión del sentido de recorrido).
+
+| n | clases de rotación | clases diédricas | valores de Jones | Jones con >1 clase diédrica |
+|---|---|---|---|---|
+| 3 | 2 | 2 | 2 | 0 (trébol derecho e izquierdo) |
+| 4 | 2 | 1 | 1 | 0 (el nudo de ocho, anfiquiral) |
+| 5 | 4 | 4 | 4 | 0 (5₁ y 5₂ con sus espejos) |
+| 6 | 18 | 9 | 8 | 1 (sonda 19b: un par «primo») |
+| 7 | 58 | 38 | 19 | 11 (6 pares primos y 5 compuestos) |
+
+La verificación de cordura pasa: los valores de n = 3, 4 y 5 son los nudos esperados.
+
+**Lectura.**
+* **n = 6:** el par primo tiene las mismas cuerdas y TODOS los signos invertidos. Es la simetría de un
+  nudo anfiquiral (6₃): el mismo nudo con un diagrama y su imagen especular. No es un flype.
+* **n = 7:** hay pares primos con SIGNOS IGUALES y cuerdas distintas, p. ej.
+  `(2,9),(4,11),(6,13),(8,1),(10,7),(12,5)` frente a `(2,9),(4,13),(6,11),(8,1),(10,5),(12,7)` (todos
+  `−`). Son diagramas alternantes reducidos NO isomorfos con el mismo Jones: candidatos a **flype**
+  (conjetura de Tait, teorema de Menasco-Thistlethwaite). Igual Jones no prueba que sean el mismo nudo,
+  pero con n ≤ 7 y diagramas alternantes reducidos es la explicación esperada.
+
+**Consecuencia.** Con una isotopía FIEL (R1, R2 y R3 reales), dos diagramas mínimos del mismo nudo no
+tienen por qué ser rotación uno del otro: difieren por flypes y por simetrías (reflexión, anfiquiralidad).
+Por tanto A7 (`minimal_isotopic_implies_rotation`) es FALSO para la teoría clásica de nudos a partir de
+n = 7, y `isotopic_irreducible_same_SIME` ("isotópicos ⇒ mismo SIME") también. Esto es independiente de
+la laxitud de las transiciones (sección 3.1): reparar las transiciones R1/R2 no puede hacer cierto A7.
+
+**Qué sí puede ser cierto** (hipótesis a estudiar, NO demostrada):
+1. El SIME de la FORMA NORMAL de Conway/Schubert (un representante canónico por nudo racional) clasifica
+   los nudos racionales: es la lectura correcta de "T5: existencia y unicidad de la forma normal".
+2. `Isotopic` restringido a R1/R2 más rotación (sin flypes ni R3), donde A6/A7 se pueden decidir para
+   n ≤ 4 por cálculo exhaustivo sobre transiciones biyectivas.
+3. Sustituir A7 por el enunciado correcto: "minimales isotópicos ⇒ equivalentes por flypes y simetrías",
+   que es el teorema de Menasco-Thistlethwaite (se citaría como axioma de la literatura, no como propio).
+
+### 3.5 Fase 3 HECHA: `Basic` coherente con lo publicado (rama `fase3-basic`, 2026-10-01)
+
+Verificación: los 48 módulos de `TMENudos/` compilan por nombre y en serie (19 min 44 s), 0 errores y 0
+alertas. Axiomas de `Basic`: 5 → 4 (total del proyecto 50 → 49).
+
+* **`reconstruct_from_first` eliminado.** Su conclusión es ahora la definición `UniformOverShift K₁ K₂`
+  (desplazamiento uniforme de las posiciones superiores), usada como HIPÓTESIS.
+* **Tres teoremas reparados y demostrados sin axiomas propios** (solo `propext` y `Quot.sound`):
+  `rotation_of_ratio_pos_eq`, `same_IME_implies_rotation`, `same_SIME_implies_rotation`; todos con la
+  hipótesis `UniformOverShift`.
+* **`IME_complete`:** la dirección «mismo SIME ⇒ isotópicos» exige el principio de reconstrucción `h_rec`
+  como hipótesis explícita; la dirección «isotópicos ⇒ mismo SIME» sigue dependiendo de A6 y A7, y por la
+  sección 3.4 es falsa para la isotopía fiel a partir de n = 7.
+* **A6 y A7** llevan en su documentación el estado de sospecha y la referencia a las sondas.
+* Los cuatro teoremas solo se usaban dentro de `Basic`: ningún otro módulo cambió.
+
 ### Fase 1. Reparar y probar `reconstruct`
 1. Sonda Python exhaustiva (n ≤ 6) de candidatos de enunciado: (a) añadir la hipótesis de que los cruces están ordenados por posición superior; (b) comparar como multiconjuntos de `(razón, signo)`; (c) exigir el desplazamiento solo salvo permutación de índices.
 2. Elegir el candidato que no admita contraejemplos y cuyo enunciado sea el que realmente usan los teoremas dependientes.
