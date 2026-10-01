@@ -8,11 +8,15 @@
 
 Este documento es el registro cronológico completo: qué se probó, qué se encontró, qué se cambió y por qué, y dónde retomar. Las secciones 1 a 3 sirven para orientarse; la 4 es el registro detallado; la 5 lista lo pendiente.
 
-## 00000000. PAUSA EN LA RAMA `reconstruccion` (2026-10-01) — RETOMAR AQUÍ
+## 00000000. PAUSA EN LA RAMA `reconstruccion` (2026-10-01, segunda pausa) — RETOMAR AQUÍ
 
-`master` = 6dfe13e (6 commits sin subir a `origin`). Rama de trabajo `reconstruccion`: contiene `TMENudos/Reconstruccion.lean` (204 líneas, **WIP: NO compilado ni revisado**; el agente que lo escribía se detuvo a medias, sin informe). Objetivo del archivo (importa solo `Basic`): teorema reparado «planares, alternantes, ordenadas, sin candidatos R1/R2 y mismo `SIMEcic` ⇒ misma clase de rotación» para n=3 y n=4 (n=5 si es viable) por `decide +kernel`, con el puente `SortedAlt ⇒ dato finito (paridad, biyección, signos)` y los contraejemplos que justifican cada hipótesis. Encargo completo: ver el prompt en el plan `Procesos/20261001_plan_axiomas_de_basic.md` (secciones 3.1 y 3.2) y las sondas 16, 17, 17b, 18, 18b.
+`master` = 6dfe13e (6 commits sin subir a `origin`). Rama `reconstruccion`: `TMENudos/Reconstruccion.lean`.
 
-**Cómo retomar:** `git checkout reconstruccion`; leer el archivo; `lake build TMENudos.Reconstruccion` (una sola build a la vez); si el diseño es correcto continuar, si no, rehacer. Después, Fase 3: restringir `rotation_of_ratio_pos_eq`, `same_IME_implies_rotation`, `same_SIME_implies_rotation`, `IME_complete` e `isotopic_irreducible_same_SIME` (los cuatro primeros dependen de un axioma falso).
+**Verificado (commit 32c166d):** el borrador de la parte combinatoria COMPILA (`lake build TMENudos.Reconstruccion`, ~40 s) y sus `#eval` coinciden con la sonda 18b: candidatos [2,4,16,96,768,7680], válidos [0,0,0,4,8,24], clases SIME [0,0,0,2,2,4], `check n` = true para n ≤ 5. Hallazgo: `checkNP` (sin planaridad) también da true para n=2..5, así que entre las ordenadas y alternantes sin R1/R2 la planaridad es redundante hasta n=5; lo que rompe la completitud es la alternancia.
+
+**NO verificado:** un segundo agente amplió el archivo a 753 líneas (teoremas por `decide +kernel`, puente `SortedAlt ⇒ buildL`, equivalencias con Basic, teorema principal, contraejemplos) y fue detenido a medias, sin informe. Esa parte no se ha compilado ni revisado; puede no compilar o contener enunciados incorrectos.
+
+**Cómo retomar:** `git checkout reconstruccion`; `lake build TMENudos.Reconstruccion` (una sola build a la vez; las pruebas por `decide +kernel` pueden tardar minutos); leer qué teoremas existen y cuáles faltan frente a la lista de la tarea (1 teoremas finitos, 2 puente general, 3 equivalencias con Basic, 4 teorema principal, 5 contraejemplos, 6 dependencias del axioma falso). Después, Fase 3: restringir `rotation_of_ratio_pos_eq`, `same_IME_implies_rotation`, `same_SIME_implies_rotation`, `IME_complete` e `isotopic_irreducible_same_SIME`.
 
 ---
 
