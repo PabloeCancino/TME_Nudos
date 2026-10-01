@@ -8,6 +8,14 @@
 
 Este documento es el registro cronológico completo: qué se probó, qué se encontró, qué se cambió y por qué, y dónde retomar. Las secciones 1 a 3 sirven para orientarse; la 4 es el registro detallado; la 5 lista lo pendiente.
 
+## 00000000. PAUSA EN LA RAMA `reconstruccion` (2026-10-01) — RETOMAR AQUÍ
+
+`master` = 6dfe13e (6 commits sin subir a `origin`). Rama de trabajo `reconstruccion`: contiene `TMENudos/Reconstruccion.lean` (204 líneas, **WIP: NO compilado ni revisado**; el agente que lo escribía se detuvo a medias, sin informe). Objetivo del archivo (importa solo `Basic`): teorema reparado «planares, alternantes, ordenadas, sin candidatos R1/R2 y mismo `SIMEcic` ⇒ misma clase de rotación» para n=3 y n=4 (n=5 si es viable) por `decide +kernel`, con el puente `SortedAlt ⇒ dato finito (paridad, biyección, signos)` y los contraejemplos que justifican cada hipótesis. Encargo completo: ver el prompt en el plan `Procesos/20261001_plan_axiomas_de_basic.md` (secciones 3.1 y 3.2) y las sondas 16, 17, 17b, 18, 18b.
+
+**Cómo retomar:** `git checkout reconstruccion`; leer el archivo; `lake build TMENudos.Reconstruccion` (una sola build a la vez); si el diseño es correcto continuar, si no, rehacer. Después, Fase 3: restringir `rotation_of_ratio_pos_eq`, `same_IME_implies_rotation`, `same_SIME_implies_rotation`, `IME_complete` e `isotopic_irreducible_same_SIME` (los cuatro primeros dependen de un axioma falso).
+
+---
+
 ## 0000000. HALLAZGO (2026-10-01): `reconstruct_from_first` de `Basic` es FALSO — LEER PRIMERO
 
 Prueba: `Procesos/Tests/auditoria_20260929/16_refuta_reconstruct_from_first.lean` (deriva `False` con un contraejemplo de n = 3: cruces antipodales (0,3),(1,4),(2,5) frente a (0,3),(2,5),(1,4); mismas razones índice a índice, sin desplazamiento uniforme). Afecta a `rotation_of_ratio_pos_eq`, `same_IME_implies_rotation`, `same_SIME_implies_rotation` e `IME_complete`. NO afecta a `TCN_*`, la capa de Gauss, la planaridad ni `ClassicalKnot`. El estado ya publicado en `origin` (master 211d1d6) contiene este axioma. Plan de reparación y de prueba para n ≤ 4: `Procesos/20261001_plan_axiomas_de_basic.md`. Los otros cuatro axiomas de `Basic` NO se han probado consistentes: A7 es sospechoso por el mismo defecto de indexado.
