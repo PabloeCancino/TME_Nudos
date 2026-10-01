@@ -11,7 +11,7 @@ mindmap
   root((TME Nudos))
     Fundamentos Axiomáticos
       A1: Espacio del Recorrido
-        Z_2n (Cíclico) «P»
+        Z_2n cíclico «P»
         Suma Modular «P»
       A2: Doble Modularidad
         Trayectoria (Mod 2n)
@@ -19,10 +19,10 @@ mindmap
       A3: Interlazado
         Intervalos Discretos
         Matriz de Interlazado
-    Objetos (con signo como dato)
+    Objetos con signo como dato
       Cruce firmado
         Posición superior e inferior
-        Signo pos Bool (dato)
+        Signo pos Bool, dato
         60 cruces en n=3 «P»
         Signo derivado = caso particular
       Configuración Racional
@@ -35,12 +35,12 @@ mindmap
       A4: Equivalencia Isotópica
         Movimientos Reidemeister
           R1 (Bucles)
-          R2 (Bigones, signos opuestos)
+          R2 Bigones, con signos opuestos
           R3 (Deslizamiento)
         Las transiciones conservan el signo
-        Rotaciones (conservan signo)
+        Rotaciones, conservan signo
       Operaciones
-        Espejo swap (invierte over-under y signo)
+        Espejo swap, invierte over-under y signo
         El trébol y su espejo son clases distintas «Cálculo»
         Progresión
     Teoremas Principales
@@ -48,7 +48,7 @@ mindmap
         Mismas razones y signos implica rotación «A»
       Forma Normal (T5)
         Existencia y Unicidad «A»
-        Irreducibilidad = Minimalidad (L5) «A»
+        Irreducibilidad = Minimalidad, L5 «A»
       Completitud
         Isotopía <=> mismo SIME en irreducibles «A»
         Con el IME solo la vuelta es falsa
@@ -72,7 +72,7 @@ mindmap
         Diagramas planares módulo movimientos entre planares «P»
         Sin suma conexa clásica
     Conexión con Nudos Abstractos
-      Schubert (1949) «C»
+      Schubert 1949 «C»
         Unicidad y existencia de factorización
         jones2 como axioma de la capa abstracta «A»
         Granny distinto de Square «A»
