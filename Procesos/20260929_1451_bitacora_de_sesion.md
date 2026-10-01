@@ -15,12 +15,15 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 **Hecho y verificado**
 - Sonda 15 (`Procesos/Tests/auditoria_20260929/15_genero_vs_indice_cero.py`, commit 7c309f1): criterio EXACTO de planaridad (mapa combinatorio determinado por el signo, género 0 ⇔ V−E+F=2). Resultado: n=3 planar = índice cero (336 = 336); n=4: 4160 planares frente a 4224 con índice cero; hay **64 configuraciones con índice cero y paridad de Gauss que NO son planares**. Por tanto "índice cero ⇒ planar" es FALSO en general (planar ⇒ índice cero se cumple hasta n=4). Falta formalizarlo en Lean.
 
-**Pendiente — NO VERIFICADO**
-- Un agente trabajaba en las cuatro tensiones de la Etapa 1 y fue detenido a medias. Deja cambios SIN COMPILAR NI REVISAR en `Basic.lean`, `TCN_08_UniformityCriterion.lean` y `TCN_10_ReidemeisterVerification.lean` (commit WIP en `pendientes`, puede no compilar). Su nota "RESUELTAS" en la bitácora se revirtió por no estar verificada.
-  Tensiones: (T1) `formR2Pair` con signos opuestos; (T2) réplica de `TCN_08_Uniformity` vs tipos de `Basic`; (T3) transiciones `is_R*_transition` que conserven `pos`; (T4) `SIME` / axioma A7.
+**Tensiones de la Etapa 1: RESUELTAS Y VERIFICADAS (commit 87a8a05 + este)**. Los 45 módulos de `TMENudos/` (incluidos `Etapa1_*`) compilan por nombre en serie, 0 errores; sin `sorry`/`native_decide`/axiomas nuevos (Basic 5, Uniformity 1).
+- T1: `formR2Pair` exige signos opuestos (`formR2Positions` es la parte posicional). `K3_special_has_R2` pasó a `K3_special_no_R2` (los 3 cruces son +); control positivo `K3_special_mixed`. La conclusión antigua "K₃,special es trivial" era un artefacto de ignorar el signo.
+- T2: la réplica de `RationalCrossing`/`RationalConfiguration` en `TCN_08_UniformityCriterion` se eliminó; ahora importa `Basic`. El axioma `uniformity_criterion` se mantiene (su conclusión se deduce de `is_dividing_ratio`; sin cambio).
+- T3: `is_R1/R2/R3_transition` conservan `pos` en los cruces que sobreviven; R3 exige `SIME K = SIME K'`.
+- T4: el axioma A7 `minimal_isotopic_implies_rotation` NO cambia (ya decía `K2 = rotate_knot k K1`, que conserva signos); reformularlo con SIME lo habría debilitado. `SIME` y `SIME_eq_iff` se movieron antes de las transiciones.
+- Límite: R1/R2 siguen siendo marcadores de posición (correspondencia existencial en ambos sentidos, sin renumeración).
 
 **Plan siguiente (en orden, builds en SERIE por la poca memoria)**
-1. Verificar/terminar las 4 tensiones (compilar `Basic`, `TCN_08_Uniformity`, `TCN_09`, `TCN_10`, luego todo).
+1. (HECHO) Las 4 tensiones.
 2. Archivo nuevo `Etapa1_Planaridad.lean` (capa paralela): `faces`/`planar` sobre `Word` (darts out_p=2p, in_p=2p+1; orden CCW por signo según la sonda), controles (trébol y espejo planares, mixto no), `∀ K : K3Config, indexZero K ↔ planar K.toWord` por `decide +kernel`, y el contraejemplo de n=4 ((0,3,−),(1,6,+),(2,5,−),(4,7,−)) con índice cero y Gauss par pero no planar.
 3. Opción 2: `ClassicalKnot` = diagramas planares módulo movimientos que pasan sólo por planares; Jones heredado; trébol ≠ espejo. La suma conexa clásica queda fuera.
 4. `Bridge.lean`: `rational_to_diagram` como DEFINICIÓN inyectiva (codificar posición y signo en `ratio_val : ℚ`, con teorema de inyectividad); el axioma `rational_equivalence_preserves_isotopy` probablemente se queda.
