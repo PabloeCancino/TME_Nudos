@@ -24,6 +24,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 **Sonda 20 (transiciones R1/R2 fieles, n=3, grado ≤ 5):** A6 se cumple (0/220 contraejemplos). A7 literal falla en 220/220 pero SOLO por reetiquetado de índices (0/220 diagramas realmente distintos): es cierto «salvo permutación de índices». Detalle: plan, sección 3.6.
 
+**Sonda 21 (confluencia local R1/R2):** con el diagrama vacío permitido, 0 pares críticos no joinables (exhaustivo n ≤ 4: 18 720 pares; muestras n = 5, 6). Sin él hay 'no joinables', que son un defecto de `Basic` (`RationalConfiguration 0` es vacío). Camino a A6/A7 como teoremas por el lema de Newman: plan, sección 3.7.
+
 ---
 
 ## 0000000. HALLAZGO (2026-10-01): `reconstruct_from_first` de `Basic` es FALSO — LEER PRIMERO

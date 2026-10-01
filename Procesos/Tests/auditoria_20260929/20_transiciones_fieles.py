@@ -71,7 +71,7 @@ def insert_positions(K, gaps):
     return K2, free
 
 
-def expansions(K):
+def expansions(K, cap=CAP):
     """Todas las K'' de grado len(K)+1 y len(K)+2 que se reducen a K por una transicion fiel."""
     d = len(K)
     N = 2 * d
@@ -89,7 +89,7 @@ def expansions(K):
                     if t in r1_cands(new) and remove(new, [t]) == K:
                         out.add(new)
     # R2: dos huecos (gaps g1 <= g2), dos cruces nuevos
-    if d + 2 <= CAP:
+    if d + 2 <= cap:
         for g1 in range(N + 1):
             for g2 in range(g1, N + 1):
                 gaps = [g1, g2]
@@ -155,7 +155,7 @@ def classify(K, cap=CAP):
             if d - 2 >= 1:
                 nxt.add(remove(X, [a, b]))
         if d + 1 <= cap:
-            nxt |= expansions(X)
+            nxt |= expansions(X, cap)
         for Y in nxt:
             c = canon(Y)
             if c not in seen:

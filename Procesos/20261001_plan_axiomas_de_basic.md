@@ -164,6 +164,38 @@ grados ≤ 5.
   de `Basic` es R1/R2/rotación y NO la isotopía de nudos, con lo cual la clasificación que se obtiene es
   de DIAGRAMAS irreducibles módulo R1/R2, no de nudos.
 
+### 3.7 Confluencia local del sistema R1/R2 (sonda 21, 2026-10-01): camino a A6 y A7 como TEOREMAS
+
+**Idea.** Sobre diagramas SIN índices, el sistema de reducción R1/R2 es terminante (cada paso baja el grado en
+1 o 2). Si además es localmente confluente, el lema de Newman da FORMA NORMAL ÚNICA por clase, y de ahí:
+(A6) un diagrama irreducible ES la forma normal de su clase, luego tiene grado mínimo; (A7) dos miembros de grado
+mínimo de la misma clase son el mismo diagrama salvo rotación (y reetiquetado).
+
+**Defecto de modelado de `Basic` encontrado.** `RationalConfiguration 0` es un tipo VACÍO (la cobertura sobre
+`ZMod 0 = ℤ` es imposible), así que ninguna reducción puede llegar al diagrama trivial. Con esa exclusión hay
+pares críticos NO joinables (n = 3: 96 de 684; n = 4: 48 de 18 720): son restos de grado 1 o 2 que solo se
+unirían en el diagrama vacío (p. ej. dos rizos de signo opuesto). No es un fallo del sistema R1/R2 sino del tipo.
+
+**Resultado con el diagrama vacío permitido** (`ALLOW_EMPTY=1`):
+
+| n | diagramas | pares críticos | NO joinables |
+|---|---|---|---|
+| 2 | 48 | 32 | **0** |
+| 3 | 960 | 684 | **0** |
+| 4 | 26 880 | 18 720 | **0** (exhaustivo) |
+| 5 y 6 | muestra de 40 por expansiones | 93 y 105 | **0** |
+
+**Análisis de papel que lo explica.** (1) Dos reducciones sobre cruces disjuntos conmutan, y los candidatos
+persisten al quitar otros cruces (la adyacencia solo mejora, el entrelazado entre los restantes no cambia).
+(2) Un candidato R1 nunca se solapa con uno R2 (R2 exige cruces entrelazados y un candidato R1 no se entrelaza con
+nadie). (3) El único solapamiento es entre dos pares R2 que comparten un cruce `b`: obliga a tres cruces
+`a, b, c` con pasos superiores consecutivos e inferiores consecutivos, mutuamente entrelazados y con signos
+`(s, −s, s)`; entonces `D∖{a,b}` y `D∖{b,c}` son el MISMO diagrama (c hace en uno el papel de a en el otro).
+
+**Consecuencia para el plan.** A6 y A7 pasan de axiomas sospechosos a TEOREMAS de un sistema fiel que incluya el
+diagrama vacío, con el enunciado de A7 «salvo rotación y reetiquetado». Diseño de la formalización:
+`Procesos/20261001_diseno_forma_normal.md`.
+
 ### Fase 1. Reparar y probar `reconstruct`
 1. Sonda Python exhaustiva (n ≤ 6) de candidatos de enunciado: (a) añadir la hipótesis de que los cruces están ordenados por posición superior; (b) comparar como multiconjuntos de `(razón, signo)`; (c) exigir el desplazamiento solo salvo permutación de índices.
 2. Elegir el candidato que no admita contraejemplos y cuyo enunciado sea el que realmente usan los teoremas dependientes.
