@@ -22,6 +22,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 - T4: el axioma A7 `minimal_isotopic_implies_rotation` NO cambia (ya decía `K2 = rotate_knot k K1`, que conserva signos); reformularlo con SIME lo habría debilitado. `SIME` y `SIME_eq_iff` se movieron antes de las transiciones.
 - Límite: R1/R2 siguen siendo marcadores de posición (correspondencia existencial en ambos sentidos, sin renumeración).
 
+**Estado al cierre (noche del 30/09):** el agente de planaridad se interrumpió al terminar la sesión anterior. Dejó dos archivos NUEVOS sin verificar: `TMENudos/Etapa1_Planaridad.lean` y `TMENudos/Etapa1_Clasico.lean` (WIP, NO compilados ni revisados; sin informe del agente). Siguiente paso: `lake build TMENudos.Etapa1_Planaridad` y luego `...Etapa1_Clasico` (builds en serie), leer los enunciados, revisar `sorry`/axiomas, y después `Bridge.lean` (`rational_to_diagram` como definición inyectiva).
+
 **Plan siguiente (en orden, builds en SERIE por la poca memoria)**
 1. (HECHO) Las 4 tensiones.
 2. Archivo nuevo `Etapa1_Planaridad.lean` (capa paralela): `faces`/`planar` sobre `Word` (darts out_p=2p, in_p=2p+1; orden CCW por signo según la sonda), controles (trébol y espejo planares, mixto no), `∀ K : K3Config, indexZero K ↔ planar K.toWord` por `decide +kernel`, y el contraejemplo de n=4 ((0,3,−),(1,6,+),(2,5,−),(4,7,−)) con índice cero y Gauss par pero no planar.
