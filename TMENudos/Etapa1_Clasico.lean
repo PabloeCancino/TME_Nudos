@@ -7,7 +7,7 @@ import TMENudos.Etapa1_Nudos
 Capa paralela (NO la importa `TMENudos.lean`).
 
 ## Definición
-* `ClassicalDiagram := {w : Word // wf w = true ∧ planar w}`: palabras de Gauss firmadas bien
+* `ClassicalDiagram := {w : Word // Word.wf w = true ∧ planar w}`: palabras de Gauss firmadas bien
   formadas cuyo mapa combinatorio es planar (`Etapa1_Planaridad.planar`, género 0 exacto).
 * `GStep`: los movimientos ELEMENTALES de `Etapa1_Nudos.GRel` (isomorfismo, R1, R1 libre, R2, R3),
   con exactamente los mismos cinco constructores y datos, SIN los constructores de cierre
@@ -86,16 +86,17 @@ theorem IsoD.toGRel {d d' : Diag} (h : IsoD d d') : GRel d d' := by
   obtain ⟨ι, D⟩ := d
   obtain ⟨ι', D'⟩ := d'
   obtain ⟨e, he⟩ := h
-  simp only at e he
-  subst he
-  exact GRel.iso D e
+  have he' : D' = D.map e := he
+  have h1 := GRel.iso D e
+  rw [← he'] at h1
+  exact h1
 
 /-- Un paso entre palabras: movimiento elemental desde `ofWord a`, salvo isomorfismo, hasta
     `ofWord b`. -/
-def StepW (a b : Word) (ha : wf a = true) (hb : wf b = true) : Prop :=
+def StepW (a b : Word) (ha : Word.wf a = true) (hb : Word.wf b = true) : Prop :=
   ∃ d : Diag, GStep (Diag.mk _ (ofWord a ha)) d ∧ IsoD d (Diag.mk _ (ofWord b hb))
 
-theorem StepW.toGRel {a b : Word} {ha : wf a = true} {hb : wf b = true} (h : StepW a b ha hb) :
+theorem StepW.toGRel {a b : Word} {ha : Word.wf a = true} {hb : Word.wf b = true} (h : StepW a b ha hb) :
     GRel (Diag.mk _ (ofWord a ha)) (Diag.mk _ (ofWord b hb)) := by
   obtain ⟨d, h1, h2⟩ := h
   exact GRel.trans h1.toGRel h2.toGRel
@@ -103,7 +104,7 @@ theorem StepW.toGRel {a b : Word} {ha : wf a = true} {hb : wf b = true} (h : Ste
 /-! ### Diagramas y nudos clásicos -/
 
 /-- **Diagrama clásico**: palabra de Gauss firmada bien formada y planar. -/
-def ClassicalDiagram : Type := {w : Word // wf w = true ∧ planar w}
+def ClassicalDiagram : Type := {w : Word // Word.wf w = true ∧ planar w}
 
 /-- Paso entre dos diagramas clásicos (ambos extremos planares por construcción). -/
 def ClStep (a b : ClassicalDiagram) : Prop := StepW a.1 b.1 a.2.1 b.2.1
@@ -121,9 +122,10 @@ def ClassicalDiagram.jones {K : Type*} [Field K] (A : K) (c : ClassicalDiagram) 
 /-- El Jones es invariante por un paso clásico (reutiliza `jones_rel`). -/
 theorem jones_step {K : Type*} [Field K] {A : K} (hA : A ≠ 0) {a b : ClassicalDiagram}
     (h : ClStep a b) : a.jones A = b.jones A := by
-  have h1 := jones_rel hA (StepW.toGRel h)
+  have h1 : (ofWord a.1 a.2.1).jones A = (ofWord b.1 b.2.1).jones A :=
+    jones_rel hA (StepW.toGRel h)
   unfold ClassicalDiagram.jones
-  rw [← jones_ofWord a.1 a.2.1 A, ← jones_ofWord b.1 b.2.1 A]
+  rw [jones_ofWord a.1 a.2.1 A, jones_ofWord b.1 b.2.1 A] at h1
   exact h1
 
 /-- El Jones es invariante por la equivalencia clásica. -/
@@ -150,7 +152,7 @@ def trefoilD : ClassicalDiagram := ⟨trefoil, wf_trefoil, planar_trefoil⟩
 
 /-- Su imagen especular `swap` como diagrama clásico. Solo se prueba la planaridad de ESTE
     diagrama (`planar_swap_trefoil`); no que `swap` preserve la planaridad en general. -/
-def mirrorD : ClassicalDiagram := ⟨swap trefoil, wf_swap_trefoil, planar_swap_trefoil⟩
+def mirrorD : ClassicalDiagram := ⟨Word.swap trefoil, wf_swap_trefoil, planar_swap_trefoil⟩
 
 /-- El diagrama vacío (nudo trivial). -/
 def unknotD : ClassicalDiagram := ⟨[], wf_nil, Or.inl rfl⟩
@@ -167,8 +169,8 @@ theorem jones_trefoilC :
 
 theorem jones_mirrorC :
     ClassicalKnot.jones (2 : ℚ) two_ne_zero' mirrorC = -61424 := by
-  change Word.jones (2 : ℚ) (swap trefoil) = _
-  rw [← jones_ofWord (swap trefoil) wf_swap_trefoil,
+  change Word.jones (2 : ℚ) (Word.swap trefoil) = _
+  rw [← jones_ofWord (Word.swap trefoil) wf_swap_trefoil,
     jones_ofWord_swap_trefoil (2 : ℚ) two_ne_zero']
   norm_num
 
