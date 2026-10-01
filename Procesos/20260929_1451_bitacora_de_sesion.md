@@ -12,6 +12,9 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 Prueba: `Procesos/Tests/auditoria_20260929/16_refuta_reconstruct_from_first.lean` (deriva `False` con un contraejemplo de n = 3: cruces antipodales (0,3),(1,4),(2,5) frente a (0,3),(2,5),(1,4); mismas razones índice a índice, sin desplazamiento uniforme). Afecta a `rotation_of_ratio_pos_eq`, `same_IME_implies_rotation`, `same_SIME_implies_rotation` e `IME_complete`. NO afecta a `TCN_*`, la capa de Gauss, la planaridad ni `ClassicalKnot`. El estado ya publicado en `origin` (master 211d1d6) contiene este axioma. Plan de reparación y de prueba para n ≤ 4: `Procesos/20261001_plan_axiomas_de_basic.md`. Los otros cuatro axiomas de `Basic` NO se han probado consistentes: A7 es sospechoso por el mismo defecto de indexado.
 
+
+**Fase 0 de A7 (sondas 17 y 17b):** `is_R3_candidate` es vacuo (0 candidatos en n=3 y 4); la laxitud real está en las transiciones R1/R2 (conjuntos de pares razón-signo). Hay 720 K1 de grado 3, sin candidatos y mínimos dentro de la cota 4, con K2 no rotación. A7 no está refutado formalmente (falta un invariante de grado), pero es muy probablemente falso en el modelo actual. Detalle en `Procesos/20261001_plan_axiomas_de_basic.md`, sección 3.1.
+
 ---
 
 ## 000000. PENDIENTES RESUELTOS EN LA RAMA `pendientes` (2026-10-01) — LEER PRIMERO

@@ -20,7 +20,7 @@ Contraejemplo con `n = 3` (`ZMod 6`, signos todos `+`): `KA = [(0,3), (1,4), (2,
 | Axioma | Qué afirma | Qué se sabe | Ataque | Prioridad |
 |---|---|---|---|---|
 | `reconstruct_from_first` | mismas razones ⇒ posiciones salvo desplazamiento | **Falso** (n = 3) | reparar el enunciado y probar el caso corregido por `decide` | **1** |
-| `minimal_isotopic_implies_rotation` (A7) | dos configuraciones mínimas isotópicas son rotación una de otra | **Sospechoso**: mismo defecto de indexado, y la transición R3 solo exige `SIME` igual | buscar un contraejemplo exhaustivo en n = 3 y 4; si no hay, reparar y probar | **2** |
+| `minimal_isotopic_implies_rotation` (A7) | dos configuraciones mínimas isotópicas son rotación una de otra | **Muy probablemente falso en el modelo** (Fase 0 hecha, sección 3.1): las transiciones R1/R2 son laxas (comparan conjuntos de pares razón-signo, no posiciones) | demostrar la falsedad con un invariante de grado, o reparar las transiciones | **2** |
 | `axiom_irreducible_is_minimal` (A6) | irreducible ⇒ grado mínimo de su clase | Falso en general para diagramas no alternantes (el desenredo de Goeritz, 10 cruces). Para n ≤ 4 podría ser cierto | comprobar en n ≤ 4 que ninguna configuración alcanzable por R3 y rotación es reducible | 3 |
 | `to_continued_fraction` | asigna una fracción continua a cada configuración | Es una función opaca: no hay nada que probar | definirla de forma concreta (sobre las realizables) | 4 |
 | `schubert_classification` | isotópicos ⇔ fracciones continuas iguales módulo 1 | Cita de Schubert (1949), pero el enunciado cubre configuraciones **no planares**, para las que no hay nudo | restringirla a las realizables y probar n ≤ 4 | 5 |
@@ -32,6 +32,18 @@ Para cada axioma se intenta **derivar `False`** o encontrar un contraejemplo por
 - **A7:** buscar `K1` irreducible con un triple R3-candidato (`is_R3_candidate`) y `K2` con el mismo `SIME` pero que no sea rotación de `K1`. Si existe, `A6 + A7 + R3` dan `False`.
 - **A6:** para n ≤ 4, calcular la componente de `K` bajo R3 y rotación y comprobar que no contiene configuraciones reducibles.
 **Criterio de salida:** cada axioma queda marcado como *refutado*, *no refutado hasta n ≤ 4* o *no evaluable*, con el archivo de prueba que lo respalda.
+
+### 3.1 Resultado de la Fase 0 para A7 (sondas 17 y 17b, hecho el 2026-10-01)
+
+**(a) `is_R3_candidate` es vacuo.** En n = 3 y n = 4 (5 760 y 645 120 configuraciones indexadas) NO hay ninguna con un triple R3-candidato. Razón: la condición de "orden cíclico" de las seis posiciones obliga a que las tres cuerdas se crucen entre sí dos a dos, y a la vez el candidato exige que exactamente un par NO se crucen. Son incompatibles. Luego `Isotopic.R3_move` nunca se activa, y mi sospecha inicial sobre R3 (la tabla original de este plan) era errónea. Falta la demostración general en Lean (`¬ is_R3_candidate K i j k`); solo está comprobado por cálculo para n ≤ 4.
+
+**(b) La laxitud real está en R1/R2.** `is_R1_transition` e `is_R2_transition` solo exigen que el CONJUNTO de pares (razón, signo) de `K'` coincida con el de `K` sin los cruces eliminados, no que se respeten posiciones, multiplicidades ni orden. Como `Isotopic` es simétrica y transitiva, dos configuraciones del mismo grado quedan unidas si ambas son objetivo de un mismo `K''` de grado mayor.
+
+**(c) Resultado de la sonda 17b** (grados 1 a 4): hay 720 configuraciones `K1` de grado 3, sin candidatos R1/R2, cuya clase no baja de grado 3 dentro de la cota y que están unidas a una de grado 4, con un `K2` del mismo conjunto que NO es rotación de `K1`. Ejemplo: `K1 = [(0,2,−), (1,4,−), (5,3,+)]` y `K2 = [(0,2,−), (4,1,−), (5,3,+)]` (el segundo cruce con over y under intercambiados). Con eso A7 se contradice, salvo que `min_degree K1 ≠ 3`.
+
+**(d) Lo que NO está demostrado.** La contradicción formal exige `n = min_degree K1`, es decir, que la clase de `K1` no contenga ningún grado menor, en TODOS los grados (la sonda solo mira hasta 4). Eso requiere un invariante. Un candidato natural (podar los pares de razón ±1) falla porque R2 puede eliminar pares de razón intermedia. Por tanto el estado correcto es: **A7 no está refutado formalmente, pero hay evidencia fuerte de que es falso en el modelo actual**, y el defecto está en las transiciones, no en el axioma.
+
+**Consecuencia para el plan.** Reparar A7 sin reparar las transiciones no sirve. Las transiciones R1/R2 deben ser biyectivas: `K'` obtenido de `K` por una renumeración que respete posiciones, no por igualdad de conjuntos.
 
 ### Fase 1. Reparar y probar `reconstruct`
 1. Sonda Python exhaustiva (n ≤ 6) de candidatos de enunciado: (a) añadir la hipótesis de que los cruces están ordenados por posición superior; (b) comparar como multiconjuntos de `(razón, signo)`; (c) exigir el desplazamiento solo salvo permutación de índices.
