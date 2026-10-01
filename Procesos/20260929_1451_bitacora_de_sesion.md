@@ -8,6 +8,33 @@
 
 Este documento es el registro cronológico completo: qué se probó, qué se encontró, qué se cambió y por qué, y dónde retomar. Las secciones 1 a 3 sirven para orientarse; la 4 es el registro detallado; la 5 lista lo pendiente.
 
+## 000000000. CIERRE DE JORNADA (2026-10-01) — RETOMAR AQUÍ
+
+**Dónde estoy:** rama `forma-normal` (1 commit sobre `master`). Nada de trabajo corriendo; todo commiteado.
+
+| Rama | Estado |
+|---|---|
+| `master` | Fase 3 hecha y **publicada** (`563173c` en `origin`); 2 commits locales más (sondas 20 y 21, diseño de la forma normal), sin subir |
+| `forma-normal` | Etapa 1 de la forma normal, **verificada**: `TMENudos/FormaNormal.lean` (680 líneas, solo Mathlib) |
+
+**Hecho hoy:** hallazgo y eliminación del axioma falso `reconstruct_from_first`; `Reconstruccion.lean` (n = 3, 4, 5); Fase 3 en `Basic` (axiomas de `Basic` 5 → 4, total 49); sondas 16 a 21; A7 falso con isotopía fiel (flypes, n ≥ 7); con transiciones R1/R2 fieles A6 se sostiene y A7 es cierto salvo reetiquetado; confluencia local R1/R2 (0 pares críticos no joinables con el diagrama vacío); Newman módulo equivalencia demostrado.
+
+**Siguiente paso (Etapa 2 del diseño, `Procesos/20261001_diseno_forma_normal.md`):**
+1. Compatibilidad de `Red` con `Equiv` (hipótesis (b) de Newman): rutinaria pero larga.
+2. EL SOLAPAMIENTO de dos pares R2 `(a,b)` y `(b,c)` con `a ≠ c`: probar que, salvo rotación, la palabra es `X ++ [a_o,b_o,c_o] ++ Y ++ [a_u,b_u,c_u] ++ Z` con signos `(s,−s,s)` y que `w∖{a,b} ≈ w∖{b,c}`. Unos 8 casos de orden por la adyacencia cíclica; dificultad media-alta.
+3. Ensamblaje: forma normal única, y A6 y A7 fieles como corolarios.
+
+**Decisiones abiertas para el autor:**
+* (A) o (B): el modelo fiel clasifica DIAGRAMAS módulo R1/R2, no nudos (sin R3 ni flypes, formas normales distintas del mismo nudo desde n = 7). Recomendación: (A) como base formal sólida y (B) (clasificación de nudos racionales por forma normal de Conway/Schubert, citando Menasco-Thistlethwaite) como objetivo declarado aparte.
+* Subir a `origin` los 2 commits de `master` y la rama `forma-normal` (no se ha hecho).
+* Defecto de `Basic` descubierto: `RationalConfiguration 0` es un tipo vacío, no se puede representar el nudo trivial.
+
+**Cómo retomar:** `git checkout forma-normal`; `lake build TMENudos.FormaNormal` (~1 min); leer el diseño, sección 7, y lanzar la Etapa 2. Builds SIEMPRE de una en una. Regla de costos: no usar `decide +kernel` sobre n ≥ 5 sin filtro de planaridad.
+
+**Seguridad:** el archivo de códigos de recuperación de GitHub ya no está en la carpeta (movido por el autor); nunca estuvo en git ni en `origin`. Revisar la papelera de OneDrive o regenerar los códigos.
+
+---
+
 ## 00000000. FASE 1 FORMAL HECHA EN LA RAMA `reconstruccion` (2026-10-01) — LEER PRIMERO
 
 `master` = 6dfe13e (sin subir a `origin`). La rama `reconstruccion` contiene `TMENudos/Reconstruccion.lean`, **VERIFICADO**: `lake build TMENudos.Reconstruccion` compila (~5 min), sin `sorry`/axiomas/`native_decide`; `#print axioms` de `reconstruccion_3/4/5`, `bridge` y los contraejemplos = solo `propext`, `Classical.choice`, `Quot.sound`. Detalle y lista de teoremas: plan, sección 3.3.
