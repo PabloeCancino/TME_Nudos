@@ -545,7 +545,8 @@ theorem check_4 : check 4 = true := by decide +kernel
 theorem check_5 : check 5 = true := by decide +kernel
 theorem checkNP_3 : checkNP 3 = true := by decide +kernel
 theorem checkNP_4 : checkNP 4 = true := by decide +kernel
-theorem checkNP_5 : checkNP 5 = true := by decide +kernel
+-- `checkNP 5` (sin filtro de planaridad) NO se demuestra aqui: el kernel supera 10 minutos y
+-- una build conjunta con ella llego a abortar Lean. La variante con planaridad (`check_5`) si.
 
 theorem cands_3 : (cands 3).length = 96 := by decide +kernel
 theorem cands_4 : (cands 4).length = 768 := by decide +kernel
@@ -602,14 +603,6 @@ theorem reconstruccionNP_4 (K₁ K₂ : RationalConfiguration 4) (s₁ : SortedA
     ∃ (j : Fin 4) (k : ℝ[4]), ∀ i : Fin 4,
       K₂.crossings (i + j) = rotate_crossing k (K₁.crossings i) :=
   main_of_checkNP checkNP_4 K₁ K₂ s₁ s₂ c₁ c₂ hs
-
-/-- Variante mas fuerte para `n = 5`: sin hipotesis de planaridad. -/
-theorem reconstruccionNP_5 (K₁ K₂ : RationalConfiguration 5) (s₁ : SortedAlt K₁)
-    (s₂ : SortedAlt K₂) (c₁ : NoCand K₁) (c₂ : NoCand K₂) (hs : SIMEcic K₁ = SIMEcic K₂) :
-    ∃ (j : Fin 5) (k : ℝ[5]), ∀ i : Fin 5,
-      K₂.crossings (i + j) = rotate_crossing k (K₁.crossings i) :=
-  main_of_checkNP checkNP_5 K₁ K₂ s₁ s₂ c₁ c₂ hs
-
 
 /-! ## Contraejemplos -/
 
@@ -737,8 +730,10 @@ usan el axioma):
 * `TMENudos.same_IME_implies_rotation`
 * `TMENudos.same_SIME_implies_rotation`
 * `TMENudos.IME_complete`
-`isotopic_irreducible_same_SIME` no lo usa directamente (ver `#print axioms` abajo), pero es
-falso por la razon explicada en el plan (seccion 3.2). -/
+`isotopic_irreducible_same_SIME` (direccion «isotopicos implica mismo SIME») no usa ese axioma, pero
+depende de `axiom_irreducible_is_minimal` y de `minimal_isotopic_implies_rotation` (A6 y A7), que
+son sospechosos y NO estan refutados formalmente. Lo que SI se refuta aqui es la direccion
+contraria de `IME_complete` (mismo SIME implica isotopicos) para irreducibles no alternantes. -/
 
 #print axioms TMENudos.Reconstruccion.bridge
 #print axioms TMENudos.Reconstruccion.noCand_iff
@@ -747,7 +742,6 @@ falso por la razon explicada en el plan (seccion 3.2). -/
 #print axioms TMENudos.Reconstruccion.reconstruccion_3
 #print axioms TMENudos.Reconstruccion.reconstruccion_4
 #print axioms TMENudos.Reconstruccion.reconstruccion_5
-#print axioms TMENudos.Reconstruccion.reconstruccionNP_5
 #print axioms TMENudos.Reconstruccion.kA_kB_no_rotacion
 #print axioms TMENudos.Reconstruccion.mA_mB_no_rotacion
 #print axioms TMENudos.isotopic_irreducible_same_SIME

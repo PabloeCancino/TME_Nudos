@@ -63,10 +63,23 @@ La última fila se mantiene sin colisiones hasta **n = 7** (n = 6: 168 configura
 **Enunciado reparado (candidato).** Para configuraciones planares, alternantes y sin candidato R1/R2, el `SIMEcic` determina la clase de rotación. Comprobado por cálculo hasta n = 7; no hay demostración general.
 
 **Dos consecuencias.**
-1. `IME_complete` y `isotopic_irreducible_same_SIME` son falsos tal como están (la hipótesis "irreducible" admite diagramas no alternantes); deben restringirse a planares alternantes.
+1. La dirección «mismo SIME ⇒ isotópicos» de `IME_complete` es falsa tal como está (la hipótesis "irreducible" admite diagramas no alternantes con igual SIME y sin ser rotación); debe restringirse a planares alternantes. CORRECCIÓN (2026-10-01): `isotopic_irreducible_same_SIME` (la dirección «isotópicos ⇒ mismo SIME») NO queda refutada por estas colisiones: depende de A6 y A7, que son sospechosos pero no refutados formalmente.
 2. La noción formal de "irreducible" (sin R1/R2) NO es "mínimo" fuera de los diagramas alternantes, así que A6 (`axiom_irreducible_is_minimal`) tampoco puede ser cierto en general; en el modelo actual R3 es vacuo y no puede reducir esos casos.
 
 **Lo que falta para la Fase 1 formal:** definir `SIMEcic` e índices ordenados en Lean, enunciar el teorema para n = 3 y n = 4 (n = 3 ya está cubierto por `TCN_06`: 4 configuraciones realizables) y probarlo con `decide +kernel`, enumerando por posición superior ordenada para no recorrer las 645 120 configuraciones indexadas de n = 4.
+
+### 3.3 Fase 1 formal: HECHA (rama `reconstruccion`, `TMENudos/Reconstruccion.lean`, 2026-10-01)
+
+Compila en ~5 min, sin `sorry`, axiomas ni `native_decide`; los teoremas principales dependen solo de `propext`, `Classical.choice` y `Quot.sound`. Importa solo `Basic` (no modifica nada).
+
+* **Teorema reparado, `reconstruccion_3`, `reconstruccion_4`, `reconstruccion_5`:** para `K₁ K₂ : RationalConfiguration n` ordenadas y alternantes (`SortedAlt`), `Planar` y sin candidatos R1/R2 (`NoCand`), `SIMEcic K₁ = SIMEcic K₂` implica que existen un reindexado cíclico `j` y una rotación `k` con `K₂.crossings (i + j) = rotate_crossing k (K₁.crossings i)`.
+* **Variante sin planaridad, `reconstruccionNP_3` y `reconstruccionNP_4`:** la planaridad es redundante para n = 3 y 4. Para n = 5 NO se prueba: `checkNP 5` supera 10 minutos en el kernel y una build conjunta con ella abortó Lean (código 0xC0000409).
+* **Puente general en n (`bridge`):** toda `K` con `SortedAlt` es `buildL p σ s` (posiciones superiores `2i + p`, inferiores `2σ(i) + 1 − p`). También `noCand_iff`, `SIMEcic_eq`, `rot_of_relB` y la reducción `main_gen`.
+* **Conteos por `decide +kernel`:** `cands_3/4/5` = 96, 768, 7680; configuraciones válidas 4, 8, 24; clases de SIME 2, 2, 4 (coinciden con la sonda 18b).
+* **Contraejemplos probados que justifican cada hipótesis:** (a) `kA`/`kB` (sonda 16): sin ordenación la conclusión falla; (b) `tA` (trébol) y `kA`: mismo `SIMEcic`, no rotación, `kA` no es planar ni alternante; (c) `mA`/`mB` de n = 4: planares, sin candidatos, mismo `SIMEcic`, no rotación, no alternantes.
+* **Dependientes del axioma falso** (calculado con `CollectAxioms`): `rotation_of_ratio_pos_eq`, `same_IME_implies_rotation`, `same_SIME_implies_rotation`, `IME_complete`.
+
+**Qué NO se logró:** el enunciado para n general (solo n = 3, 4, 5 por cálculo exhaustivo); la Fase 3 (restringir los teoremas de `Basic`); A6 y A7 siguen sin resolverse.
 
 ### Fase 1. Reparar y probar `reconstruct`
 1. Sonda Python exhaustiva (n ≤ 6) de candidatos de enunciado: (a) añadir la hipótesis de que los cruces están ordenados por posición superior; (b) comparar como multiconjuntos de `(razón, signo)`; (c) exigir el desplazamiento solo salvo permutación de índices.

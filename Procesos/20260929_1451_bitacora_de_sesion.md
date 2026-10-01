@@ -8,17 +8,15 @@
 
 Este documento es el registro cronológico completo: qué se probó, qué se encontró, qué se cambió y por qué, y dónde retomar. Las secciones 1 a 3 sirven para orientarse; la 4 es el registro detallado; la 5 lista lo pendiente.
 
-## 00000000. PAUSA EN LA RAMA `reconstruccion` (2026-10-01, segunda pausa) — RETOMAR AQUÍ
+## 00000000. FASE 1 FORMAL HECHA EN LA RAMA `reconstruccion` (2026-10-01) — LEER PRIMERO
 
-`master` = 6dfe13e (6 commits sin subir a `origin`). Rama `reconstruccion`: `TMENudos/Reconstruccion.lean`.
+`master` = 6dfe13e (sin subir a `origin`). La rama `reconstruccion` contiene `TMENudos/Reconstruccion.lean`, **VERIFICADO**: `lake build TMENudos.Reconstruccion` compila (~5 min), sin `sorry`/axiomas/`native_decide`; `#print axioms` de `reconstruccion_3/4/5`, `bridge` y los contraejemplos = solo `propext`, `Classical.choice`, `Quot.sound`. Detalle y lista de teoremas: plan, sección 3.3.
 
-**Verificado (commit 32c166d):** el borrador de la parte combinatoria COMPILA (`lake build TMENudos.Reconstruccion`, ~40 s) y sus `#eval` coinciden con la sonda 18b: candidatos [2,4,16,96,768,7680], válidos [0,0,0,4,8,24], clases SIME [0,0,0,2,2,4], `check n` = true para n ≤ 5. Hallazgo: `checkNP` (sin planaridad) también da true para n=2..5, así que entre las ordenadas y alternantes sin R1/R2 la planaridad es redundante hasta n=5; lo que rompe la completitud es la alternancia.
+**Incidente del reinicio:** git intacto. La build de 59 min que murió (Lean 0xC0000409) la causó `checkNP_5` (>10 min en el kernel); se quitó, junto con `reconstruccionNP_5`. n=3 y 4 cuestan segundos; `good_5` 2 min, `clases_5` 3,5 min, `check_5` 1,8 min. Regla: NO añadir `decide +kernel` sobre n ≥ 5 sin filtro de planaridad.
 
-**NO verificado:** un segundo agente amplió el archivo a 753 líneas (teoremas por `decide +kernel`, puente `SortedAlt ⇒ buildL`, equivalencias con Basic, teorema principal, contraejemplos) y fue detenido a medias, sin informe. Esa parte no se ha compilado ni revisado; puede no compilar o contener enunciados incorrectos.
+**Corrección:** `isotopic_irreducible_same_SIME` (isotópicos ⇒ mismo SIME) NO queda refutada; lo refutado es la dirección contraria de `IME_complete`. Dependen del axioma falso: `rotation_of_ratio_pos_eq`, `same_IME_implies_rotation`, `same_SIME_implies_rotation`, `IME_complete`.
 
-**Cómo retomar:** `git checkout reconstruccion`; `lake build TMENudos.Reconstruccion` (una sola build a la vez; las pruebas por `decide +kernel` pueden tardar minutos); leer qué teoremas existen y cuáles faltan frente a la lista de la tarea (1 teoremas finitos, 2 puente general, 3 equivalencias con Basic, 4 teorema principal, 5 contraejemplos, 6 dependencias del axioma falso). Después, Fase 3: restringir `rotation_of_ratio_pos_eq`, `same_IME_implies_rotation`, `same_SIME_implies_rotation`, `IME_complete` e `isotopic_irreducible_same_SIME`.
-
-**Reinicio del equipo (2026-10-01, tarde):** git INTACTO (`fsck` sin errores, árbol limpio, sin `.lock`, todas las ramas). `Basic` compila bien (30 s). La build de `Reconstruccion` que corría se interrumpió tras ~59 min con `Lean exited with code 3221226505` (0xC0000409, fallo del propio Lean, típico de desbordamiento de pila o memoria en un `decide +kernel` enorme): NO es corrupción del repositorio. El borrador de 204 líneas compilaba en 37 s; la parte general ampliada (líneas 1-538: puente, equivalencias, `main_gen`) compila en 17 s. El culpable está en los `decide +kernel` de la sección «Comprobaciones finitas» (probablemente n=5: `check_5`, `checkNP_5`, `cands_5`, `good_5`, `clases_5`). Se mide cada uno por separado con `lake env lean` sobre copias en el scratchpad. NO recompilar `lake build TMENudos.Reconstruccion` completo hasta resolverlo.
+**Pendiente:** Fase 3 (restringir esos cuatro teoremas en `Basic`, cambio de enunciados públicos ya subidos a `origin`); A6 y A7 (las transiciones R1/R2 deben ser biyectivas); decidir si fusionar `reconstruccion` a `master` y subir a `origin` el hallazgo del axioma falso.
 
 ---
 
@@ -29,7 +27,7 @@ Prueba: `Procesos/Tests/auditoria_20260929/16_refuta_reconstruct_from_first.lean
 
 **Fase 0 de A7 (sondas 17 y 17b):** `is_R3_candidate` es vacuo (0 candidatos en n=3 y 4); la laxitud real está en las transiciones R1/R2 (conjuntos de pares razón-signo). Hay 720 K1 de grado 3, sin candidatos y mínimos dentro de la cota 4, con K2 no rotación. A7 no está refutado formalmente (falta un invariante de grado), pero es muy probablemente falso en el modelo actual. Detalle en `Procesos/20261001_plan_axiomas_de_basic.md`, sección 3.1.
 
-**Fase 1 (sondas 18 y 18b):** el SIME NO es invariante completo en general (ejemplo n=3: trébol frente a la configuración especial). Restringido a planares, falla ya en n=4 (1 colisión) y n=5 (14). Entre las **planares alternantes sin candidato R1/R2** es completo SIN colisiones hasta n=7. Por tanto `rotation_of_ratio_pos_eq`, `same_IME_implies_rotation`, `IME_complete` e `isotopic_irreducible_same_SIME` son falsos como están y deben restringirse. Detalle y tabla en el plan, sección 3.2.
+**Fase 1 (sondas 18 y 18b):** el SIME NO es invariante completo en general (ejemplo n=3: trébol frente a la configuración especial). Restringido a planares, falla ya en n=4 (1 colisión) y n=5 (14). Entre las **planares alternantes sin candidato R1/R2** es completo SIN colisiones hasta n=7. Por tanto `rotation_of_ratio_pos_eq`, `same_IME_implies_rotation`, `same_SIME_implies_rotation` y la dirección «mismo SIME ⇒ isotópicos» de `IME_complete` son falsos como están y deben restringirse (CORRECCIÓN: `isotopic_irreducible_same_SIME`, dirección contraria, no queda refutada; depende de A6/A7, sospechosos). Detalle y tabla en el plan, sección 3.2.
 
 ---
 

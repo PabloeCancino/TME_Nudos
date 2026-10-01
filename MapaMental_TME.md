@@ -46,7 +46,7 @@ mindmap
     Teoremas Principales
       Reconstrucción
         Mismas razones y signos implica rotación «A», refutado en n=3
-        Cierto en planares alternantes sin R1 R2 hasta n=7 «Cálculo»
+        Cierto en alternantes ordenadas sin R1 R2, demostrado n=3 a 5 «P», cálculo hasta n=7
       Forma Normal (T5)
         Existencia y Unicidad «A»
         Irreducibilidad = Minimalidad, L5 «A»
