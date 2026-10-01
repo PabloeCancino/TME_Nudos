@@ -8,6 +8,12 @@
 
 Este documento es el registro cronológico completo: qué se probó, qué se encontró, qué se cambió y por qué, y dónde retomar. Las secciones 1 a 3 sirven para orientarse; la 4 es el registro detallado; la 5 lista lo pendiente.
 
+## 0000000. HALLAZGO (2026-10-01): `reconstruct_from_first` de `Basic` es FALSO — LEER PRIMERO
+
+Prueba: `Procesos/Tests/auditoria_20260929/16_refuta_reconstruct_from_first.lean` (deriva `False` con un contraejemplo de n = 3: cruces antipodales (0,3),(1,4),(2,5) frente a (0,3),(2,5),(1,4); mismas razones índice a índice, sin desplazamiento uniforme). Afecta a `rotation_of_ratio_pos_eq`, `same_IME_implies_rotation`, `same_SIME_implies_rotation` e `IME_complete`. NO afecta a `TCN_*`, la capa de Gauss, la planaridad ni `ClassicalKnot`. El estado ya publicado en `origin` (master 211d1d6) contiene este axioma. Plan de reparación y de prueba para n ≤ 4: `Procesos/20261001_plan_axiomas_de_basic.md`. Los otros cuatro axiomas de `Basic` NO se han probado consistentes: A7 es sospechoso por el mismo defecto de indexado.
+
+---
+
 ## 000000. PENDIENTES RESUELTOS EN LA RAMA `pendientes` (2026-10-01) — LEER PRIMERO
 
 Rama `pendientes` (sale de `master` = e2c300b; **sin fusionar, nada subido a `origin`**).

@@ -45,7 +45,7 @@ mindmap
         Progresión
     Teoremas Principales
       Reconstrucción
-        Mismas razones y signos implica rotación «A»
+        Mismas razones y signos implica rotación «A», refutado en n=3
       Forma Normal (T5)
         Existencia y Unicidad «A»
         Irreducibilidad = Minimalidad, L5 «A»
