@@ -26,6 +26,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 **Sonda 21 (confluencia local R1/R2):** con el diagrama vacío permitido, 0 pares críticos no joinables (exhaustivo n ≤ 4: 18 720 pares; muestras n = 5, 6). Sin él hay 'no joinables', que son un defecto de `Basic` (`RationalConfiguration 0` es vacío). Camino a A6/A7 como teoremas por el lema de Newman: plan, sección 3.7.
 
+**Forma normal, Etapa 1 hecha (rama `forma-normal`):** `TMENudos/FormaNormal.lean` compila, sin sorry/axiomas; Newman módulo una equivalencia, modelo en listas, movimientos R1/R2, `red_wf`, `equiv_equivalence`, persistencia de candidatos. Falta la compatibilidad Red/Equiv y el solapamiento de dos pares R2 (Etapa 2). Diseño, sección 7.
+
 ---
 
 ## 0000000. HALLAZGO (2026-10-01): `reconstruct_from_first` de `Basic` es FALSO — LEER PRIMERO

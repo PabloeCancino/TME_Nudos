@@ -68,3 +68,24 @@ clases de equivalencia y de formas normales deben coincidir con el cálculo).
 ## 6. Qué NO promete
 No demuestra la clasificación de nudos racionales; no toca `Basic`; no incluye R3 ni flypes. Si sale, el resultado
 honesto es: «la reducción R1/R2 de diagramas con signos tiene forma normal única», con A6 y A7 fieles como corolarios.
+
+## 7. Estado de la Etapa 1: HECHA y verificada (rama `forma-normal`, 2026-10-01)
+
+`TMENudos/FormaNormal.lean` (680 líneas, solo `import Mathlib`) compila (~55 s), sin `sorry`, axiomas ni
+`native_decide`; los teoremas clave dependen solo de `propext`, `Classical.choice` y `Quot.sound`.
+
+* **Lema de Newman módulo una equivalencia, caso general:** `lift_compat`, `newman_mod`, `normal_form_unique`,
+  `exists_normal_form`; y el estándar, `newman`, como corolario.
+* **Modelo:** `Letter` (con `up` en lugar de `over`, palabra reservada), `W`, `Wf`, `remove`, `remove2`,
+  `crossings`, `wf_length_eq` (longitud = 2 × cruces), `crossings_remove` y `crossings_remove2`.
+* **Movimientos:** `R1cand`, `Adj`, `AdjSide`, `Linked` (entrelazado, invariante por rotación),
+  `Interlaced`, `OppSign`, `R2cand`, `Red`. `red_wf : WellFounded (flip Red)` y `Red.wf_preserved`.
+* **Equivalencia:** `Equiv` (rotación y renombrado inyectivo), `equiv_equivalence`, `wf_equiv`.
+* **Infraestructura geométrica:** conmutación (`remove_comm`, `remove2_comm`), persistencia (`R1cand.remove`,
+  `R2cand.remove`) y `R1cand_not_R2`.
+* **Validación cruzada:** las definiciones coinciden con `r1_cands` y `r2_cands` de la sonda 20 (0 discrepancias en
+  n = 2 completo y 3000 configuraciones aleatorias en n = 3 y 4). Es una comprobación por cálculo, no un teorema.
+
+**Pendiente.** (i) Compatibilidad de `Red` con `Equiv` (hipótesis (b) de Newman): rutinaria pero larga. (ii) El
+único solapamiento de dos pares R2 con un cruce común (el agente lo estima media-alta). (iii) Ensamblaje.
+Detalle fino: `Interlaced` es simétrico por definición; probar `Linked a b ↔ Linked b a` puede hacer falta.
