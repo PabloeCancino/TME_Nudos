@@ -24,8 +24,13 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 2. EL SOLAPAMIENTO de dos pares R2 `(a,b)` y `(b,c)` con `a ≠ c`: probar que, salvo rotación, la palabra es `X ++ [a_o,b_o,c_o] ++ Y ++ [a_u,b_u,c_u] ++ Z` con signos `(s,−s,s)` y que `w∖{a,b} ≈ w∖{b,c}`. Unos 8 casos de orden por la adyacencia cíclica; dificultad media-alta.
 3. Ensamblaje: forma normal única, y A6 y A7 fieles como corolarios.
 
+**DECISIÓN DEL AUTOR (2026-10-01), TOMADA — recordar al retomar:** se sigue el camino **(A) como base formal sólida, con (B) como objetivo declarado pero SEPARADO.**
+* Contexto: `Isotopic` de `Basic` modela R1, R2 y rotación, NO la isotopía de nudos; con flypes y R3 reales, A7 es falso desde n = 7.
+* **(A)** Mantener la relación R1/R2/rotación y reformular A6 y A7 para ella. El teorema que se obtiene clasifica DIAGRAMAS irreducibles módulo R1/R2, no nudos. Es demostrable (es el desarrollo de `FormaNormal.lean`, Newman y confluencia local). Resultado más modesto, pero sólido.
+* **(B)** Aspirar a la clasificación de nudos RACIONALES: exige trabajar con la forma normal de Conway o Schubert y citar Menasco-Thistlethwaite (flyping) como axioma de la literatura. Se declara como objetivo, se mantiene separado y no se mezcla con (A) en los enunciados.
+* Al presentar resultados, etiquetar siempre cuál de los dos caminos respaldan, y no llamar «clasificación de nudos» a lo de (A).
+
 **Decisiones abiertas para el autor:**
-* (A) o (B): el modelo fiel clasifica DIAGRAMAS módulo R1/R2, no nudos (sin R3 ni flypes, formas normales distintas del mismo nudo desde n = 7). Recomendación: (A) como base formal sólida y (B) (clasificación de nudos racionales por forma normal de Conway/Schubert, citando Menasco-Thistlethwaite) como objetivo declarado aparte.
 * Subir a `origin` los 2 commits de `master` y la rama `forma-normal` (no se ha hecho).
 * Defecto de `Basic` descubierto: `RationalConfiguration 0` es un tipo vacío, no se puede representar el nudo trivial.
 

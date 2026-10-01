@@ -7,6 +7,8 @@ reetiquetado. De ahí salen, como teoremas, la versión fiel de A6 («irreducibl
 diagramas de grado mínimo de la misma clase son el mismo salvo rotación y reetiquetado»).
 
 ## 1. Alcance honesto
+**Decisión del autor (2026-10-01):** camino (A) como base formal sólida, con (B) como objetivo declarado pero separado (ver la bitácora, sección `000000000`). Este diseño desarrolla (A).
+
 * Es la clasificación de DIAGRAMAS módulo R1/R2 y rotación. NO es la clasificación de nudos: sin R3 ni flypes, dos
   diagramas del mismo nudo pueden tener formas normales distintas (sondas 19 y 19b: desde n = 7).
 * No sustituye los axiomas A6/A7 de `Basic` (que hablan de la relación laxa `Isotopic`); los reemplaza como
