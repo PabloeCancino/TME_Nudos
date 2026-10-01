@@ -8,19 +8,28 @@
 
 Este documento es el registro cronológico completo: qué se probó, qué se encontró, qué se cambió y por qué, y dónde retomar. Las secciones 1 a 3 sirven para orientarse; la 4 es el registro detallado; la 5 lista lo pendiente.
 
-## 0000. PAUSA (2026-09-30, fin de jornada) — RETOMAR AQUÍ
+## 0000. MIGRACIÓN AL SIGNO FIRMADO: ETAPAS 1-4 COMPLETAS (2026-09-30) — LEER PRIMERO
 
-**Rama:** `migracion-signo`. `master` = e7e4422 (fusión local, NADA subido a `origin`).
-**Etapa 1: TERMINADA y verificada** (commit 8bbb542): `Basic` con `pos : Bool`, build completa en verde, 51 axiomas / 17 sorry sin cambio.
-**Etapa 2: INTERRUMPIDA A MEDIAS** (agente detenido a propósito). El árbol tiene cambios parciales en `TCN_01`..`TCN_04` y `CrossingPairIsomorphism`, guardados en un commit `WIP` **que NO compila** (excepción consciente a la regla 6; sólo vive en esta rama, no se fusiona). El último mensaje del agente fue "Fix remaining spots manually": había errores de compilación sin resolver. No se conocen los módulos que fallan; hay que correr `lake build TMENudos.TCN_01_Fundamentos` etc. uno a uno.
-**Medición de riesgo (hecha):** `decide +kernel` sobre `powersetCard 3` de 60 pares firmados (34 220 subconjuntos) con predicado barato: ~57 s y exige `maxHeartbeats 0`. Viable pero caro; los predicados reales R1/R2 serán más pesados (Etapa 3).
+**Rama `migracion-signo`** (sale de `master` = e7e4422; NADA subido a `origin`). Plan: `20260930_plan_migracion_signo_firmado.md`.
 
-### Cómo retomar
-1. `git checkout migracion-signo`; `lake build TMENudos.TCN_01_Fundamentos` y seguir en orden 01→02→03→04→CrossingPairIsomorphism, arreglando errores (o relanzar el agente de Etapa 2 con ese estado como punto de partida).
-2. Reglas del plan `20260930_plan_migracion_signo_firmado.md` (1-8). R2 con signos opuestos va en TCN_02.
-3. Cuando 01-04 + CrossingPairIsomorphism compilen, Etapa 3 (TCN_05..08, AUX, TNC_05_1) con regla 8: realizable = irreducible ∧ índice cero (esperado 4 configs, 2 órbitas de tamaño 2). Sonda 14 lo respalda.
-4. Commitear "verde" sólo con build completa (34 módulos + raíz) y Etapa1_* por nombre; luego Etapa 4 (limpieza capa paralela).
-5. Pendientes para revisar de la Etapa 1: `SIME` (IME_complete), transiciones `is_R*_transition` que comparan sólo `ratio_val` (tensión con el axioma de rotación), `formR2Pair` de TCN_10 sin signos opuestos (falsifica K3_special), réplica de TCN_08_Uniformity independiente de Basic.
+| Etapa | Commit | Contenido |
+|---|---|---|
+| 1 | 8bbb542 | `Basic.RationalCrossing` con `pos : Bool`; swap niega, rotate conserva; `withDerivedSign`; `SIME`; KN_Isomorphism y CrossingPairIsomorphism con factor Bool |
+| 2 | 202c1c5 | `TCN.OrderedPair` con `pos` (card 60), `K3Config` (card 960), D₆ conserva signo, R2 con signos opuestos; `CrossingPairIsomorphism` directo |
+| 3 | 8726680 | TCN_05..08, AUX, TNC_05_1: recuento firmado, `indexZero`, clasificación firmada |
+| 4 | (este commit) | `Modular_Signo` reducido a su sección residual (el prototipo K3 era duplicado y se retiró) |
+
+**Verificación (independiente, en serie):** los 35 módulos distintos de `Etapa1_*` compilan por nombre; los 10 `Etapa1_*` y `Modular_Signo` compilan por nombre; `#print axioms` de los teoremas clave = `propext, Classical.choice, Quot.sound`; sin `sorry`, axiomas ni `native_decide` nuevos (51 axiomas y 17 sorry como antes).
+
+**Cifras antes → después (K3):** configuraciones 120→960; irreducibles 14→172 (18 órbitas; 12 de tamaño 12, 4 de 6, 2 de 2: tamaños sólo por sonda Python, en Lean está probada la suma de estabilizadores 216 = 12·18); con índice cero 336; realizables 2→4 (2 órbitas de tamaño 2: trébol derecho e izquierdo); fracción 1/60→1/240; no realizables 118→956. La órbita de 12 (`specialClass`) ya no es realizable (índice ≠ 0). `mirrorTrefoil = swap trefoilKnot` y NO está en la órbita del trébol.
+
+**Cambios de enunciado (honestos):** eliminados por falsos con signo dato: `two_orbits_sum_to_14`, `two_orbits_disjoint`, `configsNoR1NoR2_eq_two_orbits`, `two_orbits_cover_all`, `configsNoR1NoR2_eq_realizable_union_special`, `irreducible_dichotomy`, `irreducible_realizable_iff_not_special`. Reformulados con `indexZero`: `k3_classification`, `exactly_two_classes`, `representatives_not_equivalent`, `realizable_iff_trefoil_orbits`. "Realizable" = irreducible ∧ Gauss par ∧ índice cero.
+
+**Límites que hay que tener presentes**
+- El índice cero es condición NECESARIA de planaridad; que sea suficiente en general NO está demostrado (sólo para K3, por cálculo).
+- Costos: `irreducible_stabilizer_sum` 184 s, `indexZero_card` ~112 s, `irreducible_indexZero_iff` 60 s; `TCN_06` compila en ~4 min. El conteo de órbitas como Finset de Finsets (18 y tamaños) se abandonó por costo (>40 min).
+- Pendientes abiertos de la Etapa 1: transiciones `is_R*_transition` comparan sólo `ratio_val` (tensión con el axioma de rotación); `formR2Pair` de TCN_10 sin signos opuestos (falsificaría `K3_special_has_R2`); la réplica de `TCN_08_UniformityCriterion` sigue independiente de `Basic`; `SIME` en `IME_complete`.
+- Pendientes de proyecto: `rational_to_diagram` (axioma de Bridge), Opción 2 (Knot clásico), fusión de `migracion-signo` a `master` (NO hecha) y subida a `origin` (NO solicitada).
 
 ---
 

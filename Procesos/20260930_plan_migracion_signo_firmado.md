@@ -1,6 +1,6 @@
 # Plan de migración de `Basic` y `TCN` al signo como dato
 
-**Fecha:** 2026-09-30 · **Rama:** `migracion-signo` (sale de `master`, que ya contiene toda la etapa 1) · **Estado:** PLAN, en ejecución por etapas
+**Fecha:** 2026-09-30 · **Rama:** `migracion-signo` (sale de `master`, que ya contiene toda la etapa 1) · **Estado:** EJECUTADO (etapas 1-4 completas en `migracion-signo`; ver bitácora, sección 0000)
 **Decisión del autor:** adoptar el signo del cruce como DATO en la teoría modular, migrando `Basic` y `TCN` con los cambios en cascada que haga falta. La justificación demostrada está en la bitácora (secciones 4.26 y 4.29): con el signo derivado de las posiciones la teoría modular no puede representar el trébol de la otra quiralidad.
 
 ## 1. Alcance medido
