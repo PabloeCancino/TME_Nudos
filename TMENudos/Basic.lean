@@ -321,6 +321,26 @@ def IME {n : ℕ} (K : RationalConfiguration n) : List ℕ :=
 def IME' {n : ℕ} (K : RationalConfiguration n) : Fin n → ℕ :=
   fun i => ratio_val (K.crossings i)
 
+/-- IME firmado (SIME): la secuencia de pares (razón modular, signo) de los cruces.
+    Es el invariante que sustituye al IME cuando el signo es un dato. -/
+def SIME {n : ℕ} (K : RationalConfiguration n) : List (ℕ × Bool) :=
+  (List.finRange n).map (fun i => (ratio_val (K.crossings i), (K.crossings i).pos))
+
+/-- SIME igual implica razones y signos iguales cruce a cruce. -/
+theorem SIME_eq_iff {n : ℕ} (K₁ K₂ : RationalConfiguration n) :
+    SIME K₁ = SIME K₂ ↔ ∀ i : Fin n,
+      ratio_val (K₁.crossings i) = ratio_val (K₂.crossings i) ∧
+      (K₁.crossings i).pos = (K₂.crossings i).pos := by
+  unfold SIME
+  rw [List.map_inj_left]
+  constructor
+  · intro h i
+    have := h i (List.mem_finRange i)
+    simpa [Prod.ext_iff] using this
+  · intro h i _
+    have := h i
+    simp [this.1, this.2]
+
 /-- El IME tiene longitud n -/
 theorem IME_length {n : ℕ} (K : RationalConfiguration n) :
   (IME K).length = n := by
@@ -798,47 +818,92 @@ La implementación constructiva de estas funciones (renumeración, etc.) se deja
 posterior.
 -/
 
+/-!
+MIGRACIÓN (tensiones T3/T4, signo como dato): antes → después
+- antes: las tres transiciones comparaban SOLO `ratio_val` (razones); no exigían conservar el signo
+  de los cruces que sobreviven. Así, una transición R3 podía unir dos configuraciones con el mismo
+  IME y signos distintos, en tensión con el axioma A7 (`minimal_isotopic_implies_rotation`: dos
+  mínimas isotópicas difieren por una rotación, y la rotación CONSERVA los signos).
+- después: los cruces que sobreviven conservan, además de la razón, el signo (`pos`):
+  * R1: se elimina UN cruce `i` de cualquier signo (el candidato R1 no mira el signo); cada cruce
+    de K' se corresponde con un cruce de K \ {i} de igual (razón, signo) y viceversa.
+  * R2: se eliminan DOS cruces de signos opuestos (`is_R2_candidate` ya lo exige); los demás se
+    corresponden con igual (razón, signo).
+  * R3: los TRES cruces del triple CONSERVAN su signo, igual que todos los demás. Decisión
+    geométrica: un movimiento R3 desliza una hebra sobre un cruce, pero no crea ni destruye
+    cruces ni cambia ninguno de sus signos (el writhe es invariante bajo R3). Se exige, pues,
+    `SIME K = SIME K'` (misma lista (razón, signo), índice a índice) en lugar de `IME K = IME K'`.
+- Siguen siendo marcadores de posición en lo demás: la correspondencia sobre R1/R2 es la
+  "existencial en ambos sentidos" de siempre (no una biyección), y no se modela la renumeración
+  de las posiciones.
+-/
+
 def is_R1_transition {n : ℕ} (K : RationalConfiguration n)
   (K' : RationalConfiguration (n - 1)) (i : Fin n) : Prop :=
   -- K' se obtiene de K eliminando el cruce i (que debe ser R1) y renumerando.
   -- Verificamos que:
-  -- 1. El cruce i es un candidato R1 válido
+  -- 1. El cruce i es un candidato R1 válido (de cualquier signo)
   is_R1_candidate K i ∧
   -- 2. K' tiene exactamente n-1 cruces (implícito en el tipo)
-  -- 3. Cada cruce en K' corresponde a un cruce en K \ {i} con el mismo IME
+  -- 3. Cada cruce en K' corresponde a un cruce en K \ {i} con la misma razón Y EL MISMO SIGNO
   (∀ j : Fin (n-1), ∃ k : Fin n, k.val ≠ i.val ∧
-    ratio_val (K'.crossings j) = ratio_val (K.crossings k)) ∧
-  -- 4. Todos los cruces de K \ {i} están representados en K'
+    ratio_val (K'.crossings j) = ratio_val (K.crossings k) ∧
+    (K'.crossings j).pos = (K.crossings k).pos) ∧
+  -- 4. Todos los cruces de K \ {i} están representados en K' (misma razón y mismo signo)
   (∀ k : Fin n, k ≠ i → ∃ j : Fin (n-1),
-    ratio_val (K'.crossings j) = ratio_val (K.crossings k))
+    ratio_val (K'.crossings j) = ratio_val (K.crossings k) ∧
+    (K'.crossings j).pos = (K.crossings k).pos)
 
 def is_R2_transition {n : ℕ} (K : RationalConfiguration n)
   (K' : RationalConfiguration (n - 2)) (a b : Fin n) : Prop :=
   -- K' se obtiene de K eliminando el par (a,b) (que debe ser R2) y renumerando.
   -- Verificamos que:
-  -- 1. El par (a,b) es un candidato R2 válido
+  -- 1. El par (a,b) es un candidato R2 válido (signos opuestos)
   is_R2_candidate K a b ∧
   -- 2. K' tiene exactamente n-2 cruces (implícito en el tipo)
-  -- 3. Cada cruce en K' corresponde a un cruce en K \ {a,b} con el mismo IME
+  -- 3. Cada cruce en K' corresponde a un cruce en K \ {a,b} con la misma razón Y EL MISMO SIGNO
   (∀ j : Fin (n-2), ∃ k : Fin n, k ≠ a ∧ k ≠ b ∧
-    ratio_val (K'.crossings j) = ratio_val (K.crossings k)) ∧
-  -- 4. Todos los cruces de K \ {a,b} están representados en K'
+    ratio_val (K'.crossings j) = ratio_val (K.crossings k) ∧
+    (K'.crossings j).pos = (K.crossings k).pos) ∧
+  -- 4. Todos los cruces de K \ {a,b} están representados en K' (misma razón y mismo signo)
   (∀ k : Fin n, k ≠ a → k ≠ b → ∃ j : Fin (n-2),
-    ratio_val (K'.crossings j) = ratio_val (K.crossings k))
+    ratio_val (K'.crossings j) = ratio_val (K.crossings k) ∧
+    (K'.crossings j).pos = (K.crossings k).pos)
 
 def is_R3_transition {n : ℕ} (K K' : RationalConfiguration n) (i j k : Fin n) : Prop :=
   -- K' se obtiene de K aplicando el deslizamiento R3 en el triple (i,j,k).
-  -- La movida R3 preserva el número de cruces y el IME completo,
-  -- solo reordena los cruces localmente.
+  -- La movida R3 preserva el número de cruces, las razones Y LOS SIGNOS de todos los cruces
+  -- (incluidos los tres del triple), solo reordena los cruces localmente.
   -- Verificamos que:
   -- 1. El triple (i,j,k) es un candidato R3 válido en K
   is_R3_candidate K i j k ∧
   -- 2. El número de cruces se preserva (implícito en el tipo)
-  -- 3. El IME se preserva completamente (invariante fundamental de R3)
-  IME K = IME K' ∧
-  -- 4. La configuración K' también tiene el mismo conjunto de razones modulares
-  --    (esto es redundante con IME pero lo hacemos explícito)
-  (∀ x : Fin n, ∃ y : Fin n, ratio_val (K.crossings x) = ratio_val (K'.crossings y))
+  -- 3. El IME FIRMADO se preserva completamente (invariante fundamental de R3)
+  SIME K = SIME K' ∧
+  -- 4. Cada razón de K aparece en K' con el mismo signo
+  --    (esto es redundante con SIME pero lo hacemos explícito)
+  (∀ x : Fin n, ∃ y : Fin n, ratio_val (K.crossings x) = ratio_val (K'.crossings y) ∧
+    (K.crossings x).pos = (K'.crossings y).pos)
+
+/-- R3 conserva el IME firmado (y por tanto razones y signos, cruce a cruce). -/
+theorem is_R3_transition_SIME {n : ℕ} {K K' : RationalConfiguration n} {i j k : Fin n}
+    (h : is_R3_transition K K' i j k) : SIME K = SIME K' := h.2.1
+
+/-- R3 conserva el IME (consecuencia del firmado). -/
+theorem is_R3_transition_IME {n : ℕ} {K K' : RationalConfiguration n} {i j k : Fin n}
+    (h : is_R3_transition K K' i j k) : IME K = IME K' := by
+  have h1 := (SIME_eq_iff K K').mp h.2.1
+  unfold IME
+  apply List.map_congr_left
+  intro x hx
+  have hx' : x < n := List.mem_range.mp hx
+  simp only [hx', dite_true]
+  exact (h1 ⟨x, hx'⟩).1
+
+/-- R3 conserva el writhe-multiconjunto de signos: ningún cruce cambia de signo. -/
+theorem is_R3_transition_pos {n : ℕ} {K K' : RationalConfiguration n} {i j k : Fin n}
+    (h : is_R3_transition K K' i j k) (x : Fin n) : (K.crossings x).pos = (K'.crossings x).pos :=
+  ((SIME_eq_iff K K').mp h.2.1 x).2
 
 /-- Relación de equivalencia isotópica -/
 inductive Isotopic : GeneralConfiguration → GeneralConfiguration → Prop where
@@ -1619,6 +1684,23 @@ Axioma A7 (Lema de Unicidad Modular):
 Si dos configuraciones tienen el grado mínimo en su clase de isotopía,
 entonces son equivalentes salvo rotación.
 Adaptado de `E:\Nudos_LEAN\Articulo\Lema de Unicidad Modular.md`.
+
+REVISIÓN (tensiones T3/T4, signo como dato): el enunciado NO cambia (sigue siendo UN axioma, con el
+mismo nombre y tipo; axiomas de `Basic`: 5). Ya estaba formulado con la igualdad EXACTA de
+configuraciones, `K2 = rotate_knot k K1`, y `rotate_knot` conserva razones y signos, así que
+el axioma ya dice "misma configuración firmada salvo rotación" (lo que implica `SIME K1 = SIME K2`,
+ver `SIME_rotation_invariant`). Reformularlo con `SIME` sería MÁS DÉBIL (sólo diría que coinciden
+razones y signos, sin las posiciones), así que NO se hace.
+Lo que sí cambió es la RELACIÓN `Isotopic` de la que habla: antes, las transiciones R1/R2/R3
+comparaban solo razones y una transición R3 podía unir configuraciones mínimas del mismo IME y
+signos distintos, lo que habría falsificado el axioma (la conclusión exigiría que una fuera
+rotación de la otra, pero la rotación conserva el signo). Ahora todas las transiciones conservan
+el signo de los cruces que sobreviven (`is_R3_transition_SIME`), de modo que la relación de la
+hipótesis solo identifica configuraciones que el modelo pretendido (diagramas firmados módulo
+Reidemeister) identifica realmente, y en ese modelo el axioma es el lema de unicidad de la forma
+mínima salvo rotación. Los teoremas que lo usan (`isotopic_irreducible_same_IME`,
+`isotopic_irreducible_same_SIME`, `IME_complete`) lo consumen solo para concluir
+`K2 = rotate_knot k K1`, de donde se lee tanto el IME como el SIME.
 -/
 axiom minimal_isotopic_implies_rotation {n : ℕ} (K1 K2 : RationalConfiguration n) :
   n = min_degree K1 → Isotopic ⟨n, K1⟩ ⟨n, K2⟩ → ∃ k : ℝ[n], K2 = rotate_knot k K1
@@ -1696,11 +1778,6 @@ theorem same_IME_implies_rotation {n : ℕ} (K₁ K₂ : RationalConfiguration n
   · haveI : NeZero n := ⟨h_n⟩
     exact rotation_of_ratio_pos_eq K₁ K₂ (IME_eq_implies_ratio_val_eq K₁ K₂ h_ime) h_sgn
 
-/-- IME firmado (SIME): la secuencia de pares (razón modular, signo) de los cruces.
-    Es el invariante que sustituye al IME cuando el signo es un dato. -/
-def SIME {n : ℕ} (K : RationalConfiguration n) : List (ℕ × Bool) :=
-  (List.finRange n).map (fun i => (ratio_val (K.crossings i), (K.crossings i).pos))
-
 /-- El SIME es invariante bajo rotaciones (la rotación conserva razones y signos). -/
 theorem SIME_rotation_invariant {n : ℕ} [NeZero n] (K : RationalConfiguration n) (k : ℝ[n]) :
     SIME (rotate_knot k K) = SIME K := by
@@ -1709,21 +1786,6 @@ theorem SIME_rotation_invariant {n : ℕ} [NeZero n] (K : RationalConfiguration 
   intro i _
   simp only [ratio_val, rotation_preserves_ratios]
   rfl
-
-/-- SIME igual implica razones y signos iguales cruce a cruce. -/
-theorem SIME_eq_iff {n : ℕ} (K₁ K₂ : RationalConfiguration n) :
-    SIME K₁ = SIME K₂ ↔ ∀ i : Fin n,
-      ratio_val (K₁.crossings i) = ratio_val (K₂.crossings i) ∧
-      (K₁.crossings i).pos = (K₂.crossings i).pos := by
-  unfold SIME
-  rw [List.map_inj_left]
-  constructor
-  · intro h i
-    have := h i (List.mem_finRange i)
-    simpa [Prod.ext_iff] using this
-  · intro h i _
-    have := h i
-    simp [this.1, this.2]
 
 /-- Si dos configuraciones tienen el mismo SIME, una es rotación de la otra. -/
 theorem same_SIME_implies_rotation {n : ℕ} (K₁ K₂ : RationalConfiguration n) :

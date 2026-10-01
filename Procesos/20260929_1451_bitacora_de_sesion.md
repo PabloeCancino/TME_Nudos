@@ -8,6 +8,25 @@
 
 Este documento es el registro cronológico completo: qué se probó, qué se encontró, qué se cambió y por qué, y dónde retomar. Las secciones 1 a 3 sirven para orientarse; la 4 es el registro detallado; la 5 lista lo pendiente.
 
+## 00000. PAUSA EN LA RAMA `pendientes` (2026-09-30) — RETOMAR AQUÍ
+
+`master` = e2c300b (migración al signo firmado completa y verificada; nada subido a `origin`). Rama de trabajo: `pendientes` (sale de master).
+
+**Hecho y verificado**
+- Sonda 15 (`Procesos/Tests/auditoria_20260929/15_genero_vs_indice_cero.py`, commit 7c309f1): criterio EXACTO de planaridad (mapa combinatorio determinado por el signo, género 0 ⇔ V−E+F=2). Resultado: n=3 planar = índice cero (336 = 336); n=4: 4160 planares frente a 4224 con índice cero; hay **64 configuraciones con índice cero y paridad de Gauss que NO son planares**. Por tanto "índice cero ⇒ planar" es FALSO en general (planar ⇒ índice cero se cumple hasta n=4). Falta formalizarlo en Lean.
+
+**Pendiente — NO VERIFICADO**
+- Un agente trabajaba en las cuatro tensiones de la Etapa 1 y fue detenido a medias. Deja cambios SIN COMPILAR NI REVISAR en `Basic.lean`, `TCN_08_UniformityCriterion.lean` y `TCN_10_ReidemeisterVerification.lean` (commit WIP en `pendientes`, puede no compilar). Su nota "RESUELTAS" en la bitácora se revirtió por no estar verificada.
+  Tensiones: (T1) `formR2Pair` con signos opuestos; (T2) réplica de `TCN_08_Uniformity` vs tipos de `Basic`; (T3) transiciones `is_R*_transition` que conserven `pos`; (T4) `SIME` / axioma A7.
+
+**Plan siguiente (en orden, builds en SERIE por la poca memoria)**
+1. Verificar/terminar las 4 tensiones (compilar `Basic`, `TCN_08_Uniformity`, `TCN_09`, `TCN_10`, luego todo).
+2. Archivo nuevo `Etapa1_Planaridad.lean` (capa paralela): `faces`/`planar` sobre `Word` (darts out_p=2p, in_p=2p+1; orden CCW por signo según la sonda), controles (trébol y espejo planares, mixto no), `∀ K : K3Config, indexZero K ↔ planar K.toWord` por `decide +kernel`, y el contraejemplo de n=4 ((0,3,−),(1,6,+),(2,5,−),(4,7,−)) con índice cero y Gauss par pero no planar.
+3. Opción 2: `ClassicalKnot` = diagramas planares módulo movimientos que pasan sólo por planares; Jones heredado; trébol ≠ espejo. La suma conexa clásica queda fuera.
+4. `Bridge.lean`: `rational_to_diagram` como DEFINICIÓN inyectiva (codificar posición y signo en `ratio_val : ℚ`, con teorema de inyectividad); el axioma `rational_equivalence_preserves_isotopy` probablemente se queda.
+
+---
+
 ## 0000. MIGRACIÓN AL SIGNO FIRMADO: ETAPAS 1-4 COMPLETAS (2026-09-30) — LEER PRIMERO
 
 **Rama `migracion-signo`** (sale de `master` = e7e4422; NADA subido a `origin`). Plan: `20260930_plan_migracion_signo_firmado.md`.

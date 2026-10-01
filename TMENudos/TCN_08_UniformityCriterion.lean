@@ -2,6 +2,7 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Tactic.IntervalCases
+import TMENudos.Basic
 
 /-!
 # Criterio de Uniformidad para Detección de Enlaces
@@ -34,53 +35,20 @@ namespace TMENudos.UniformityCriterion
 /-!
 ## 1. DEFINICIONES BASE
 
-Asumimos acceso a las definiciones de Basic.txt
+MIGRACIÓN (tensión T2, signo como dato): antes → después
+- antes: este archivo contenía una RÉPLICA independiente de `RationalCrossing`,
+  `RationalConfiguration`, `zmod_sign`, `withDerivedSign`, `modular_ratio`, `ratio_val` e `IME`
+  (con su propio campo `pos`), de modo que existían DOS mundos paralelos sin relación formal.
+- después: se importa `TMENudos.Basic` y se usan SUS tipos y definiciones (el espacio de nombres
+  `TMENudos.UniformityCriterion` está dentro de `TMENudos`, así que `RationalCrossing`,
+  `RationalConfiguration`, `ratio_val`, `modular_ratio`, `IME`, `zmod_sign` y
+  `RationalCrossing.withDerivedSign` resuelven a las de `Basic`). La réplica se ha eliminado;
+  no hay duplicados ni teorema de equivalencia que mantener.
+  Las definiciones eliminadas eran idénticas a las de `Basic` (misma fórmula), así que los
+  enunciados de este archivo y de `TCN_09`/`TCN_10` conservan su sentido.
+- la rotación local `rotate_crossing c k` (con `k : ℕ`) se sustituyó por la de `Basic`
+  (`rotate_crossing (k : ℝ[n]) c`, que también conserva el signo).
 -/
-
-/-- Cruce racional simplificado (réplica de `Basic`), ahora FIRMADO.
-
-    MIGRACIÓN (signo como dato, Etapa 1): antes → después
-    - antes: 3 campos (`over_pos`, `under_pos`, `distinct`).
-    - después: gana `pos : Bool` como último campo (como `Basic.RationalCrossing`). El criterio de
-      uniformidad depende solo de las razones modulares, así que no cambia. -/
-structure RationalCrossing (n : ℕ) where
-  over_pos : ZMod (2 * n)
-  under_pos : ZMod (2 * n)
-  distinct : over_pos ≠ under_pos
-  pos : Bool
-  deriving DecidableEq
-
-/-- Signo auxiliar (réplica de `Basic.zmod_sign`). -/
-def zmod_sign {n : ℕ} (x : ZMod (2 * n)) : Int :=
-  if x.val > 0 ∧ x.val ≤ n then 1 else -1
-
-/-- Cruce con el signo derivado de las posiciones (réplica de
-    `Basic.RationalCrossing.withDerivedSign`). -/
-def RationalCrossing.withDerivedSign {n : ℕ} (o u : ZMod (2 * n)) (h : o ≠ u) :
-    RationalCrossing n :=
-  ⟨o, u, h, decide (zmod_sign (u - o) = 1)⟩
-
-/-- Razón modular de un cruce -/
-def modular_ratio {n : ℕ} (c : RationalCrossing n) : ZMod (2 * n) :=
-  c.under_pos - c.over_pos
-
-/-- Valor natural de la razón modular -/
-def ratio_val {n : ℕ} (c : RationalCrossing n) : ℕ :=
-  (modular_ratio c).val
-
-/-- Configuración racional -/
-structure RationalConfiguration (n : ℕ) where
-  crossings : Fin n → RationalCrossing n
-  coverage : ∀ x : ZMod (2 * n), ∃ (i : Fin n),
-    (crossings i).over_pos = x ∨ (crossings i).under_pos = x
-
-/-- IME como lista de valores naturales -/
-def IME {n : ℕ} (K : RationalConfiguration n) : List ℕ :=
-  (List.range n).map (fun i =>
-    if h : i < n then
-      ratio_val (K.crossings ⟨i, h⟩)
-    else
-      0)
 
 /-!
 ## 2. UNIFORMIDAD DEL IME
@@ -142,7 +110,13 @@ def predicted_components (n : ℕ) (r : ℕ) : ℕ :=
 Si K tiene IME uniforme con razón divisoria, entonces tiene múltiples componentes.
 -/
 
-/-- El Criterio de Uniformidad (axiomatizado por ahora) -/
+/-- El Criterio de Uniformidad (axiomatizado por ahora).
+
+    Con el signo como dato el enunciado conserva su sentido: solo habla de `ratio_val`, que no
+    depende de `pos`, y la conclusión es sobre `predicted_components n r`, que solo depende de
+    `n` y `r`. (Observación: la conclusión se deduce de `is_dividing_ratio n r`, ya que
+    `predicted_components n r = 2 * n / r > 1`; el axioma se mantiene tal cual por decisión de
+    diseño.) -/
 axiom uniformity_criterion {n : ℕ} [NeZero n] (K : RationalConfiguration n) (r : ℕ) :
     has_uniform_IME K →
     (∀ i : Fin n, ratio_val (K.crossings i) = r) →
@@ -335,17 +309,11 @@ Para K₃,special:
 
 -/
 
-/-- Rotación de un cruce por k posiciones -/
-def rotate_crossing {n : ℕ} (c : RationalCrossing n) (k : ℕ) : RationalCrossing n :=
-  { over_pos := c.over_pos + k
-    under_pos := c.under_pos + k
-    distinct := fun h => c.distinct (add_right_cancel h)
-    pos := c.pos }
-
-/-- Una configuración es cerrada bajo rotación por k -/
+/-- Una configuración es cerrada bajo rotación por k posiciones (usa `Basic.rotate_crossing`,
+    que conserva el signo del cruce). -/
 def closed_under_rotation {n : ℕ} (K : RationalConfiguration n) (k : ℕ) : Prop :=
   ∀ i : Fin n, ∃ j : Fin n,
-    K.crossings j = rotate_crossing (K.crossings i) k
+    K.crossings j = rotate_crossing (k : ℝ[n]) (K.crossings i)
 
 /-!
 ## RESUMEN Y CONCLUSIONES
