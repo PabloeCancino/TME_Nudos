@@ -46,11 +46,12 @@ mindmap
     Teoremas Principales
       Reconstrucción
         Mismas razones y signos implica rotación «A», refutado en n=3
+        Cierto en planares alternantes sin R1 R2 hasta n=7 «Cálculo»
       Forma Normal (T5)
         Existencia y Unicidad «A»
         Irreducibilidad = Minimalidad, L5 «A»
       Completitud
-        Isotopía <=> mismo SIME en irreducibles «A»
+        Isotopía <=> mismo SIME en irreducibles «A», falso si no es alternante
         Con el IME solo la vuelta es falsa
     Realizabilidad y Planaridad
       K3 firmado

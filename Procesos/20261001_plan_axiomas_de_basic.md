@@ -45,6 +45,29 @@ Para cada axioma se intenta **derivar `False`** o encontrar un contraejemplo por
 
 **Consecuencia para el plan.** Reparar A7 sin reparar las transiciones no sirve. Las transiciones R1/R2 deben ser biyectivas: `K'` obtenido de `K` por una renumeración que respete posiciones, no por igualdad de conjuntos.
 
+### 3.2 Resultado de la Fase 1: qué es cierto de verdad (sondas 18 y 18b, 2026-10-01)
+
+**La reparación no es solo de indexado.** Los teoremas `rotation_of_ratio_pos_eq` y `same_IME_implies_rotation` están enunciados para configuraciones ARBITRARIAS, así que son falsos como teoremas, no solo el axioma. Ejemplo (n = 3, todos `+`): `(0,3),(1,4),(2,5)` (configuración especial, NO planar) y `(0,3),(4,1),(2,5)` (el trébol) tienen las mismas razones y signos y no son rotación una de otra. Es decir, **ni el IME ni el SIME son invariantes completos en general.**
+
+**Qué sí es cierto** (invariante `SIMEcic` = lista de pares (razón, signo) en orden creciente de la posición superior, mínima por rotación cíclica; colisión = dos clases de rotación distintas con el mismo `SIMEcic`):
+
+| Conjunto de configuraciones | n = 3 | n = 4 | n = 5 |
+|---|---|---|---|
+| todas | 28 colisiones | 546 | 15 784 |
+| planares | **0** | 1 | 14 |
+| planares sin candidato R1/R2 | **0** | 1 | **0** |
+| **planares, alternantes y sin candidato R1/R2** (sonda 18b) | **0** | **0** | **0** |
+
+La última fila se mantiene sin colisiones hasta **n = 7** (n = 6: 168 configuraciones en 18 clases; n = 7: 788 en 58). Las colisiones de n = 4 y n = 5 en las filas intermedias son diagramas **no alternantes**, para los que "sin candidato R1/R2" no implica mínimo (por ejemplo `(0,3,−),(1,6,−),(2,5,+),(7,4,+)`, con pasos superiores consecutivos 0, 1, 2).
+
+**Enunciado reparado (candidato).** Para configuraciones planares, alternantes y sin candidato R1/R2, el `SIMEcic` determina la clase de rotación. Comprobado por cálculo hasta n = 7; no hay demostración general.
+
+**Dos consecuencias.**
+1. `IME_complete` y `isotopic_irreducible_same_SIME` son falsos tal como están (la hipótesis "irreducible" admite diagramas no alternantes); deben restringirse a planares alternantes.
+2. La noción formal de "irreducible" (sin R1/R2) NO es "mínimo" fuera de los diagramas alternantes, así que A6 (`axiom_irreducible_is_minimal`) tampoco puede ser cierto en general; en el modelo actual R3 es vacuo y no puede reducir esos casos.
+
+**Lo que falta para la Fase 1 formal:** definir `SIMEcic` e índices ordenados en Lean, enunciar el teorema para n = 3 y n = 4 (n = 3 ya está cubierto por `TCN_06`: 4 configuraciones realizables) y probarlo con `decide +kernel`, enumerando por posición superior ordenada para no recorrer las 645 120 configuraciones indexadas de n = 4.
+
 ### Fase 1. Reparar y probar `reconstruct`
 1. Sonda Python exhaustiva (n ≤ 6) de candidatos de enunciado: (a) añadir la hipótesis de que los cruces están ordenados por posición superior; (b) comparar como multiconjuntos de `(razón, signo)`; (c) exigir el desplazamiento solo salvo permutación de índices.
 2. Elegir el candidato que no admita contraejemplos y cuyo enunciado sea el que realmente usan los teoremas dependientes.

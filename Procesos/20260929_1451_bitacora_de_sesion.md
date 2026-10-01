@@ -15,6 +15,8 @@ Prueba: `Procesos/Tests/auditoria_20260929/16_refuta_reconstruct_from_first.lean
 
 **Fase 0 de A7 (sondas 17 y 17b):** `is_R3_candidate` es vacuo (0 candidatos en n=3 y 4); la laxitud real está en las transiciones R1/R2 (conjuntos de pares razón-signo). Hay 720 K1 de grado 3, sin candidatos y mínimos dentro de la cota 4, con K2 no rotación. A7 no está refutado formalmente (falta un invariante de grado), pero es muy probablemente falso en el modelo actual. Detalle en `Procesos/20261001_plan_axiomas_de_basic.md`, sección 3.1.
 
+**Fase 1 (sondas 18 y 18b):** el SIME NO es invariante completo en general (ejemplo n=3: trébol frente a la configuración especial). Restringido a planares, falla ya en n=4 (1 colisión) y n=5 (14). Entre las **planares alternantes sin candidato R1/R2** es completo SIN colisiones hasta n=7. Por tanto `rotation_of_ratio_pos_eq`, `same_IME_implies_rotation`, `IME_complete` e `isotopic_irreducible_same_SIME` son falsos como están y deben restringirse. Detalle y tabla en el plan, sección 3.2.
+
 ---
 
 ## 000000. PENDIENTES RESUELTOS EN LA RAMA `pendientes` (2026-10-01) — LEER PRIMERO
