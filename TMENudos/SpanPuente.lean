@@ -118,7 +118,7 @@ section Cocientes
 
 variable {X ι : Type*}
 
-/-- Si `phi` es sobreyectiva y `S x y <-> T (phi x) (phi y)`, hay el mismo numero de clases. -/
+/-- Si `phiS` es sobreyectiva y `S x y <-> T (phiS x) (phiS y)`, hay el mismo numero de clases. -/
 theorem ncs_eq_of_fiber (S : Setoid X) (T : Setoid ι) (φ : X → ι) (hsurj : Function.Surjective φ)
     (h : ∀ x y, S x y ↔ T (φ x) (φ y)) : ncs S = ncs T := by
   let f : Quotient S → Quotient T := Quotient.map φ (fun x y hxy => (h x y).1 hxy)
@@ -136,7 +136,7 @@ theorem ncs_eq_of_fiber (S : Setoid X) (T : Setoid ι) (φ : X → ι) (hsurj : 
       exact ⟨Quotient.mk _ x, rfl⟩
   exact Nat.card_congr (Equiv.ofBijective f ⟨hinj, hs⟩)
 
-/-- Las orbitas de `<eps, s>` corresponden a las componentes de `r` cuando `phi` identifica
+/-- Las orbitas de `<eps, s>` corresponden a las componentes de `r` cuando `phiS` identifica
 exactamente los extremos de `eps` y `r` viene de `s`. -/
 theorem orb_eq_ncs (ε s : Equiv.Perm X) (φ : X → ι) (r : ι → ι → Prop)
     (hsurj : Function.Surjective φ) (hεφ : ∀ x, φ (ε x) = φ x)
@@ -278,18 +278,18 @@ section Lazos
 variable {ι : Type} [DecidableEq ι] [Fintype ι] (D : GDiag ι)
 
 /-- La arista a la que pertenece un extremo. -/
-def phi : ι × Bool → ι
+def phiS : ι × Bool → ι
   | (j, true) => j
   | (j, false) => D.prev j
 
-theorem phi_surj : Function.Surjective D.phi := fun j => ⟨(j, true), rfl⟩
+theorem phiS_surj : Function.Surjective D.phiS := fun j => ⟨(j, true), rfl⟩
 
-theorem phi_eps (x : ι × Bool) : D.phi (D.eps x) = D.phi x := by
-  obtain ⟨j, _ | _⟩ := x <;> simp [eps_true, eps_false, phi, prev]
+theorem phiS_eps (x : ι × Bool) : D.phiS (D.eps x) = D.phiS x := by
+  obtain ⟨j, _ | _⟩ := x <;> simp [eps_true, eps_false, phiS, prev]
 
-theorem phi_fib (x y : ι × Bool) (h : D.phi x = D.phi y) : y = x ∨ y = D.eps x := by
+theorem phiS_fib (x y : ι × Bool) (h : D.phiS x = D.phiS y) : y = x ∨ y = D.eps x := by
   obtain ⟨j, _ | _⟩ := x <;> obtain ⟨k, _ | _⟩ := y <;>
-    simp only [phi, prev, eps_true, eps_false] at *
+    simp only [phiS, prev, eps_true, eps_false] at *
   · left; simp [D.next.symm.injective h]
   · right; simp [h]
   · right; simp [h]
@@ -328,36 +328,36 @@ theorem eqv_of_smooth (σ : D.Cross → Bool) (ori : ι → Bool)
 theorem orb_sm (σ : D.Cross → Bool) (ori : ι → Bool) (hpar : ∀ j, ori (D.partner j) = ori j)
     (hori : ∀ c : D.Cross, (σ c == D.sign c.1) = ori c.1) :
     orb {D.eps, D.sm ori hpar} = ncs (EqvGen.setoid (D.rel σ)) := by
-  refine orb_eq_ncs D.eps (D.sm ori hpar) D.phi (D.rel σ) D.phi_surj D.phi_eps D.phi_fib ?_ ?_
+  refine orb_eq_ncs D.eps (D.sm ori hpar) D.phiS (D.rel σ) D.phiS_surj D.phiS_eps D.phiS_fib ?_ ?_
   · rintro ⟨j, _ | _⟩
     · rw [sm_apply]
       cases hoj : ori j
       · refine D.eqv_of_smooth σ ori hpar hori j _ _ ?_
         rw [hoj, smoothRel_false]
-        left; simp [phi]
+        left; simp [phiS]
       · refine D.eqv_of_smooth σ ori hpar hori j _ _ ?_
         rw [hoj, smoothRel_true]
-        left; simp [phi]
+        left; simp [phiS]
     · rw [sm_apply]
       cases hoj : ori j
       · refine D.eqv_of_smooth σ ori hpar hori j _ _ ?_
         rw [hoj, smoothRel_false]
-        right; simp [phi]
+        right; simp [phiS]
       · refine EqvGen.symm _ _ (D.eqv_of_smooth σ ori hpar hori j _ _ ?_)
         rw [hoj, smoothRel_true]
-        right; simp [phi]
+        right; simp [phiS]
   · rintro u v ⟨c, hc⟩
     rw [hori] at hc
     cases hoc : ori c.1 <;> rw [hoc] at hc
     · rw [smoothRel_false] at hc
       rcases hc with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
-      · exact ⟨(c.1, false), rfl, by simp [sm_apply, phi, hoc]⟩
-      · exact ⟨(c.1, true), rfl, by simp [sm_apply, phi, hoc]⟩
+      · exact ⟨(c.1, false), rfl, by simp [sm_apply, phiS, hoc]⟩
+      · exact ⟨(c.1, true), rfl, by simp [sm_apply, phiS, hoc]⟩
     · rw [smoothRel_true] at hc
       rcases hc with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
-      · exact ⟨(c.1, false), rfl, by simp [sm_apply, phi, hoc]⟩
+      · exact ⟨(c.1, false), rfl, by simp [sm_apply, phiS, hoc]⟩
       · refine ⟨(D.partner c.1, false), rfl, ?_⟩
-        simp [sm_apply, phi, hpar, hoc, D.partner_partner]
+        simp [sm_apply, phiS, hpar, hoc, D.partner_partner]
 
 end Lazos
 

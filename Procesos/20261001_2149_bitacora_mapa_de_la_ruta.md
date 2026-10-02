@@ -79,7 +79,8 @@ camino respaldan.
 | S2 | Cota de grado por estados, para cualquier diagrama | **[HECHO]** `SpanEstados.lean` |
 | S1 | Corchete como polinomio de Laurent; invariancia polinomial | **[HECHO]** `SpanLaurent.lean` |
 | S4 | Puente de `Word`/`GDiag` a la formulación con permutaciones | **[HECHO]** `SpanPuente.lean` |
-| S5 | `s_A + s_B = n + 2` y adecuación en reducidos alternantes planares | [ABIERTO], siguiente, riesgo alto |
+| S5a | Adecuado ⇒ span exacto; primer teorema de minimalidad (trébol) | **[HECHO]** `SpanAdecuado.lean` |
+| S5b | Reducidos alternantes planares ⇒ adecuados y `s_A + s_B = n + 2` (general o por verificador n ≤ 7) | [ABIERTO], siguiente, riesgo alto |
 | S6 | Ensamblaje y corolario de minimalidad | [ABIERTO] |
 
 Evidencia por cálculo ya obtenida: span = 4n en el 100 % de los reducidos (n = 2..7) y menor en los no reducidos; reducido ⇔ adecuado (n = 2..6); en

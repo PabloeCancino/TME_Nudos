@@ -33,6 +33,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 **S4 HECHA (`TMENudos/SpanPuente.lean`):** `s_A + s_B ≤ c + 2` para todo `GDiag` de una curva sin libres (puente al modelo de tres involuciones de `SpanGenero`); sanidad con el trébol sin hipótesis pendientes. Con S1..S4 queda la cota general `span ≤ 4c`. Quedan S5 y S6.
 
+**S5a HECHA y PRIMER TEOREMA DE MINIMALIDAD (`TMENudos/SpanAdecuado.lean`):** diagrama A- y B-adecuado ⇒ `span = 2c + 2(s_A+s_B) − 4` (exponentes extremos exactos); el trébol es adecuado con span 12; **`trefoil_minimal`: todo diagrama de una curva, sin libres, equivalente por GRel al trébol tiene al menos 3 cruces.** Choque de nombres `GDiag.phi` resuelto (`phiS` en `SpanPuente`). Quedan S5b (reducidos alternantes planares ⇒ adecuados e igualdad) y S6.
+
 ---|---|
 | `master` | Fase 3 hecha y **publicada** (`563173c` en `origin`); 2 commits locales más (sondas 20 y 21, diseño de la forma normal), sin subir |
 | `forma-normal` | Etapa 1 de la forma normal, **verificada**: `TMENudos/FormaNormal.lean` (680 líneas, solo Mathlib) |

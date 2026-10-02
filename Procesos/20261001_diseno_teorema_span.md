@@ -147,3 +147,26 @@ los teoremas clave dependen solo de `propext`, `Classical.choice` y `Quot.sound`
 * **Sanidad:** `genero_trefoil` aplica el teorema al trébol SIN hipótesis pendientes (`2 + 3 ≤ 3 + 2`, igualdad).
 
 **Efecto:** con S1, S2, S3 y S4 queda la cota general `span (bracketL D) ≤ 2c + 2(s_A + s_B) − 4 ≤ 4c` para todo diagrama de una curva. Faltan S5 (igualdad en reducidos alternantes) y S6.
+
+## 12. Estado de S5a: HECHA y verificada, con el PRIMER TEOREMA DE MINIMALIDAD (2026-10-02)
+
+`TMENudos/SpanAdecuado.lean` (~560 líneas; importa `SpanLaurent` y `SpanPuente`) compila desde el código fuente (~27 s con los linters), sin `sorry`, axiomas ni `native_decide`;
+los teoremas clave dependen solo de `propext`, `Classical.choice` y `Quot.sound`. Álgebra y combinatoria GENERAL sobre cualquier `GDiag`, sin geometría.
+
+* **Adecuación:** `AAdequate D := ∀ x, lazos (update allA x false) < lazos allA` y `BAdequate` análogo. `lazos_lt_of_AAdequate`: si `1 ≤ nB σ`, `lazos σ + 1 ≤ lazos allA + nB σ`.
+* **Coeficientes extremos:** `coeff_dL_pow_top/bot` (el coeficiente extremo de `dL^m` es `(-1)^m`), `coeff_top`, `coeff_bot` y **`maxExp_bracketL`**, **`minExp_bracketL`**
+  (exponentes extremos exactos del corchete de un diagrama adecuado).
+* **Span exacto:** `span_bracketL_eq : (span (bracketL D) : ℤ) = 2c + 2(s_A + s_B) − 4` si `AAdequate`, `BAdequate` y `Nonempty Cross`;
+  `span_bracketL_eq_four_mul : span = 4c` si además `s_A + s_B = c + 2`. Caso sin cruces: `span_bracketL_of_isEmpty` (el corchete es 1, span 0).
+* **Trébol:** `trefoil_AAdequate`, `trefoil_BAdequate` (por `decide +kernel` sobre los 3 + 3 estados de un solo cambio) y **`span_trefoil_eq : span (bracketL (ofWord trefoil _)) = 12`**.
+* **`trefoil_minimal`** (teorema piloto): si `GRel ⟨_, ofWord trefoil _⟩ d'`, `d'.D.free = 0` y `d'` es de una sola curva (`∀ i j, d'.D.next.SameCycle i j`), entonces
+  **`3 ≤ Fintype.card d'.D.Cross`**: todo diagrama de una curva del trébol tiene al menos 3 cruces. Ruta: `span_bracketL_rel` (el span es invariante por `GRel`) da `span = 12`;
+  si `Cross` es vacío el span es 0 (contradicción); si no, `span ≤ 4 c'` por `span_bracketL_le_of_nonempty` y la desigualdad de género de `SpanPuente`.
+
+**Incidente resuelto:** `import SpanLaurent` y `import SpanPuente` chocaban por `GDiag.phi` (ya definido en `Etapa1_R3`). Se renombró `phi`, `phi_surj`, `phi_eps`, `phi_fib` a `phiS...` en
+`SpanPuente.lean` (27 reemplazos, todo dentro de ese archivo); `SpanPuente` y `SpanAdecuado` recompilan sin problema.
+
+**Lo que falta:** (i) S5b: probar que los diagramas alternantes planares REDUCIDOS son A- y B-adecuados y cumplen `s_A + s_B = n + 2`; en general (geometría: caras monocromáticas por la alternancia,
+planar = `F = n + 2`, reducido ⇒ cada cruce toca dos caras distintas) o, de forma verificable, por un **verificador computable** que compruebe ambas cosas sobre una palabra concreta con su teorema de
+corrección, y lo aplique a todas las palabras alternantes reducidas planares hasta n = 6 o 7 (4, 8, 24, 168, 676) y a los nudos con nombre; (ii) S6: enunciar el teorema general
+(`GRel` + una curva ⇒ `c' ≥ n`) para toda palabra con esas propiedades, que es exactamente el esquema de `trefoil_minimal`.
