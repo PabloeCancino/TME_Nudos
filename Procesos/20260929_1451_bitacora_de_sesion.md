@@ -23,6 +23,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 **Span, sonda 24:** entre los alternantes planares n = 2..6, todos los reducidos son A- y B-adecuados y ninguno de los no reducidos lo es (reducido ⇔ adecuado). S0 casi cerrada (falta la sonda 25: círculos de todo-A = caras de un color).
 
+**Span, S0 cerrada y S3 planteada de nuevo (sondas 25 y 26):** en alternantes planares los círculos de todo-A y todo-B SON las caras (100 %, n ≤ 5), y la forma abstracta de S3 (tres involuciones) no tiene violaciones (c ≤ 4 exhaustivo). Corrección: la ruta de permutaciones SÍ cubre el caso no orientable aplicando Riemann-Hurwitz al trío par (εa, ab, (εb)⁻¹) con k' ≤ 2k. Lanzada la formalización de S3 (`TMENudos/SpanGenero.lean`).
+
 ---|---|
 | `master` | Fase 3 hecha y **publicada** (`563173c` en `origin`); 2 commits locales más (sondas 20 y 21, diseño de la forma normal), sin subir |
 | `forma-normal` | Etapa 1 de la forma normal, **verificada**: `TMENudos/FormaNormal.lean` (680 líneas, solo Mathlib) |

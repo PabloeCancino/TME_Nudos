@@ -40,7 +40,10 @@ Definir `maxdeg`, `mindeg`, `span`. *Riesgo bajo-medio; es infraestructura.*
 **S2. Cota por estados (cualquier diagrama).** `|S| ≤ s_A + k`, es decir que cambiar una suavización cambia los círculos en a lo sumo 1; de ahí
 `maxdeg ≤ c + 2 s_A − 2` y `mindeg ≥ −c − 2 s_B + 2`. *Riesgo medio: manejo de los grafos de estados del modelo existente.*
 
-**S3. Desigualdad de género `s_A + s_B ≤ c + 2` (el hueco principal).** Resultado puramente combinatorio, SIN topología. OJO (sonda 23): los signos libres de `GDiag` dan superficies de Turaev NO ORIENTABLES (hay déficits `(n+2) − (s_A + s_B)` impares: 1, 3, 5), así que la ruta de permutaciones `ciclos(σ) + ciclos(α) + ciclos(φ) ≤ |X| + 2` (conteo de transposiciones) solo cubre el caso orientable y NO basta. Ruta principal: **inducción sobre el número de cruces** con la desigualdad generalizada `s_A + s_B ≤ c + 2k`, `k` = componentes conexas del diagrama, eligiendo en cada paso la suavización que conserva la conexión (en un cruce de corte, una de las dos suavizaciones lo mantiene conexo; la otra lo parte en dos) y usando que cambiar UNA suavización cambia los círculos en a lo sumo 1. Se prueba como lema independiente y reutilizable. *Riesgo ALTO: no está en Mathlib; es la etapa que decide la viabilidad.*
+**S3. Desigualdad de género `s_A + s_B ≤ c + 2k` (el hueco principal).** Combinatoria pura sobre permutaciones, SIN topología. Formulación abstracta (sonda 26, validada: exhaustivo c ≤ 4 con 2 027 025 involuciones, muestreo c = 5, 6; 0 violaciones): sobre un conjunto finito `H` de `4c` extremos de aristas, tres involuciones sin puntos fijos `ε` (empareja los extremos de cada arista), `a` y `b` (las suavizaciones A y B, con `a∘b` de ciclos de longitud 2); `s_A = órbitas ⟨ε,a⟩`, `s_B = órbitas ⟨ε,b⟩`, `k = órbitas ⟨ε,a,b⟩`. Con `p = εa`, `q = εb`, `x = ab` se cumple `cyc(p) = 2 s_A`, `cyc(q) = 2 s_B` y `p·x·q⁻¹ = 1`; el trío `(p, x, q⁻¹)` genera un grupo con `k'` órbitas, `k ≤ k' ≤ 2k`.
+* **L1 (tipo Riemann-Hurwitz):** `σ τ ρ = 1` ⇒ `cyc σ + cyc τ + cyc ρ ≤ |X| + 2·órbitas⟨σ,τ,ρ⟩`. Se prueba contando trasposiciones: multiplicar por una trasposición cambia los ciclos en exactamente ±1; un producto de trasposiciones igual a la identidad cuyo grafo tiene `k` componentes sobre `m` vértices necesita al menos `2(m − k)` factores.
+* **L2:** `2·(cyc p + cyc q) ≤ |H| + 8k`, es decir `s_A + s_B ≤ c + 2k`.
+**CORRECCIÓN respecto a una versión anterior de este diseño:** se había descartado la ruta de permutaciones por creer que solo cubría mapas orientables (la sonda 23 mostró déficits impares). Eso era un error: aplicando L1 al trío PAR `(εa, ab, (εb)⁻¹)`, cuyo grupo es de índice ≤ 2 en `⟨ε,a,b⟩`, la no orientabilidad solo significa que ese subgrupo par tiene hasta DOS órbitas por cada órbita de `⟨ε,a,b⟩`, y la cota `k' ≤ 2k` ya la absorbe. La inducción sobre cruces queda como plan B. *Riesgo ALTO: no está en Mathlib; es la etapa que decide la viabilidad.*
 
 **S4. Puente al modelo.** Expresar `s_A`, `s_B` y los círculos de un estado como ciclos de permutaciones del `GDiag`, y probar que una sola curva
 (`next` con un único ciclo) da un grupo transitivo. Combinar S2 y S3: `span ≤ 4c` para todo diagrama de una curva. *Riesgo medio.*
@@ -72,6 +75,7 @@ resultado vale para nudos (una curva). No sustituye a (A): lo complementa (los r
 | 22 | span = 4n en reducidos, < 4n en no reducidos | 100 % para n = 2..7 |
 | 23 | `s_A + s_B ≤ n + 2` en toda palabra de una curva | se cumple (n ≤ 5, 967 680 diagramas); la paridad es falsa |
 | 24 | adecuación de los alternantes planares | reducido ⇔ A- y B-adecuado (n = 2..6) |
-| 25 | círculos de todo-A = caras de un color | pendiente |
+| 25 | círculos de todo-A y todo-B = caras del mapa | alternantes planares: 100 % (4, 16, 84, 520, 3 592 en n = 1..5); no alternantes planares: nunca |
+| 26 | forma abstracta de S3 con tres involuciones | 0 violaciones (c ≤ 4 exhaustivo, c = 5, 6 muestreo) |
 
-Con esto, S0 está casi cerrada: queda la sonda 25. El enunciado de S3 (desigualdad de género) es VERDADERO por cálculo y S5 (adecuación) está respaldada.
+**S0 CERRADA.** El enunciado de S3 es VERDADERO por cálculo en su forma abstracta, y S5 (adecuación, igualdad de caras) está respaldada.
