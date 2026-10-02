@@ -80,7 +80,8 @@ camino respaldan.
 | S1 | Corchete como polinomio de Laurent; invariancia polinomial | **[HECHO]** `SpanLaurent.lean` |
 | S4 | Puente de `Word`/`GDiag` a la formulación con permutaciones | **[HECHO]** `SpanPuente.lean` |
 | S5a | Adecuado ⇒ span exacto; primer teorema de minimalidad (trébol) | **[HECHO]** `SpanAdecuado.lean` |
-| S5b | Reducidos alternantes planares ⇒ adecuados y `s_A + s_B = n + 2` (general o por verificador n ≤ 7) | [ABIERTO], siguiente, riesgo alto |
+| S5b | Verificador `checkW` + `minimal_of_check`; nudos con nombre y censos n ≤ 7 | **[HECHO]** `SpanCensos.lean` |
+| S5b-general | TODO reducido alternante planar pasa `checkW` (geometría: caras monocromáticas, reducido ⇒ adecuado) | [ABIERTO], riesgo alto |
 | S6 | Ensamblaje y corolario de minimalidad | [ABIERTO] |
 
 Evidencia por cálculo ya obtenida: span = 4n en el 100 % de los reducidos (n = 2..7) y menor en los no reducidos; reducido ⇔ adecuado (n = 2..6); en

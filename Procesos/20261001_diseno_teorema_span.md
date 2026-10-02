@@ -170,3 +170,24 @@ los teoremas clave dependen solo de `propext`, `Classical.choice` y `Quot.sound`
 planar = `F = n + 2`, reducido ⇒ cada cruce toca dos caras distintas) o, de forma verificable, por un **verificador computable** que compruebe ambas cosas sobre una palabra concreta con su teorema de
 corrección, y lo aplique a todas las palabras alternantes reducidas planares hasta n = 6 o 7 (4, 8, 24, 168, 676) y a los nudos con nombre; (ii) S6: enunciar el teorema general
 (`GRel` + una curva ⇒ `c' ≥ n`) para toda palabra con esas propiedades, que es exactamente el esquema de `trefoil_minimal`.
+
+## 13. Estado de S5b: HECHA y verificada, verificador computable y censo (2026-10-02)
+
+`TMENudos/SpanCensos.lean` (859 líneas; importa `SpanAdecuado`; NO importa `Etapa1_Planaridad`) y la sonda `27_palabras_lean.py`. Compila (build de ~26 min con picos de ~7,4 GB de RAM; ver nota
+operativa), sin `sorry`, axiomas ni `native_decide`. Los teoremas centrales dependen solo de `propext`, `Classical.choice` y `Quot.sound` (los censos, solo de `propext` y `Quot.sound`).
+
+* **Verificador:** `checkW (w : Word) : Bool` = al menos un cruce, `s_A + s_B = n + 2` y, para cada cruce, cambiar UNA suavización desde todo-A (resp. todo-B) baja estrictamente los lazos.
+* **Corrección general (el entregable central):** `checkW_correct` (`AAdequate ∧ BAdequate ∧ Nonempty Cross ∧ s_A + s_B = c + 2`), `span_of_check : span (bracketL (ofWord w)) = 4 · n` y
+  **`minimal_of_check`**: si `checkW w = true`, todo diagrama de UNA curva sin libres equivalente por `GRel` a `ofWord w` tiene al menos `n` cruces. El trébol se recupera (`trefoil_minimal'`).
+* **Nudos con nombre (cota inferior de cruces):** `minimal_41` (4), `minimal_51` (5), `minimal_52` (5), `minimal_61`, `minimal_62`, `minimal_63` (6), con spans 16, 20, 20, 24, 24, 24. La cota superior es trivial.
+* **Censo `wordOfData`/`passes`:** `pasan_3` (4 datos, el trébol y su espejo con otra paridad), `pasan_4` (8, el nudo de ocho), `pasan_5` (24, en 10 trozos de ~70 s). Conteos de Lean = conteos de la sonda 22 de Python.
+  Para n = 6 y 7, listas explícitas de Python (168 y 676 palabras): `censo6_passes`, `censo7_passes` y `*_length`, `*_nodup`.
+
+**Qué NO está demostrado (declarado en el docstring del módulo):**
+1. Que TODO diagrama alternante reducido planar pase `checkW` (la parte geométrica general de S5b). Solo se verifica caso por caso.
+2. La COMPLETITUD de `censo6` y `censo7` (que sean todos los reducidos de 6 y 7 cruces): es un hecho de Python. Enumerarlos en el kernel costaría ~2 h (n = 6) y ~30 h (n = 7).
+3. Que `checkW` fallido implique no-minimal: no es cierto en general.
+4. El puente "toda palabra alternante arbitraria es, salvo rotación y renombrado, una `wordOfData`".
+
+**Nota operativa.** Esta build es PESADA (26 min, ~7,4 GB). No está en la raíz. No recompilarla sin necesidad; construir de una en una. El agente cerró una vez `lake.exe`/`lean.exe` genéricos (pudo cerrar servidores
+Lean del editor): reiniciar el servidor de Lean en VS Code si hace falta.
