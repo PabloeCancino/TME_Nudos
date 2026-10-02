@@ -206,3 +206,20 @@ El recíproco falla (una cuerda aislada puede ser adecuada en uno de los dos est
 **Qué cambia.** La parte geométrica general de S5b se reduce a dos propiedades limpias: (a) `s_A + s_B = c + 2` para los alternantes planares (caras monocromáticas por la alternancia, planar = F = n + 2),
 y (b) toda cuerda entrelazada con otra implica no-nugatorio. La adecuación deja de ser un cálculo caso por caso. Teorema objetivo de S5c: `D` de una curva, `free = 0`, `s_A + s_B = c + 2`, `NonNugatory D` ⇒ A- y B-adecuado
 ⇒ `span = 4c` ⇒ minimalidad de cruces. Archivo previsto: `TMENudos/SpanNoNugatorio.lean`.
+
+## 15. Estado de S5c: HECHA y verificada, adecuación desde género cero y no-nugatorio (2026-10-02)
+
+`TMENudos/SpanNoNugatorio.lean` (483 líneas; importa `SpanAdecuado`, `SpanPuente`, `SpanGenero`) compila desde el código fuente (~24 s con los linters), sin `sorry`, axiomas ni `native_decide`;
+los teoremas clave dependen solo de `propext`, `Classical.choice` y `Quot.sound`. Confirma lo que la sonda 28 anticipaba por cálculo.
+
+* **L2 refinado (abstracto):** `card_add_fixed_le_two_cyc : card X + #fijos(x) ≤ 2 · cyc x` para una involución y
+  **`L2_refinado : 2 (cyc(ε a) + cyc(ε b)) + #fijos(a b) ≤ card X + 8 · orb{ε,a,b}`**. (Solo la desigualdad; la igualdad `2 cyc x = |X| + f` no se necesita.)
+* **Estado desacoplado:** `aX x`, `bX x` (el emparejamiento `a`/`b` con el otro tipo en el cruce `x`); involuciones sin puntos fijos; `aX x * b` es involución con **exactamente 4 puntos fijos**
+  (`card_fixed_aX_b`, `card_fixed_a_bX`: los extremos del cruce `x`).
+* **Adecuación en un cruce:** `lazos_update_allA_lt` (si `s_A + s_B = c + 2` y `orb{ε,aX x,b} = 1`, cambiar `x` desde todo-A baja los lazos) y `lazos_update_allB_lt`.
+* **Definición y teoremas generales:** `NonNugatory D := ∀ x, orb{ε,aX x,b} = 1 ∧ orb{ε,a,bX x} = 1`; `adequate_of_nonNugatory`; **`span_eq_four_mul_of_nonNugatory : span = 4 c`**;
+  **`minimal_of_nonNugatory`**: si `d` es de una curva, sin libres, con algún cruce, `s_A + s_B = c + 2` y `NonNugatory`, todo `d'` de una curva sin libres con `GRel d d'` tiene `c(d) ≤ c(d')`.
+* **Trébol:** `trefoil_nonNugatory` (por `orb_eq_one_of_path`, caminos hallados por BFS y comprobados con `decide +kernel`), `span_trefoil_eq_of_nonNugatory` (span 12 por la vía nueva) y `trefoil_minimal_nonNugatory`.
+
+**Qué NO está probado:** que "toda cuerda tiene otra entrelazada" implique `NonNugatory` para palabras (la conexión combinatoria es abierta); que `s_A + s_B = c + 2` se cumpla en los alternantes planares (S5d, en curso);
+la igualdad `2 cyc x = |X| + f`.

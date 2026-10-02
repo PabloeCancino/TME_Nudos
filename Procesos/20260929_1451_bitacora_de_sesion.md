@@ -39,6 +39,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 **Sonda 28 (S5c):** la adecuación sale de la igualdad de género `s_A + s_B = c + 2` y de que la cuerda esté entrelazada con otra, sin geometría (0 violaciones en 967 680 palabras de n = 5, planares o no); los diagramas con esa igualdad son exactamente los planares. Con un L2 refinado (puntos fijos de `a·b`), la adecuación se deduce algebraicamente. Lanzada la formalización (`SpanNoNugatorio.lean`).
 
+**S5c HECHA (`TMENudos/SpanNoNugatorio.lean`):** L2 refinado con puntos fijos; adecuación en un cruce desde `s_A + s_B = c + 2` y no-nugatorio; **`minimal_of_nonNugatory`** general (sin geometría): género cero + no-nugatorio ⇒ minimalidad de cruces entre diagramas de una curva equivalentes por GRel; trébol no-nugatorio. Pendiente: alternante planar ⇒ género cero (S5d, en curso) y 'cuerda entrelazada ⇒ no-nugatorio'.
+
 ---|---|
 | `master` | Fase 3 hecha y **publicada** (`563173c` en `origin`); 2 commits locales más (sondas 20 y 21, diseño de la forma normal), sin subir |
 | `forma-normal` | Etapa 1 de la forma normal, **verificada**: `TMENudos/FormaNormal.lean` (680 líneas, solo Mathlib) |
