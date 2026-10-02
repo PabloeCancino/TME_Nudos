@@ -79,3 +79,22 @@ resultado vale para nudos (una curva). No sustituye a (A): lo complementa (los r
 | 26 | forma abstracta de S3 con tres involuciones | 0 violaciones (c ≤ 4 exhaustivo, c = 5, 6 muestreo) |
 
 **S0 CERRADA.** El enunciado de S3 es VERDADERO por cálculo en su forma abstracta, y S5 (adecuación, igualdad de caras) está respaldada.
+
+## 8. Estado de S3: HECHA y verificada (rama `span-s3`, 2026-10-01)
+
+`TMENudos/SpanGenero.lean` (849 líneas, solo `import Mathlib`) compila desde el código fuente (~20 s con los linters del proyecto), sin `sorry`, axiomas
+ni `native_decide`; los teoremas clave dependen solo de `propext`, `Classical.choice` y `Quot.sound`.
+
+* **Definiciones:** `ncs` (clases de un `Setoid`), `cyc π` (ciclos de `π`, con puntos fijos), `orb S` (órbitas del subgrupo generado por `S`).
+  Justificadas con Mathlib: `cyc_eq_card_zpowers` (`cyc π` = órbitas de `zpowers π`) y `orb_eq_card_orbitRel` (`orb S` = cociente de órbitas de `Subgroup.closure S`).
+* **L1 (tipo Riemann-Hurwitz), en general:** `σ * τ * ρ = 1 → cyc σ + cyc τ + cyc ρ ≤ card X + 2 * orb {σ, τ, ρ}`.
+  Ruta distinta a la sugerida: inducción sobre `card X − cyc σ`, con las trasposiciones `s = (x0 σx0)` y `t = (σ⁻¹x0 x0)`, y dos casos (mismo ciclo de `τ`, o
+  ciclos distintos). Los lemas clave sobre multiplicar por una trasposición usan `Equiv.Perm.SameCycle` y primer retorno.
+* **L2:** `2 * (cyc (ε*a) + cyc (ε*b)) ≤ card X + 8 * orb {ε, a, b}`, es decir `s_A + s_B ≤ c + 2k`. NO necesita que `ε`, `a`, `b` ni `a∘b` carezcan de puntos
+  fijos: basta que sean involuciones (se usa `cyc (a∘b) ≥ card X / 2`). La ruta del diseño (el trío par `(ε a, a b, b ε)` con `k' ≤ 2k`) funcionó sin cambios.
+* **Corolario:** `L2_conexo`: con `orb {ε,a,b} = 1`, `cyc (ε*a) + cyc (ε*b) ≤ card X / 2 + 4`.
+* **Sanidad con `decide`:** instancias concretas de L1 (`Fin 4`, género 0 con igualdad) y de L2 (`Fin 8`, caso justo `16 = 8 + 8·1`).
+
+**Lo que queda del teorema del span:** S1 (corchete como polinomio de Laurent), S2 (cota de grado por estados), S4 (puente de `GDiag`/`Word` a esta formulación con
+permutaciones), S5 (igualdad y adecuación en reducidos alternantes planares) y S6 (ensamblaje). La etapa de mayor riesgo, S3, está resuelta; el punto de decisión de
+degradar a diagramas planares NO hace falta.
