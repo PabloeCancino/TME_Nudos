@@ -76,8 +76,8 @@ camino respaldan.
 |---|---|---|
 | S0 | Sondas 22 a 26 | **[CÁLCULO]** cerrada |
 | S3 | Desigualdad de género `s_A + s_B ≤ c + 2k` | **[HECHO]** |
-| S2 | Cota de grado por estados, para cualquier diagrama | [ABIERTO], siguiente |
-| S1 | Corchete como polinomio de Laurent; invariancia polinomial | [ABIERTO] |
+| S2 | Cota de grado por estados, para cualquier diagrama | **[HECHO]** `SpanEstados.lean` |
+| S1 | Corchete como polinomio de Laurent; invariancia polinomial | [ABIERTO], siguiente |
 | S4 | Puente de `Word`/`GDiag` a la formulación con permutaciones | [ABIERTO] |
 | S5 | `s_A + s_B = n + 2` y adecuación en reducidos alternantes planares | [ABIERTO], riesgo alto |
 | S6 | Ensamblaje y corolario de minimalidad | [ABIERTO] |

@@ -27,6 +27,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 **S3 HECHA (rama `span-s3`):** `TMENudos/SpanGenero.lean` demuestra L1 (Riemann-Hurwitz para permutaciones, caso general) y L2 (`2(cyc(εa)+cyc(εb)) ≤ |X| + 8·orb⟨ε,a,b⟩`, o sea `s_A + s_B ≤ c + 2k`), sin axiomas propios; es la etapa de mayor riesgo del teorema del span. No hizo falta degradar a diagramas planares. Quedan S1, S2, S4, S5 y S6. Estado: `Procesos/20261001_diseno_teorema_span.md`, sección 8.
 
+**S2 HECHA (`TMENudos/SpanEstados.lean`):** cambiar una suavización cambia los lazos en a lo sumo 1 (`lazos_le_succ`); de ahí `lazos σ ≤ lazos allA + nB σ`, `lazos σ ≤ lazos allB + nA σ` y las cotas de exponente `expo_upper`/`expo_lower`, para cualquier `GDiag`. Sin axiomas propios. Quedan S1, S4, S5, S6.
+
 ---|---|
 | `master` | Fase 3 hecha y **publicada** (`563173c` en `origin`); 2 commits locales más (sondas 20 y 21, diseño de la forma normal), sin subir |
 | `forma-normal` | Etapa 1 de la forma normal, **verificada**: `TMENudos/FormaNormal.lean` (680 líneas, solo Mathlib) |

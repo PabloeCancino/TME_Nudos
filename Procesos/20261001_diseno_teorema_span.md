@@ -98,3 +98,20 @@ ni `native_decide`; los teoremas clave dependen solo de `propext`, `Classical.ch
 **Lo que queda del teorema del span:** S1 (corchete como polinomio de Laurent), S2 (cota de grado por estados), S4 (puente de `GDiag`/`Word` a esta formulación con
 permutaciones), S5 (igualdad y adecuación en reducidos alternantes planares) y S6 (ensamblaje). La etapa de mayor riesgo, S3, está resuelta; el punto de decisión de
 degradar a diagramas planares NO hace falta.
+
+## 9. Estado de S2: HECHA y verificada (2026-10-01, noche)
+
+`TMENudos/SpanEstados.lean` (310 líneas; importa `Mathlib`, `Etapa1_Invariancia`, `SpanGenero` y, solo para la sanidad, `Etapa1_Puente`) compila desde el código
+fuente (~27 s con los linters), sin `sorry`, axiomas ni `native_decide`; los teoremas clave dependen solo de `propext`, `Classical.choice` y `Quot.sound`.
+Los teoremas viven en `TMENudos.Invariancia.GDiag`, para CUALQUIER `GDiag` (no solo planares).
+
+* **Lema clave `lazos_le_succ`:** dos estados que difieren a lo sumo en un cruce tienen `lazos σ ≤ lazos σ' + 1`. Se pasa de `lazos` a `ncs` de la clausura de
+  equivalencia de `rel σ` (`lazos_eq`, `reachableSetoid_fromRel`), lo que absorbe los casos degenerados (bucles, vértices repetidos). Ruta más simple que la
+  sugerida: sin grafo auxiliar `K`, con `join1` y `ncs_le_join1` de `SpanGenero`.
+* **Cotas por estados:** `lazos_le_allA : lazos σ ≤ lazos allA + nB σ` y `lazos_le_allB : lazos σ ≤ lazos allB + nA σ`.
+* **Cotas de exponente en ℤ:** `expo_upper : expo σ + 2*(lazos σ − 1) ≤ c + 2*lazos allA − 2` y `expo_lower : −c − 2*lazos allB + 2 ≤ expo σ − 2*(lazos σ − 1)`;
+  `expo_allA = c`, `expo_allB = −c`.
+* **Sanidad:** `sanidad_trefoil`: `c = 3`, `lazos allA = 2`, `lazos allB = 3` (`s_A + s_B = 5 = c + 2`, el caso de igualdad).
+
+**Efecto en el plan:** con S2 y S3 queda lista la cota GENERAL `span ≤ 2c + 2(s_A + s_B) − 4 ≤ 4c` a nivel de estados. Falta S1 (hacerla una cota sobre un polinomio de Laurent), S4 (unirla
+con `SpanGenero` mediante las permutaciones del modelo), S5 y S6.
