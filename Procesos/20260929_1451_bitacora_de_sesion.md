@@ -41,6 +41,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 **S5c HECHA (`TMENudos/SpanNoNugatorio.lean`):** L2 refinado con puntos fijos; adecuación en un cruce desde `s_A + s_B = c + 2` y no-nugatorio; **`minimal_of_nonNugatory`** general (sin geometría): género cero + no-nugatorio ⇒ minimalidad de cruces entre diagramas de una curva equivalentes por GRel; trébol no-nugatorio. Pendiente: alternante planar ⇒ género cero (S5d, en curso) y 'cuerda entrelazada ⇒ no-nugatorio'.
 
+**S5d y S6 HECHAS:** `SpanAlternante.lean` (alternante ⇒ caras = s_A + s_B; con `PlanarD`, género cero; verificado también por Python en 100 724 palabras) y `SpanFinal.lean` (**`minimal_alternante_planar`**: alternante + planar + no-nugatorio ⇒ minimalidad de cruces entre diagramas de una curva equivalentes por GRel). Abierto: `NonNugatory` desde 'cuerda entrelazada' (S5e), equivalencia de `PlanarD` con la planaridad de Etapa1_Planaridad, completitud de censos n = 6, 7.
+
 ---|---|
 | `master` | Fase 3 hecha y **publicada** (`563173c` en `origin`); 2 commits locales más (sondas 20 y 21, diseño de la forma normal), sin subir |
 | `forma-normal` | Etapa 1 de la forma normal, **verificada**: `TMENudos/FormaNormal.lean` (680 líneas, solo Mathlib) |

@@ -223,3 +223,23 @@ los teoremas clave dependen solo de `propext`, `Classical.choice` y `Quot.sound`
 
 **Qué NO está probado:** que "toda cuerda tiene otra entrelazada" implique `NonNugatory` para palabras (la conexión combinatoria es abierta); que `s_A + s_B = c + 2` se cumpla en los alternantes planares (S5d, en curso);
 la igualdad `2 cyc x = |X| + f`.
+
+## 16. Estado de S5d y S6: HECHAS y verificadas (2026-10-02)
+
+**S5d: `TMENudos/SpanAlternante.lean`** (385 líneas; importa `SpanPuente` y `SpanGenero`) compila desde el código fuente (~21 s con linters), sin `sorry`, axiomas ni `native_decide`;
+los teoremas clave dependen solo de `propext`, `Classical.choice` y `Quot.sound`.
+* **Rotación `σ`** en cada cruce: `σ (j,s) = (partner j, xor s (xor (sign j) (ovr j)))`, con `σ² = (j,s) ↦ (j,!s)`; **`sigma_eq_a`/`sigma_eq_b`**: `σ = a` en los extremos de letras inferiores y `σ = b` en los de letras superiores.
+* **`caras_eq_of_alternante`:** `D.free = 0` y `D.Alt` (`∀ j, ovr (next j) = !ovr j`) ⇒ `cyc (σ ∘ ε) = lazos allA + lazos allB`. Ruta distinta a la prevista: sin la igualdad `cyc(εa) = 2 orb`, con el lema abstracto
+  `cycOn_eq_orb` (los ciclos de `a∘ε` contenidos en un conjunto `Y` complementario de su imagen por `ε` e invariante se corresponden con las órbitas de `⟨ε,a⟩`) y `cyc_split`.
+* **`PlanarD D := cyc (σ ∘ ε) = card Cross + 2`** y **`hgen_of_alternante_planar`:** alternante + planar ⇒ `s_A + s_B = c + 2`.
+* **Trébol:** `alt_trefoil`, `planarD_trefoil` (5 caras = 3 + 2), `hgen_trefoil`.
+* **Verificación independiente (sonda 29):** en 100 724 palabras alternantes (n ≤ 6), planares o no, `caras = s_A + s_B` sin excepción.
+
+**S6: `TMENudos/SpanFinal.lean`** (ensamblaje, ~20 s): **`minimal_alternante_planar`**: si `d` es sin libres, ALTERNANTE (`Alt`), PLANAR (`PlanarD`), NO NUGATORIO (`NonNugatory`) y con algún cruce, todo `d'` de UNA curva sin libres equivalente
+por `GRel` tiene al menos `c(d)` cruces. `trefoil_minimal_general` lo instancia en el trébol por la ruta general.
+
+**Qué queda abierto (hipótesis declaradas del teorema final):**
+1. **S5e:** `NonNugatory` no se deduce de "toda cuerda está entrelazada con otra" para palabras de Gauss. Solo verificado en el trébol y, por cálculo equivalente, en los censos.
+2. `PlanarD` es una hipótesis; la equivalencia con la planaridad de `Etapa1_Planaridad` se comprobó por cálculo pero no está formalizada.
+3. Completitud de los censos de n = 6 y 7.
+4. Todo es para diagramas de UNA curva sin circunferencias libres.
