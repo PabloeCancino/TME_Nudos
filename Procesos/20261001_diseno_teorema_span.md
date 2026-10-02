@@ -191,3 +191,18 @@ operativa), sin `sorry`, axiomas ni `native_decide`. Los teoremas centrales depe
 
 **Nota operativa.** Esta build es PESADA (26 min, ~7,4 GB). No está en la raíz. No recompilarla sin necesidad; construir de una en una. El agente cerró una vez `lake.exe`/`lean.exe` genéricos (pudo cerrar servidores
 Lean del editor): reiniciar el servidor de Lean en VS Code si hace falta.
+
+## 14. S5c: la adecuación sale del género cero, sin geometría (sonda 28, 2026-10-02)
+
+**Idea.** Para un diagrama de UNA curva con `s_A + s_B = c + 2` (género de Turaev cero) y un cruce `x` que no sea de corte, la A- y la B-adecuación en `x` se deducen de la desigualdad
+de género aplicada al estado DESACOPLADO en `x`: usar en `x` el emparejamiento B también en `a` deja la terna `(ε, a_x, b)` con `a_x ∘ b` involución con exactamente 4 puntos fijos (el bloque de `x`).
+Un L2 refinado (`2(cyc p + cyc q) + f ≤ |X| + 8·orb`, con `f` los puntos fijos de `a·b`) da `lazos(σ_x) + s_B ≤ (c − 1) + 2·orb{ε,a_x,b}`; con `orb = 1` y `s_A + s_B = c + 2` sale `lazos(σ_x) ≤ s_A − 1`.
+La condición `orb{ε, a_x, b} = 1` (el cruce no desconecta la estructura al desacoplarlo) equivale a que la cuerda de `x` esté entrelazada con alguna otra.
+
+**Respaldo por cálculo (sonda 28, exhaustiva hasta n = 5, 967 680 palabras en n = 5):** en TODA palabra de una curva con `s_A + s_B = n + 2` (planar o no, alternante o no, orientable o no), si la cuerda de `x`
+está entrelazada con otra, hay adecuación en `x` en los estados A y B: 0 violaciones. Además, los diagramas con `s_A + s_B = n + 2` son exactamente los PLANARES (336, 4 160 y 57 472 en n = 3, 4, 5, igual que la sonda 25).
+El recíproco falla (una cuerda aislada puede ser adecuada en uno de los dos estados, pero no en ambos de forma sistemática).
+
+**Qué cambia.** La parte geométrica general de S5b se reduce a dos propiedades limpias: (a) `s_A + s_B = c + 2` para los alternantes planares (caras monocromáticas por la alternancia, planar = F = n + 2),
+y (b) toda cuerda entrelazada con otra implica no-nugatorio. La adecuación deja de ser un cálculo caso por caso. Teorema objetivo de S5c: `D` de una curva, `free = 0`, `s_A + s_B = c + 2`, `NonNugatory D` ⇒ A- y B-adecuado
+⇒ `span = 4c` ⇒ minimalidad de cruces. Archivo previsto: `TMENudos/SpanNoNugatorio.lean`.

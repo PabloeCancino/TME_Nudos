@@ -37,6 +37,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 **S5b HECHA (`TMENudos/SpanCensos.lean`):** verificador `checkW` y `minimal_of_check` general (toda palabra que pasa el chequeo es mínima en cruces entre los diagramas de una curva equivalentes por GRel); nudos con nombre `minimal_41/51/52/61/62/63`; censos con conteos 4, 8, 24 (enumeración completa en Lean) y 168, 676 (listas de Python) = sonda 22. No demostrado: que todo reducido alternante planar pase `checkW` (geometría general) ni la completitud de las listas de n = 6, 7. Build pesada (26 min, 7,4 GB).
 
+**Sonda 28 (S5c):** la adecuación sale de la igualdad de género `s_A + s_B = c + 2` y de que la cuerda esté entrelazada con otra, sin geometría (0 violaciones en 967 680 palabras de n = 5, planares o no); los diagramas con esa igualdad son exactamente los planares. Con un L2 refinado (puntos fijos de `a·b`), la adecuación se deduce algebraicamente. Lanzada la formalización (`SpanNoNugatorio.lean`).
+
 ---|---|
 | `master` | Fase 3 hecha y **publicada** (`563173c` en `origin`); 2 commits locales más (sondas 20 y 21, diseño de la forma normal), sin subir |
 | `forma-normal` | Etapa 1 de la forma normal, **verificada**: `TMENudos/FormaNormal.lean` (680 líneas, solo Mathlib) |
