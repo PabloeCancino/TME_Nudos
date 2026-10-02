@@ -115,3 +115,20 @@ Los teoremas viven en `TMENudos.Invariancia.GDiag`, para CUALQUIER `GDiag` (no s
 
 **Efecto en el plan:** con S2 y S3 queda lista la cota GENERAL `span ≤ 2c + 2(s_A + s_B) − 4 ≤ 4c` a nivel de estados. Falta S1 (hacerla una cota sobre un polinomio de Laurent), S4 (unirla
 con `SpanGenero` mediante las permutaciones del modelo), S5 y S6.
+
+## 10. Estado de S1: HECHA y verificada (2026-10-01, noche)
+
+`TMENudos/SpanLaurent.lean` (416 líneas; importa `SpanEstados` y `Etapa1_Nudos`) compila desde el código fuente (~25 s con los linters), sin `sorry`, axiomas ni
+`native_decide`; los 10 teoremas clave dependen solo de `propext`, `Classical.choice` y `Quot.sound`.
+
+* **Corchete como polinomio de Laurent:** `bracketL D : LaurentPolynomial ℤ` (la suma de estados con `A = T`) y `jonesL D`. `evalL_bracketL` y `evalL_jonesL`
+  prueban que su evaluación en un cuerpo es el `bracket`/`jones` ya existente.
+* **Inyectividad:** `evalL_injective`: dos polinomios de Laurent que coinciden al evaluar en todo racional no nulo son iguales (`exists_T_pow`, raíces de un
+  polinomio sobre un dominio infinito).
+* **Invariancia polinomial:** `jonesL_rel : GRel d d' → jonesL d.D = jonesL d'.D` y `bracketL_rel : bracketL d'.D = s * T k * bracketL d.D` con `s = ±1`.
+* **Span:** `span p = (maxExp p − minExp p).toNat`; `span_unit_mul` (las unidades `±T^k` no lo cambian) y **`span_bracketL_rel : GRel d d' → span (bracketL d.D) = span (bracketL d'.D)`**.
+* **Cota por estados en el polinomio:** `inBox_bracketL` y **`span_bracketL_le_of_nonempty : span (bracketL D) ≤ 2c + 2(s_A + s_B) − 4`** si hay algún cruce.
+* **Borde:** con `Cross` vacío y `free = 0`, `bracketL = 1` y la cota de S2 no aplica (el span real es 0); se trata aparte.
+* **Sanidad:** `span_trefoil_le : span (bracketL (ofWord trefoil _)) ≤ 12 = 4·3`.
+
+**Efecto en el plan:** con S1, S2 y S3 queda la cota general **por demostrar solo el puente (S4)**: `span ≤ 2c + 2(s_A + s_B) − 4 ≤ 4c` para diagramas de una curva. Faltan S4, S5 y S6.

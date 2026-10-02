@@ -29,6 +29,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 **S2 HECHA (`TMENudos/SpanEstados.lean`):** cambiar una suavización cambia los lazos en a lo sumo 1 (`lazos_le_succ`); de ahí `lazos σ ≤ lazos allA + nB σ`, `lazos σ ≤ lazos allB + nA σ` y las cotas de exponente `expo_upper`/`expo_lower`, para cualquier `GDiag`. Sin axiomas propios. Quedan S1, S4, S5, S6.
 
+**S1 HECHA (`TMENudos/SpanLaurent.lean`):** corchete como polinomio de Laurent, inyectividad de la evaluación, invariancia polinomial bajo `GRel` y **`span_bracketL_rel`** (el span es invariante bajo `GRel`); cota `span ≤ 2c + 2(s_A + s_B) − 4` en el polinomio. Sin axiomas propios. Quedan S4, S5, S6.
+
 ---|---|
 | `master` | Fase 3 hecha y **publicada** (`563173c` en `origin`); 2 commits locales más (sondas 20 y 21, diseño de la forma normal), sin subir |
 | `forma-normal` | Etapa 1 de la forma normal, **verificada**: `TMENudos/FormaNormal.lean` (680 líneas, solo Mathlib) |
