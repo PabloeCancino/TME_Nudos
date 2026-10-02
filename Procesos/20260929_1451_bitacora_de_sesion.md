@@ -45,6 +45,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 **S5e HECHA (`TMENudos/SpanEntrelazado.lean`):** `nonNugatory_of_entrelazada` y **`minimal_alternante_planar_entrelazada`**: diagrama de una curva, alternante, planar (`PlanarD`) y con toda cuerda entrelazada con otra ⇒ minimalidad de cruces entre diagramas de una curva equivalentes por GRel. Cadena del teorema del span ENSAMBLADA (S1..S6). Abierto: `Entrelazado` frente a la noción posicional (sonda 28), `PlanarD` frente a Etapa1_Planaridad, censos n = 6, 7.
 
+**S7 HECHA (`TMENudos/SpanToricos.lean`):** `toro_minimal`: para todo n impar >= 3, el diagrama alternante del torico T(2,n) es minimal en cruces (n) entre diagramas de una curva GRel-equivalentes. Respalda el camino (A); no es clasificacion de nudos (B).
+
 ---|---|
 | `master` | Fase 3 hecha y **publicada** (`563173c` en `origin`); 2 commits locales más (sondas 20 y 21, diseño de la forma normal), sin subir |
 | `forma-normal` | Etapa 1 de la forma normal, **verificada**: `TMENudos/FormaNormal.lean` (680 líneas, solo Mathlib) |

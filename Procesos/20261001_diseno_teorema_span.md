@@ -265,3 +265,15 @@ por `GRel` tiene al menos `c(d)` cruces. `trefoil_minimal_general` lo instancia 
 
 **Resumen de la cadena completa del teorema del span (S1 a S6, S5a a S5e): ENSAMBLADA en Lean.** Los diagramas alternantes, planares y con toda cuerda entrelazada (= alternantes reducidos) son mínimos en cruces entre los diagramas de una curva
 equivalentes por R1, R2 y R3, sin axiomas propios.
+
+## 18. Estado de S7: HECHA y verificada, familia T(2,n) para todo n impar >= 3 (2026-10-02)
+
+`TMENudos/SpanToricos.lean` (453 líneas; importa `SpanEntrelazado`) compila desde el código fuente (~25 s con linters), sin `sorry`, axiomas ni `native_decide`; todos los teoremas dependen solo de `propext`, `Classical.choice` y `Quot.sound`.
+
+* **Diagrama `toroD n hn : GDiag (ZMod (2n))`:** `next = +1`, `partner j = j + n`, `ovr j = (j.val par)`, `sign = true`, `free = 0` (palabra de Gauss del torico T(2,n)).
+* **Hipótesis del teorema final verificadas para TODO n impar >= 3:** una curva (`toroD_curve`), alternante (`toroD_alt`), `n` cruces (`toroD_card`), toda cuerda entrelazada (`toroD_entrelazada`, testigo la cuerda i+2),
+  planar (`toroD_planar`, vía `orb_A = 2` por invariante de paridad y `orb_B = n` por clase mod n).
+* **`toro_minimal`:** todo diagrama `d'` de una curva sin libres, `GRel`-equivalente a `toroD n`, tiene al menos `n` cruces. Instancias `toro3_minimal`, `toro5_minimal`.
+
+**Qué respalda:** camino (A) (base formal; minimalidad de cruces de una familia infinita de diagramas alternantes). NO es una clasificación de nudos (camino B).
+**Abierto:** no se probó formalmente que `toroD 3` sea isomorfo a `ofWord trefoil`; vale solo para diagramas de UNA curva sin libres; se mantienen los abiertos de la sección 17.

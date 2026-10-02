@@ -79,6 +79,7 @@ mindmap
       Trébol: al menos 3 cruces «P»
       Nudos 4_1 a 6_3 y censos hasta n 7 «P»
       Alternante planar con toda cuerda entrelazada «P»
+      Toricos T 2 n minimales para todo n impar «P»
       Abierto: censos n 6 y 7 completos, PlanarD frente a Etapa1
     Conexión con Nudos Abstractos
       Schubert 1949 «C»
