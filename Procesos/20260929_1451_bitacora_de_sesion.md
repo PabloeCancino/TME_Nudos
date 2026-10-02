@@ -19,6 +19,10 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 **(B), fase B1, resultados (sondas 22 y 22b):** el span del corchete es 4n en el 100 % de los alternantes planares reducidos (n = 2..6, exhaustivo) y menor en los no reducidos; `s_A + s_B = n + 2` sin excepciones. CORRECCIÓN: en alternantes, reducido ⇒ sin R1/R2 pero NO al revés: dos tréboles unidos por una cuerda aislada (n = 7) es irreducible y no reducido (sonda 22c; 788 irreducibles frente a 676 reducidos en n = 7). El teorema del span necesita la hipótesis explícita «sin cuerdas aisladas». Con n = 7 (sonda 22) el span sigue siendo 4n en el 100 % de los reducidos. El teorema del span (minimalidad real de cruces a nivel de nudo) sigue siendo viable.
 
+**Span, sonda 23 y diseño por etapas:** `s_A + s_B ≤ n + 2` se cumple en TODOS los diagramas de una curva (n ≤ 5, 967 680 en n = 5), incluidos los no planares; la paridad es falsa (superficies no orientables), así que la ruta de permutaciones orientables NO basta y S3 se plantea por inducción sobre cruces. Diseño por etapas S0 a S6: `Procesos/20261001_diseno_teorema_span.md`.
+
+**Span, sonda 24:** entre los alternantes planares n = 2..6, todos los reducidos son A- y B-adecuados y ninguno de los no reducidos lo es (reducido ⇔ adecuado). S0 casi cerrada (falta la sonda 25: círculos de todo-A = caras de un color).
+
 ---|---|
 | `master` | Fase 3 hecha y **publicada** (`563173c` en `origin`); 2 commits locales más (sondas 20 y 21, diseño de la forma normal), sin subir |
 | `forma-normal` | Etapa 1 de la forma normal, **verificada**: `TMENudos/FormaNormal.lean` (680 líneas, solo Mathlib) |
