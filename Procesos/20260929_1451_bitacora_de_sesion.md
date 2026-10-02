@@ -31,6 +31,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 **S1 HECHA (`TMENudos/SpanLaurent.lean`):** corchete como polinomio de Laurent, inyectividad de la evaluación, invariancia polinomial bajo `GRel` y **`span_bracketL_rel`** (el span es invariante bajo `GRel`); cota `span ≤ 2c + 2(s_A + s_B) − 4` en el polinomio. Sin axiomas propios. Quedan S4, S5, S6.
 
+**S4 HECHA (`TMENudos/SpanPuente.lean`):** `s_A + s_B ≤ c + 2` para todo `GDiag` de una curva sin libres (puente al modelo de tres involuciones de `SpanGenero`); sanidad con el trébol sin hipótesis pendientes. Con S1..S4 queda la cota general `span ≤ 4c`. Quedan S5 y S6.
+
 ---|---|
 | `master` | Fase 3 hecha y **publicada** (`563173c` en `origin`); 2 commits locales más (sondas 20 y 21, diseño de la forma normal), sin subir |
 | `forma-normal` | Etapa 1 de la forma normal, **verificada**: `TMENudos/FormaNormal.lean` (680 líneas, solo Mathlib) |

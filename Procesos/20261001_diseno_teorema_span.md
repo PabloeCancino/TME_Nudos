@@ -132,3 +132,18 @@ con `SpanGenero` mediante las permutaciones del modelo), S5 y S6.
 * **Sanidad:** `span_trefoil_le : span (bracketL (ofWord trefoil _)) ≤ 12 = 4·3`.
 
 **Efecto en el plan:** con S1, S2 y S3 queda la cota general **por demostrar solo el puente (S4)**: `span ≤ 2c + 2(s_A + s_B) − 4 ≤ 4c` para diagramas de una curva. Faltan S4, S5 y S6.
+
+## 11. Estado de S4: HECHA y verificada (2026-10-01, noche)
+
+`TMENudos/SpanPuente.lean` (523 líneas; importa `SpanGenero` y `SpanEstados`) compila desde el código fuente (~22 s con los linters), sin `sorry`, axiomas ni `native_decide`;
+los teoremas clave dependen solo de `propext`, `Classical.choice` y `Quot.sound`.
+
+* **Teorema final:** `lazos_allA_add_allB_le (D : GDiag ι) (hfree : D.free = 0) (hcurve : ∀ i j, D.next.SameCycle i j) (hne : Nonempty D.Cross) :
+  D.lazos D.allA + D.lazos D.allB ≤ Fintype.card D.Cross + 2` (es `s_A + s_B ≤ c + 2`, para toda palabra de Gauss de una curva, planar o no, orientable o no).
+* **Lema abstracto:** `two_orb_le_cyc : 2 * orb {ε,a} ≤ cyc (ε*a)` para involuciones sin puntos fijos (`x` y `ε x` están en ciclos distintos de `ε*a`, `not_cyc_eps`).
+* **Modelo:** `X = ι × Bool` (`false` = entrada, `true` = salida); `ε (j,true) = (next j,false)`; emparejamiento genérico `sm ori (j,s) = (partner j, xor s (ori j))`;
+  `a = sm sign`, `b = sm (!sign)`; `a*b` es el paso por el cruce `(j,s) ↦ (j,!s)`. Sin puntos fijos sin hipótesis extra.
+* **Lazos = órbitas:** `lazos_allA_eq`, `lazos_allB_eq` (con `free = 0`) vía `phi (j,true) = j`, `phi (j,false) = prev j`; cardinal `card_modelo : |ι × Bool| = 4c`; conexión `orb_eq_one`.
+* **Sanidad:** `genero_trefoil` aplica el teorema al trébol SIN hipótesis pendientes (`2 + 3 ≤ 3 + 2`, igualdad).
+
+**Efecto:** con S1, S2, S3 y S4 queda la cota general `span (bracketL D) ≤ 2c + 2(s_A + s_B) − 4 ≤ 4c` para todo diagrama de una curva. Faltan S5 (igualdad en reducidos alternantes) y S6.
