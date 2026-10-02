@@ -243,3 +243,25 @@ por `GRel` tiene al menos `c(d)` cruces. `trefoil_minimal_general` lo instancia 
 2. `PlanarD` es una hipótesis; la equivalencia con la planaridad de `Etapa1_Planaridad` se comprobó por cálculo pero no está formalizada.
 3. Completitud de los censos de n = 6 y 7.
 4. Todo es para diagramas de UNA curva sin circunferencias libres.
+
+## 17. Estado de S5e: HECHA y verificada, cuerda entrelazada ⇒ no nugatorio (2026-10-02)
+
+`TMENudos/SpanEntrelazado.lean` (393 líneas; importa `SpanFinal`) compila desde el código fuente (~22 s con linters), sin `sorry`, axiomas ni `native_decide`; los teoremas clave dependen solo de
+`propext`, `Classical.choice` y `Quot.sound`.
+
+* **Definiciones:** `Arc p q j` (letras estrictamente entre `p` y `q` a lo largo de la curva), `Entrelazado x y` (una letra de `y` en el arco `i → k` y la otra en `k → i`) y `TodaEntrelazada D := ∀ x, ∃ y ≠ x, Entrelazado x y`.
+* **`nonNugatory_of_entrelazada`:** `D` de una curva y `TodaEntrelazada D` ⇒ `NonNugatory D`. Ruta: recorrer un arco por `ε` y el giro `(j,s) ↦ (j,!s)` conecta todos sus extremos (`walk`, `arc_reach`, `hit_reach`, `arc_cover`);
+  una cuerda entrelazada conecta los dos arcos (`rel_all`, lema abstracto sobre cualquier `Setoid`); el emparejamiento en `x` mismo no se usa, así que no hay que separar casos por el signo.
+* **Teorema final con hipótesis legibles, `minimal_alternante_planar_entrelazada`:** si `d` es de UNA curva, sin circunferencias libres, ALTERNANTE (`Alt`), PLANAR (`PlanarD`), con TODA CUERDA ENTRELAZADA con otra y con algún cruce, entonces todo `d'`
+  de una curva sin libres equivalente por `GRel` tiene `c(d) ≤ c(d')`.
+* **Trébol:** `trefoil_todaEntrelazada` (`decide +kernel`), `trefoil_curve`, `trefoil_nonNugatory_entrelazado` (reprueba `NonNugatory` sin tablas de caminos).
+
+**Qué queda abierto (declarado):**
+1. `Entrelazado` está justificado por su definición (arco `i → k` frente a arco `k → i`), pero NO se probó formalmente que coincida con la noción posicional de la sonda 28 ("exactamente un extremo de `y` cae entre los de `x`"); la implicación
+   'un extremo en cada arco ⇒ exactamente uno entre los de x' necesita `A ∩ B = ∅` (un argumento de longitud de ciclo).
+2. `PlanarD` (caras = c + 2) es una definición propia del mapa combinatorio; su equivalencia formal con la planaridad de `Etapa1_Planaridad` no está formalizada (por cálculo coinciden, sondas 15, 25 y 29).
+3. La completitud de los censos de n = 6 y 7 (`SpanCensos`).
+4. Todo es para diagramas de UNA curva sin circunferencias libres.
+
+**Resumen de la cadena completa del teorema del span (S1 a S6, S5a a S5e): ENSAMBLADA en Lean.** Los diagramas alternantes, planares y con toda cuerda entrelazada (= alternantes reducidos) son mínimos en cruces entre los diagramas de una curva
+equivalentes por R1, R2 y R3, sin axiomas propios.

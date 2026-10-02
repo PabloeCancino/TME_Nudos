@@ -43,6 +43,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 **S5d y S6 HECHAS:** `SpanAlternante.lean` (alternante ⇒ caras = s_A + s_B; con `PlanarD`, género cero; verificado también por Python en 100 724 palabras) y `SpanFinal.lean` (**`minimal_alternante_planar`**: alternante + planar + no-nugatorio ⇒ minimalidad de cruces entre diagramas de una curva equivalentes por GRel). Abierto: `NonNugatory` desde 'cuerda entrelazada' (S5e), equivalencia de `PlanarD` con la planaridad de Etapa1_Planaridad, completitud de censos n = 6, 7.
 
+**S5e HECHA (`TMENudos/SpanEntrelazado.lean`):** `nonNugatory_of_entrelazada` y **`minimal_alternante_planar_entrelazada`**: diagrama de una curva, alternante, planar (`PlanarD`) y con toda cuerda entrelazada con otra ⇒ minimalidad de cruces entre diagramas de una curva equivalentes por GRel. Cadena del teorema del span ENSAMBLADA (S1..S6). Abierto: `Entrelazado` frente a la noción posicional (sonda 28), `PlanarD` frente a Etapa1_Planaridad, censos n = 6, 7.
+
 ---|---|
 | `master` | Fase 3 hecha y **publicada** (`563173c` en `origin`); 2 commits locales más (sondas 20 y 21, diseño de la forma normal), sin subir |
 | `forma-normal` | Etapa 1 de la forma normal, **verificada**: `TMENudos/FormaNormal.lean` (680 líneas, solo Mathlib) |

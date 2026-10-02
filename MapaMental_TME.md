@@ -72,6 +72,14 @@ mindmap
       ClassicalKnot
         Diagramas planares módulo movimientos entre planares «P»
         Sin suma conexa clásica
+    Teorema del span: minimalidad de cruces
+      Corchete de Kauffman como polinomio de Laurent «P»
+      Desigualdad de género s_A + s_B <= c + 2 «P»
+      Adecuado implica span exacto «P»
+      Trébol: al menos 3 cruces «P»
+      Nudos 4_1 a 6_3 y censos hasta n 7 «P»
+      Alternante planar con toda cuerda entrelazada «P»
+      Abierto: censos n 6 y 7 completos, PlanarD frente a Etapa1
     Conexión con Nudos Abstractos
       Schubert 1949 «C»
         Unicidad y existencia de factorización

@@ -83,7 +83,7 @@ camino respaldan.
 | S5b | Verificador `checkW` + `minimal_of_check`; nudos con nombre y censos n ≤ 7 | **[HECHO]** `SpanCensos.lean` |
 | S5c | Género cero + no-nugatorio ⇒ adecuación ⇒ span 4c ⇒ minimalidad (sin geometría) | **[HECHO]** `SpanNoNugatorio.lean` |
 | S5d | Alternante: caras = `s_A + s_B`; con planaridad, género cero | **[HECHO]** `SpanAlternante.lean` |
-| S5e | 'Cuerda entrelazada con otra' ⇒ `NonNugatory` en palabras | [ABIERTO] |
+| S5e | 'Cuerda entrelazada con otra' ⇒ `NonNugatory` | **[HECHO]** `SpanEntrelazado.lean` (teorema final: `minimal_alternante_planar_entrelazada`) |
 | S6 | Ensamblaje: `minimal_alternante_planar` | **[HECHO]** `SpanFinal.lean` (hipótesis abiertas: S5e, `PlanarD`) |
 
 Evidencia por cálculo ya obtenida: span = 4n en el 100 % de los reducidos (n = 2..7) y menor en los no reducidos; reducido ⇔ adecuado (n = 2..6); en
