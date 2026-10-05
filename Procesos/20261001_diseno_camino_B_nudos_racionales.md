@@ -149,3 +149,21 @@ no hay palabras de los 7_x en Lean para comparar; listas con ai = 0 no se consid
 **NO probado (declarado):** el verificador booleano de caminos de movimientos sobre `Word` con corrección hacia `GRel` (`checkPath`); falta (a) que cada paso sobre `Word` produzca `ofWord w'` igual a `GDiag.r1/r2/tri` salvo isomorfismo, (b) reindexado `Fin (m+2) ≃ Fin m ⊕ Bool`
 (cuello de botella), (c) R3 y flypes no son locales sobre la lista; estimación del agente: un par de días para R1/R2, más para R3. Tampoco: certificados para pares que exijan reversión/espejo; los nombres 7_x en Lean; que `conwayWord` sea wf/planar/alternante para toda lista; que `frac` determine el nudo (Schubert).
 **No es clasificación de nudos racionales.**
+
+## 9. Caracterización general de `conwayWord`: PARCIAL (2026-10-05) — camino (B)
+
+**Sonda 31** (`Procesos/Tests/auditoria_20260929/31_conway_forma_cerrada.py`): hallazgo de una **forma cerrada por pasadas**. Para p impar, la palabra de Gauss de C(a1..ak) es la concatenación de 2k pasadas de bloque:
+cada pasada recorre los a_j cruces del bloque j (etiquetas e_j .. e_j+a_j−1, con e_j = a_1+...+a_{j−1}) en sentido ascendente o descendente, y cada bloque se recorre exactamente dos veces. Las pasadas las da un recorrido en el grafo de extremos de bloque (4 por bloque), que depende solo de k y de las paridades a_j mod 2.
+Verificado en Python (reejecutado por mí hasta n = 10: 681 listas de una curva, 0 discrepancias; el agente llegó a n = 12 con 2729). La palabra NO es una recursión sobre C(a1..a_{k−1}).
+
+**`TMENudos/ConwayGeneral.lean`** (495 líneas; importa `Conway`; NO está en la raíz; mismo espacio de nombres `TMENudos.Conway`) compila desde el código fuente (~24 s con linters), sin `sorry`, axiomas ni `native_decide`; axiomas solo estándar. Probado para TODA lista:
+`length_blocks`, `length_walkAux`, `length_walk` y **`conwayWord_length : (conwayWord a).length = 2 * a.sum`**; `links_prop` y `partnerOf_interno` (paso interno de una pasada); `walk_pasada_asc` (pasada ascendente por un bloque cualquiera);
+`isOver_asc_alt` (alternancia sobre/bajo dentro de una pasada ascendente); `walk_primer_bloque` y `conwayWord_primer_bloque` (las primeras m etiquetas son 1..m). Casos con `decide +kernel`: `etiquetas_32/23/312` contrastan con el modelo de pasadas.
+
+**NO probado (declarado):** bien-formación, alternancia global, una curva ⇔ p impar, planaridad y entrelazado para toda lista; `ncross = a.sum` para toda lista (con p par el recorrido repite puertos y depende de la bien-formación); la pasada descendente; que cada bloque se recorra exactamente dos veces y el orden de las pasadas; la regla de signo por bloque; las fronteras entre bloques y los casquetes (todo esto solo por Python, n <= 12).
+
+**Hoja de ruta (estimación del agente):** (1) pasada descendente, ~100 líneas, dificultad media; (2) lemas de frontera de bloque y casquetes en `links`/`resolve`/`endPort`, media-alta (carriles desnudos k = 1, 2 aparte);
+(3) teorema de estructura: `walk a` = concatenación de las pasadas del grafo de extremos, alta (el grueso del trabajo); (4) **lema clave abierto**: el grafo de extremos (4k extremos, parejas por bloque y por carril) tiene un solo ciclo ⇔ p impar (p = numerador de `frac`), por inducción sobre la fracción continua o por el determinante mod 2, alta (el paso genuinamente matemático);
+(5) con 3 y 4: bien-formación, longitud, alternancia y `ncross`, media; (6) planaridad y entrelazado, alta, no estudiada.
+**Enunciado abierto (lema clave):** para toda `a` con a_i >= 1 y p impar, `walk a` es la concatenación de 2k pasadas completas (cada bloque dos veces) determinadas por el grafo de extremos de las paridades a_j mod 2, y la palabra resultante es bien formada.
+**No es clasificación de nudos racionales.**

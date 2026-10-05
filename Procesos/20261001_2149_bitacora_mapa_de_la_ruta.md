@@ -97,6 +97,7 @@ Dependencias: S1, S2 independientes; S4 necesita S2 y S3; S5 necesita S1 y la pl
 | B0 | Definiciones de Conway y fracción `p/q` | **[HECHO]** `Conway.lean` + sonda 30 (por casos, n <= 7; sin caracterización general) |
 | B1 | Censo por cálculo: flypes y clases de Jones (sondas 22 a 25 ya hechas en parte) | parcial |
 | B2 | Tabla verificada de nudos racionales hasta N (certificados de equivalencia + Jones para distinguir) | **[PARCIAL]** `ConwayTabla.lean`: distintos hecho (14 formas); iguales solo por isomorfismo; falta verificador de caminos R1/R2/R3 |
+| B3' | Caracterización general de `conwayWord` (bien formada, alternante, una curva sii p impar, planar) | **[PARCIAL]** `ConwayGeneral.lean` + sonda 31: longitud 2n y pasada ascendente probadas; lema clave abierto |
 | B4 | Alternante reducido de un racional ≃ su forma de Conway, para todo n | [ABIERTO], investigación |
 
 ## 6. Pendientes y riesgos abiertos
