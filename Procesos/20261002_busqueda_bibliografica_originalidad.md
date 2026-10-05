@@ -33,8 +33,25 @@ VISTO en las páginas:
 **No revisado:** Zulip de Lean, búsqueda de código en GitHub (exige login), Coq/Rocq y Agda en particular, arXiv directo.
 **Redacción prudente:** «no hemos encontrado formalización previa en AFP, TauCeti, GitHub ni arXiv (búsquedas web, octubre 2026); lo más cercano es Prathamesh (corchete e invariancia) y TauCeti (corchete y Jones sobre PD codes)».
 
+## 4. Seguimiento de los pendientes menores (2026-10-05)
+
+### 4.1 TauCeti (clonado en el scratchpad, commit 3054e6f; LEÍDO en los archivos)
+- **No tiene nada de span, grado, adecuación, Turaev, Tait, número de cruces ni diagramas alternantes** (grep sin resultados en `KnotTheory/`; sin `sorry` en esa carpeta). Tu formalización S5–S7 no está duplicada ahí.
+- Tiene la infraestructura de base: `kauffmanBracket` como suma sobre estados con `stateLoopCount`; `jonesPolynomial` con invariancia (R1, R3, clasp); y en `PDCode/Planar.lean` caras y planaridad: `eulerChar_toPermutationTriple` (eulerChar = faceCount − n), **`faceCount_le` (faceCount ≤ n + 2·componentes conexas)** e `isPlanar_iff_faceCount_eq_of_isConnected`.
+- **Matiz importante:** `faceCount_le` es una desigualdad de tipo Euler para tríos de permutaciones de PD codes, ya formalizada en Lean. Es del mismo tipo que mi L1, pero sobre otra estructura (rotación de cruces, no tres involuciones) y no la relaciona con los estados A/B. No revisé issues ni PRs abiertos del repo.
+
+### 4.2 Comparación de mi S5c con Ilyutko–Manturov (el agente leyó §6 de IM y `SpanNoNugatorio.lean`; no abrió `SpanGenero.lean` ni recompiló)
+- Esqueleto global idéntico (cota span <= 4c − 4g, igualdad por adecuación, contradicción con un diagrama de menos cruces). No es original.
+- Núcleo distinto: IM compara el estado cambiado con su opuesto, usa la equidistancia de estados de un círculo y una movida en dos vértices; mi prueba usa una sola desigualdad con los 4 puntos fijos del cruce desacoplado (`L2_refinado`) y `orb = 1`.
+- Paso 2 de IM (cota del estado opuesto, «obviamente»): mi prueba lo **reemplaza** por la desigualdad general de L1. Paso 4 (equidistancia, sin demostración en su texto): mi prueba lo **evita**.
+- Diferencias de alcance: IM cubre grafo-enlaces generales (con corank sobre Z2, citando sin prueba el teorema de Soboleva / Bar-Natan–Garoufalidis); la mía solo diagramas de Gauss de una curva sin libres, pero con círculos = órbitas formalizado. `NonNugatory` es más fuerte que «sin vértices aislados» salvo cuando toda cuerda está entrelazada (S5e); el recíproco no está probado.
+- Redacción prudente: «variante distinta del Lema 6.3 dentro del mismo esqueleto», no «resultado nuevo».
+
+### 4.3 Zulip y búsqueda de código en GitHub: NO realizados
+Exigen sesión o un buscador que los agentes no tienen, y el comando `gh` de esta máquina no es la CLI de GitHub. Quedan para hacer a mano.
+
 ## Pendiente
-- Abrir `PDCode/Kauffman.lean` y `Jones.lean` de TauCeti buscando «span», «degree», «adequate».
-- Zulip de Lean y búsqueda de código en GitHub con sesión iniciada.
+- Zulip de Lean y búsqueda de código en GitHub con sesión iniciada (a mano).
+- Issues y PRs abiertos de TauCeti (span, adecuación).
 - Bryant–Singerman 1985 (sec. 2) y Jones–Singerman 1978, no leídos.
-- Comparar mi prueba de S5c con los pasos 2 y 4 de Ilyutko–Manturov.
+- Mirar `faceCount_le` de TauCeti frente a mi L1 (¿se puede reutilizar o comparar?).
