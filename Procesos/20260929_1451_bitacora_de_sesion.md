@@ -49,6 +49,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 **B0 HECHA (camino B, separado de A):** `Conway.lean` (palabra de Gauss de C(a1..ak), fraccion p/q, verificacion por casos con decide +kernel hasta 7 cruces) y sonda 30 (127 listas, 0 discrepancias). NO es clasificacion de nudos. Falta: caracterizacion general, B2 (tabla), B4.
 
+**B2 PARCIAL (`ConwayTabla.lean`):** `tabla_distintos` (14 formas de Conway hasta 7 cruces, dos a dos NO GRel-equivalentes por Jones en A=2) y `grel_223_322` (equivalencia por isomorfismo, sin R1/R2/R3). Falta el verificador de caminos de movimientos (puente Word<->GDiag). Camino B; no es clasificacion.
+
 ---|---|
 | `master` | Fase 3 hecha y **publicada** (`563173c` en `origin`); 2 commits locales más (sondas 20 y 21, diseño de la forma normal), sin subir |
 | `forma-normal` | Etapa 1 de la forma normal, **verificada**: `TMENudos/FormaNormal.lean` (680 líneas, solo Mathlib) |

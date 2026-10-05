@@ -136,3 +136,16 @@ su Jones aparece en el censo de su n (3_1, 4_1, 5_1, 5_2, 6_1, 6_2, 6_3 por Jone
 **Qué NO está probado (declarado):** que `conwayWord a` sea bien formada/alternante/planar/de una curva para TODA lista (solo por casos en Lean y por cálculo hasta n = 7 en Python);
 que `frac` determine el nudo (Schubert) o que p impar equivalga a una curva; `IsoW`/`variant` son comprobaciones booleanas, no `GRel` ni conservación formal del corchete;
 no hay palabras de los 7_x en Lean para comparar; listas con ai = 0 no se consideran. **Esto NO es clasificación de nudos racionales**: fija definiciones y las valida por cálculo.
+
+## 8. Estado de B2: PARCIAL, hecha y verificada la parte «distintos» (2026-10-05) — camino (B)
+
+`TMENudos/ConwayTabla.lean` (113 líneas; importa `Conway` y `Etapa1_Nudos`; NO está en la raíz) compila desde el código fuente (~56 s con linters), sin `sorry`, axiomas ni `native_decide`; axiomas solo estándar.
+
+* **Distintos (probado):** tabla de 14 formas de Conway (3_1, 4_1, 5_1, 5_2, 6_1, 6_2, 6_3, 7_1 a 7_5 por determinante, y dos más de 7 cruces con p = 19 y 21). `tabla_ok` (bien formadas, alternantes, `checkW`), `tabla_jones_nodup` (Jones en A = 2 todos distintos)
+  y **`tabla_distintos`: dos formas distintas de la tabla NO son `GRel`-equivalentes** (vía `jones_rel`). Alcance: separa los REPRESENTANTES tal como los construye `conwayWord`, con su quiralidad; no afirma nada sobre imágenes especulares ni sobre «el nudo» en el sentido de Schubert.
+* **Iguales (modesto):** `grel_of_iso` (isomorfismo explícito de `GDiag` da `GRel`), `grel_rot` (rotación del punto de partida) y **`grel_223_322`**: C(2,2,3) y C(3,2,2) (p = 17, q q' = 35 ≡ 1 mod 17) son `GRel`-equivalentes. Es un caso de `GRel.iso`, **cero movimientos R1/R2/R3**.
+  Otros pares con igual p (C(2,4)/C(4,2), C(2,3)/C(3,2), ...) solo son isomorfos con reversión del recorrido o imagen especular, que `GRel.iso` no permite.
+
+**NO probado (declarado):** el verificador booleano de caminos de movimientos sobre `Word` con corrección hacia `GRel` (`checkPath`); falta (a) que cada paso sobre `Word` produzca `ofWord w'` igual a `GDiag.r1/r2/tri` salvo isomorfismo, (b) reindexado `Fin (m+2) ≃ Fin m ⊕ Bool`
+(cuello de botella), (c) R3 y flypes no son locales sobre la lista; estimación del agente: un par de días para R1/R2, más para R3. Tampoco: certificados para pares que exijan reversión/espejo; los nombres 7_x en Lean; que `conwayWord` sea wf/planar/alternante para toda lista; que `frac` determine el nudo (Schubert).
+**No es clasificación de nudos racionales.**
