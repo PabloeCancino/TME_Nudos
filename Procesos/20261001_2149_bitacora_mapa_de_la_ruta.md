@@ -94,7 +94,7 @@ Dependencias: S1, S2 independientes; S4 necesita S2 y S3; S5 necesita S1 y la pl
 ### 5.2 Resto de (B)
 | Fase | Contenido | Estado |
 |---|---|---|
-| B0 | Definiciones de Conway y fracción `p/q` | [ABIERTO] |
+| B0 | Definiciones de Conway y fracción `p/q` | **[HECHO]** `Conway.lean` + sonda 30 (por casos, n <= 7; sin caracterización general) |
 | B1 | Censo por cálculo: flypes y clases de Jones (sondas 22 a 25 ya hechas en parte) | parcial |
 | B2 | Tabla verificada de nudos racionales hasta N (certificados de equivalencia + Jones para distinguir) | [ABIERTO] |
 | B4 | Alternante reducido de un racional ≃ su forma de Conway, para todo n | [ABIERTO], investigación |

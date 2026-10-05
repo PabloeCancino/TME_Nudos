@@ -47,6 +47,8 @@ Este documento es el registro cronológico completo: qué se probó, qué se enc
 
 **S7 HECHA (`TMENudos/SpanToricos.lean`):** `toro_minimal`: para todo n impar >= 3, el diagrama alternante del torico T(2,n) es minimal en cruces (n) entre diagramas de una curva GRel-equivalentes. Respalda el camino (A); no es clasificacion de nudos (B).
 
+**B0 HECHA (camino B, separado de A):** `Conway.lean` (palabra de Gauss de C(a1..ak), fraccion p/q, verificacion por casos con decide +kernel hasta 7 cruces) y sonda 30 (127 listas, 0 discrepancias). NO es clasificacion de nudos. Falta: caracterizacion general, B2 (tabla), B4.
+
 ---|---|
 | `master` | Fase 3 hecha y **publicada** (`563173c` en `origin`); 2 commits locales más (sondas 20 y 21, diseño de la forma normal), sin subir |
 | `forma-normal` | Etapa 1 de la forma normal, **verificada**: `TMENudos/FormaNormal.lean` (680 líneas, solo Mathlib) |

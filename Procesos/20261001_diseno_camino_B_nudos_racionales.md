@@ -121,3 +121,18 @@ No demuestra la clasificación de Schubert ni el teorema de Reidemeister; no cub
 Cumplimiento del 100 %: reducido ⇒ span = 4n; no reducido ⇒ span < 4n. Tampoco hubo ningún reducido con `s_A + s_B ≠ n + 2` (n ≤ 6). El teorema del span (B3) es viable por cálculo. OJO: en alternantes, reducido ⇒ irreducible pero NO al revés (sección 4, sonda 22c).
 
 **Pendiente de B1:** flypes y clases de Jones (sondas 23 a 25 del plan), n = 7 y 8, y la contrastación con tablas de nudos racionales.
+
+## 7. Estado de B0: HECHA y verificada (2026-10-05) — camino (B), separado de (A)
+
+**Sonda 30** (`Procesos/Tests/auditoria_20260929/30_conway_b0.py`): construye la palabra de Gauss de C(a1,...,ak) como 4-plat y la valida hasta n <= 7 (127 listas con ai >= 1): 0 discrepancias.
+Una curva si y solo si p impar; todas las de una curva son alternantes, planares, sin cuerdas aisladas, con s_A + s_B = n + 2, adecuadas (salvo el trivial n = 1) y con n = suma ai cruces;
+su Jones aparece en el censo de su n (3_1, 4_1, 5_1, 5_2, 6_1, 6_2, 6_3 por Jones; 7_1 a 7_5 por determinante). Reejecutada por mí hasta n = 6: 0 discrepancias.
+
+**`TMENudos/Conway.lean`** (232 líneas; importa `SpanCensos`; NO está en la raíz) compila desde el código fuente (~36 s con linters), sin `sorry`, axiomas ni `native_decide`; axiomas solo estándar.
+* Definiciones generales: `frac`, `pOf`, `qOf`, `conwayWord : List ℕ → Word` (con `walk`, `links`, `blocks`).
+* Con `decide +kernel`, para casos concretos: fracciones (`frac [3,2] = 7/2`, ...); `okCase` (bien formada, n = suma ai, longitud 2n, alternante, `checkW`) para 12 listas;
+  `wf` falso para los enlaces C(2), C(4), C(3,1); `conwayWord [3]` coincide con `trefoil`, y 4_1 a 6_3 coinciden salvo rotación, reversión o imagen especular (`IsoW`, `variant`); `minimal_conway_32` (>= 5 cruces).
+
+**Qué NO está probado (declarado):** que `conwayWord a` sea bien formada/alternante/planar/de una curva para TODA lista (solo por casos en Lean y por cálculo hasta n = 7 en Python);
+que `frac` determine el nudo (Schubert) o que p impar equivalga a una curva; `IsoW`/`variant` son comprobaciones booleanas, no `GRel` ni conservación formal del corchete;
+no hay palabras de los 7_x en Lean para comparar; listas con ai = 0 no se consideran. **Esto NO es clasificación de nudos racionales**: fija definiciones y las valida por cálculo.
