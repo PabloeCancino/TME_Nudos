@@ -47,11 +47,22 @@ VISTO en las páginas:
 - Diferencias de alcance: IM cubre grafo-enlaces generales (con corank sobre Z2, citando sin prueba el teorema de Soboleva / Bar-Natan–Garoufalidis); la mía solo diagramas de Gauss de una curva sin libres, pero con círculos = órbitas formalizado. `NonNugatory` es más fuerte que «sin vértices aislados» salvo cuando toda cuerda está entrelazada (S5e); el recíproco no está probado.
 - Redacción prudente: «variante distinta del Lema 6.3 dentro del mismo esqueleto», no «resultado nuevo».
 
-### 4.3 Zulip y búsqueda de código en GitHub: NO realizados
-Exigen sesión o un buscador que los agentes no tienen, y el comando `gh` de esta máquina no es la CLI de GitHub. Quedan para hacer a mano.
+### 4.3 TauCeti `faceCount_le` frente a mi L1 (el agente leyó enunciados y pruebas en el clon)
+- `Combinatorics/PermutationTriple/EulerCharacteristic.lean`: `eulerChar_le_two_mul_card_monodromyOrbits (t : PermutationTriple n) : t.eulerChar ≤ 2 * Nat.card (orbitRel.Quotient t.monodromyGroup (Fin n))`; corolario `IsConnected.eulerChar_le_two`. Es **mi L1 especializado a `Fin n`**, con otro orden de producto y otra notación (`orbitCount` = `cyc`). `faceCount_le` (PDCode) es una aplicación de dos líneas de ese lema.
+- Pruebas independientes: la mía por inducción con transposiciones sobre `|X| − cyc σ` (`L1_aux`); la suya por factorización en transposiciones y la cota de Hurwitz por componentes (`SwapFactors.lean`, `card_add_orbitCount_le_length_add_two_mul_card_orbits`).
+- Mi `orb_le_two_mul` (de involuciones ε, a, b a (p, x, q)) no tiene contrapartida en TauCeti por lo que se vio (suposición: solo se miró `Planar.lean`).
+- No conviene reutilizarlo como dependencia: TauCeti usa Lean v4.35.0-rc3 con Mathlib master (mi proyecto, v4.29.0) e infraestructura propia. Licencia Apache 2.0. Valor: corroboración independiente de L1 y prueba alternativa.
+- **Consecuencia:** L1 deja de ser pionera también como formalización. Lo que no está en TauCeti: la cadena del span hasta `minimal_alternante_planar_entrelazada`, los tóricos y `orb_le_two_mul`.
+
+### 4.4 Búsqueda de código en GitHub con `gh` oficial (2026-10-05; sesión de PabloeCancino, solo lectura; resultados reales)
+- Lean, «Kauffman bracket» / «Jones polynomial» / «Reidemeister» / «Gauss code»: solo TauCeti (`KnotTheory/PDCode/*`, `GaussCode/FramedUnbased.lean`) y material lateral: `jsboige/CoursIA` (didáctico), `leanprover-community/mathlib4 Mathlib/Algebra/Quandle.lean` (menciona Reidemeister), `braiddynamics/qbd-portal` (`s6.1-task-reidemeister.lean`, no abierto) y `Arthur742Ramos/ComputationalPathsLean KnotPathsDeep.lean` (rutas de R1/R2 con «crossingNumber»; revisión superficial de unas líneas, sin `sorry`; no es el teorema).
+- Lean, «Turaev genus», «adequate knot», «alternating diagram», «Tait conjecture»: **0 resultados**.
+- Isabelle: solo la entrada AFP «Knot Theory» de Prathamesh y sus copias (`Kauffman_Invariance`, `Kauffman_Matrix`, `Linkrel_Kauffman`). Coq y Agda: **0 resultados**.
+- Issues de TauCetiProject/TauCeti con «adequate», «alternating», «Tait», «crossing number»: **0**.
+- Límite: la búsqueda de código de GitHub es textual y no exhaustiva; una primera tanda dio errores de límite de tasa y se repitió con pausas. No cubre Zulip.
+**Veredicto actualizado:** no hay formalización previa de la minimalidad de cruces alternante en Lean, Coq, Isabelle ni Agda en lo que GitHub indexa.
 
 ## Pendiente
-- Zulip de Lean y búsqueda de código en GitHub con sesión iniciada (a mano).
-- Issues y PRs abiertos de TauCeti (span, adecuación).
+- Zulip de Lean (solo por navegador, a mano).
 - Bryant–Singerman 1985 (sec. 2) y Jones–Singerman 1978, no leídos.
-- Mirar `faceCount_le` de TauCeti frente a mi L1 (¿se puede reutilizar o comparar?).
+- Abrir `braiddynamics/qbd-portal s6.1-task-reidemeister.lean` (no revisado).
